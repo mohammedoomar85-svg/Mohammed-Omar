@@ -20,6 +20,8 @@ export default function BoxCode() {
       setBusy(true);
       result = await redeemCode(code);
       setBusy(false);
+      // No connection (or a preview that blocks it): still accept the demo code on the device.
+      if (result === 'offline' && isValidCode(code)) result = 'ok';
     } else if (isValidCode(code)) {
       result = 'ok';
     }
