@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&family=Tajawal:wght@400;500;700&display=swap">
 <style>
-/* Layout: a single mobile-first column — summary tiles, then a filterable list of sign-up cards, then box codes. */
+/* Layout: one narrow column — the sign-up count, then one card per customer with a WhatsApp button. */
 :root {
   --bg: #F7F4EC;
   --surface: #FFFFFF;
@@ -17,401 +17,155 @@
   --muted: #5B6680;
   --line: #E6DDC8;
   --sea: #0A7F96;
-  --sea-soft: #D6F0F4;
   --sun: #FFC23D;
   --coral: #E5533F;
-  --leaf: #2E9E62;
-  --leaf-soft: #DDF3E6;
   --wa: #1FA855;
   --font-display: "Baloo Bhaijaan 2", "Tajawal", system-ui, sans-serif;
   --font-body: "Tajawal", "Segoe UI", system-ui, sans-serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #111A2C; --surface: #18233A; --ink: #F1ECE1; --muted: #A6B0C4; --line: #2C3A58; --sea: #4CC3D9; --sea-soft: #16384A; --sun: #FFC94F; --coral: #FF7D6E; --leaf: #4FC487; --leaf-soft: #173A2A; --wa: #3CC774; color-scheme: dark; }
+  :root { --bg: #111A2C; --surface: #18233A; --ink: #F1ECE1; --muted: #A6B0C4; --line: #2C3A58; --sea: #4CC3D9; --sun: #FFC94F; --coral: #FF7D6E; --wa: #3CC774; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
-.wrap { max-width: 920px; margin-inline: auto; padding: 16px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 18px; }
-h1, h2 { font-family: var(--font-display); margin: 0; line-height: 1.25; }
-h1 { font-size: 1.5rem; }
-h2 { font-size: 1.25rem; }
-button, input, select, textarea { font: inherit; color: inherit; }
-button { cursor: pointer; }
-:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
 [hidden] { display: none !important; }
+.wrap { max-width: 560px; margin-inline: auto; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 16px; }
+h1 { font-family: var(--font-display); font-size: 1.4rem; margin: 0; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 2px; }
 
-.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: env(safe-area-inset-top); }
-.brand { display: flex; align-items: center; gap: 10px; }
-.mark { display: grid; grid-template-columns: repeat(2, 10px); gap: 3px; }
-.mark i { width: 10px; height: 10px; border-radius: 3px; display: block; }
-.mark i:nth-child(1) { background: #F2604F; } .mark i:nth-child(2) { background: #FFC23D; border-radius: 50%; } .mark i:nth-child(3) { background: #0A7F96; } .mark i:nth-child(4) { background: #2E9E62; }
-.ghost { background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .9rem; }
-.primary { background: var(--sun); color: #1B2A4A; border: 0; border-radius: 999px; padding: 12px 22px; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ghost { background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .9rem; cursor: pointer; }
+.primary { background: var(--sun); color: #1B2A4A; border: 0; border-radius: 999px; padding: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; cursor: pointer; }
 .primary:disabled { opacity: .6; }
-
 .card { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 18px; }
 
-/* Login */
-.login { max-width: 380px; margin: 10vh auto 0; display: flex; flex-direction: column; gap: 14px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-label { font-weight: 700; font-size: .95rem; }
-input, select, textarea { background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--sea); }
-.ltr { direction: ltr; text-align: left; }
+.login { margin-top: 12vh; display: flex; flex-direction: column; gap: 14px; }
+.login h1 { text-align: center; }
+label { font-weight: 700; font-size: .95rem; display: block; margin-bottom: 6px; }
+input { background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; direction: ltr; text-align: left; }
+input:focus { outline: none; border-color: var(--sea); }
 .err { color: var(--coral); font-size: .92rem; min-height: 1.2em; }
-.muted { color: var(--muted); }
 
-/* Tiles */
-.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.tile { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; min-width: 0; }
-.tile b { display: block; font-family: var(--font-display); font-size: 1.9rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.tile span { color: var(--muted); font-size: .88rem; }
-.tile.new b { color: var(--coral); } .tile.paid b { color: var(--leaf); }
-.breakdown { display: flex; flex-wrap: wrap; gap: 8px; }
-.pill { font-size: .85rem; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 2px solid var(--line); }
+.count { text-align: center; padding-block: 22px; }
+.count b { display: block; font-family: var(--font-display); font-size: 3.4rem; line-height: 1; color: var(--sea); font-variant-numeric: tabular-nums; }
+.count span { color: var(--muted); }
 
-/* Toolbar */
-.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.toolbar input { flex: 1 1 200px; width: auto; }
-.seg { display: flex; flex-wrap: wrap; gap: 6px; }
-.seg button { background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: .9rem; font-weight: 500; }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 700; }
-
-/* Sign-up list */
 .list { display: flex; flex-direction: column; gap: 10px; }
-.row { background: var(--surface); border: 2px solid var(--line); border-inline-start: 6px solid var(--st, var(--line)); border-radius: 16px; padding: 14px; display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: start; }
-.row[data-status="new"] { --st: var(--coral); }
-.row[data-status="contacted"] { --st: var(--sun); }
-.row[data-status="paid"] { --st: var(--leaf); }
-.row[data-status="not_interested"] { --st: var(--line); opacity: .75; }
-.who { min-width: 0; }
-.who strong { font-size: 1.1rem; overflow-wrap: anywhere; }
-.meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.meta .pill { font-size: .8rem; padding: 1px 8px; }
-.phone { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
-.when { color: var(--muted); font-size: .85rem; white-space: nowrap; }
-.actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.wa { display: inline-flex; align-items: center; gap: 6px; background: var(--wa); color: #fff; text-decoration: none; font-weight: 700; padding: 8px 14px; border-radius: 999px; }
-.actions select { width: auto; padding: 6px 10px; border-radius: 999px; }
-.notes { grid-column: 1 / -1; }
-.notes textarea { min-height: 2.6em; resize: vertical; font-size: .92rem; }
-.empty { text-align: center; padding: 28px 12px; color: var(--muted); }
-
-/* Codes */
-.codes-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
-.codes-form .field { flex: 1 1 120px; }
-.code-out { display: flex; flex-wrap: wrap; gap: 6px; direction: ltr; }
-.code-out code { font-family: ui-monospace, Menlo, monospace; background: var(--bg); border: 2px dashed var(--line); border-radius: 8px; padding: 3px 8px; font-size: .95rem; }
-.code-used { opacity: .45; text-decoration: line-through; }
-
-.toast { position: fixed; inset-inline: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); margin-inline: auto; max-width: 420px; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 16px; text-align: center; font-weight: 700; }
-
-@media (max-width: 640px) {
-  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
+.person { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+.info { flex: 1; min-width: 0; }
+.info strong { display: block; font-size: 1.08rem; overflow-wrap: anywhere; }
+.info small { color: var(--muted); display: block; }
+.phone { direction: ltr; unicode-bidi: isolate; }
+.wa { flex: none; background: var(--wa); color: #fff; text-decoration: none; font-weight: 700; padding: 10px 16px; border-radius: 999px; }
+.empty { text-align: center; color: var(--muted); padding: 24px 8px; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- Login -->
   <section id="login-view" class="login" hidden>
-    <div class="brand" style="justify-content:center"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><h1>لوحة فز و العب</h1></div>
-    <form id="login-form" class="card" style="display:flex;flex-direction:column;gap:14px" novalidate>
-      <div class="field">
-        <label for="email">الإيميل</label>
-        <input id="email" type="email" class="ltr" autocomplete="username" required>
-      </div>
-      <div class="field">
-        <label for="password">كلمة السر</label>
-        <input id="password" type="password" class="ltr" autocomplete="current-password" required>
-      </div>
+    <h1>لوحة فز و العب</h1>
+    <form id="login-form" class="card" style="display:flex;flex-direction:column;gap:12px" novalidate>
+      <div><label for="email">الإيميل</label><input id="email" type="email" autocomplete="username"></div>
+      <div><label for="password">كلمة السر</label><input id="password" type="password" autocomplete="current-password"></div>
       <span class="err" id="login-err"></span>
       <button class="primary" type="submit" id="login-btn">دخول</button>
     </form>
-    <p class="muted" style="text-align:center;font-size:.88rem">هذي الصفحة للإدارة بس.</p>
   </section>
 
-  <!-- Dashboard -->
-  <section id="app-view" hidden style="display:flex;flex-direction:column;gap:18px">
+  <section id="app-view" hidden style="display:flex;flex-direction:column;gap:16px">
     <header class="top">
-      <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><h1>لوحة فز و العب</h1></div>
+      <h1>لوحة فز و العب</h1>
       <div style="display:flex;gap:8px">
         <button class="ghost" id="refresh-btn" type="button">تحديث</button>
         <button class="ghost" id="logout-btn" type="button">خروج</button>
       </div>
     </header>
-
-    <div class="tiles">
-      <div class="tile"><b id="t-total">–</b><span>كل الحجوزات</span></div>
-      <div class="tile new"><b id="t-new">–</b><span>جدد، ما تواصلت معهم</span></div>
-      <div class="tile paid"><b id="t-paid">–</b><span>دفعوا</span></div>
-      <div class="tile"><b id="t-app">–</b><span>مستخدمي التطبيق</span></div>
-    </div>
-    <div class="breakdown" id="breakdown"></div>
-
-    <div class="card" style="display:flex;flex-direction:column;gap:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <h2>الحجوزات</h2>
-        <button class="ghost" id="export-btn" type="button">تنزيل Excel</button>
-      </div>
-      <div class="toolbar">
-        <input id="search" type="search" placeholder="ابحث بالاسم أو الرقم">
-      </div>
-      <div class="seg" id="filters" role="group" aria-label="فلترة حسب الحالة">
-        <button type="button" data-f="all" aria-pressed="true">الكل</button>
-        <button type="button" data-f="new" aria-pressed="false">جديد</button>
-        <button type="button" data-f="contacted" aria-pressed="false">تواصلت</button>
-        <button type="button" data-f="paid" aria-pressed="false">دفع</button>
-        <button type="button" data-f="not_interested" aria-pressed="false">غير مهتم</button>
-      </div>
-      <div class="list" id="list"></div>
-    </div>
-
-    <div class="card" style="display:flex;flex-direction:column;gap:14px">
-      <h2>أكواد الصناديق</h2>
-      <p class="muted" style="margin:0" id="codes-summary">–</p>
-      <form class="codes-form" id="codes-form" novalidate>
-        <div class="field"><label for="c-box">رقم الصندوق</label><input id="c-box" type="number" min="1" max="99" value="1" class="ltr"></div>
-        <div class="field"><label for="c-count">كم كود؟</label><input id="c-count" type="number" min="1" max="500" value="20" class="ltr"></div>
-        <button class="primary" type="submit" id="codes-btn">سوّ الأكواد</button>
-      </form>
-      <div id="new-codes" hidden style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-          <b>الأكواد الجديدة</b>
-          <button class="ghost" type="button" id="copy-codes">نسخ الكل</button>
-        </div>
-        <div class="code-out" id="new-codes-list"></div>
-      </div>
-      <details>
-        <summary style="cursor:pointer;font-weight:700">كل الأكواد</summary>
-        <div class="code-out" id="all-codes" style="margin-top:10px"></div>
-      </details>
-    </div>
+    <div class="card count"><b id="total">–</b><span>حجز</span></div>
+    <div class="list" id="list"></div>
   </section>
 
-  <div class="toast" id="toast" hidden></div>
 </div>
-
 <script>
 (function () {
-  var SUPABASE_URL = 'https://mxocmwkxnihenqmfhjcc.supabase.co';
+  var URL_ = 'https://mxocmwkxnihenqmfhjcc.supabase.co';
   var KEY = 'sb_publishable_NgFczrw5qNiMZN_VDpdeQg_0wcG4wxD';
   var STORE = 'fp-admin-session';
-
-  var STATUS = { new: 'جديد', contacted: 'تواصلت', paid: 'دفع', not_interested: 'غير مهتم' };
   var AGE = { '3-5': '٣-٥ سنوات', '6-8': '٦-٨ سنوات', more: 'أكثر من طفل' };
-  var LANG = { ar: 'عربي', en: 'English' };
-
-  var session = null, rows = [], filter = 'all';
   var $ = function (id) { return document.getElementById(id); };
+  var session = null;
+  var fmt = new Intl.DateTimeFormat('ar-KW', { timeZone: 'Asia/Kuwait', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 
-  function toast(msg) {
-    var t = $('toast'); t.textContent = msg; t.hidden = false;
-    clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 2600);
-  }
   function save(s) { session = s; try { s ? localStorage.setItem(STORE, JSON.stringify(s)) : localStorage.removeItem(STORE); } catch (e) {} }
-  function load() { try { return JSON.parse(localStorage.getItem(STORE)); } catch (e) { return null; } }
+  function show(v) { $('login-view').hidden = v !== 'login'; $('app-view').hidden = v !== 'app'; }
 
   async function auth(grant, body) {
-    var r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=' + grant, {
-      method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-    });
+    var r = await fetch(URL_ + '/auth/v1/token?grant_type=' + grant, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     var j = await r.json().catch(function () { return {}; });
     if (!r.ok) throw new Error(j.error_description || j.msg || 'login failed');
     return { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in - 60) * 1000 };
   }
-  async function token() {
-    if (!session) throw new Error('signed out');
+  async function api(path, method) {
     if (Date.now() > session.expires_at) save(await auth('refresh_token', { refresh_token: session.refresh_token }));
-    return session.access_token;
+    var r = await fetch(URL_ + '/rest/v1/' + path, { method: method || 'GET', headers: { apikey: KEY, Authorization: 'Bearer ' + session.access_token, 'Content-Type': 'application/json' }, body: method === 'POST' ? '{}' : undefined });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
   }
-  async function api(path, opts) {
-    opts = opts || {};
-    var headers = Object.assign({ apikey: KEY, Authorization: 'Bearer ' + (await token()), 'Content-Type': 'application/json' }, opts.headers || {});
-    var r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { method: opts.method || 'GET', headers: headers, body: opts.body ? JSON.stringify(opts.body) : undefined });
-    if (!r.ok) { var e = await r.json().catch(function () { return {}; }); throw new Error(e.message || ('HTTP ' + r.status)); }
-    if (opts.count) { var cr = r.headers.get('content-range') || ''; return parseInt(cr.split('/')[1], 10) || 0; }
-    return r.status === 204 ? null : r.json();
-  }
-
-  function show(view) { $('login-view').hidden = view !== 'login'; $('app-view').hidden = view !== 'app'; }
-
-  // Kuwait time, e.g. "١٤ نوف · ٣:٢٠ م"
-  var fmt = new Intl.DateTimeFormat('ar-KW', { timeZone: 'Asia/Kuwait', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 
   function waLink(r) {
     var msg = r.app_lang === 'en'
-      ? 'Hi ' + r.parent_name + '! This is the Fizz & Play team. Thank you for reserving a box for your child. '
-      : 'هلا ' + r.parent_name + '! معاك فريق فز و العب. شكراً على حجزك لصندوق طفلك. ';
+      ? 'Hi ' + r.parent_name + '! This is the Fizz & Play team. Thank you for reserving a box for your child.'
+      : 'هلا ' + r.parent_name + '! معاك فريق فز و العب. شكراً على حجزك لصندوق طفلك.';
     return 'https://wa.me/965' + r.phone + '?text=' + encodeURIComponent(msg);
   }
 
-  function el(tag, attrs, text) {
-    var e = document.createElement(tag);
-    if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
-    if (text != null) e.textContent = text;
-    return e;
-  }
-
-  function renderStats() {
-    var real = rows;
-    $('t-total').textContent = real.length.toLocaleString('ar');
-    $('t-new').textContent = real.filter(function (r) { return r.status === 'new'; }).length.toLocaleString('ar');
-    $('t-paid').textContent = real.filter(function (r) { return r.status === 'paid'; }).length.toLocaleString('ar');
-    var b = $('breakdown'); b.textContent = '';
-    var groups = {};
-    real.forEach(function (r) {
-      var k1 = AGE[r.age_group] || r.age_group, k2 = LANG[r.app_lang] || r.app_lang;
-      groups[k1] = (groups[k1] || 0) + 1; groups[k2] = (groups[k2] || 0) + 1;
-    });
-    Object.keys(groups).forEach(function (k) { b.appendChild(el('span', { class: 'pill' }, k + ': ' + groups[k].toLocaleString('ar'))); });
-  }
-
-  function renderList() {
-    var q = $('search').value.trim().toLowerCase();
-    var list = $('list'); list.textContent = '';
-    var shown = rows.filter(function (r) {
-      if (filter !== 'all' && r.status !== filter) return false;
-      return !q || (r.parent_name || '').toLowerCase().indexOf(q) >= 0 || (r.phone || '').indexOf(q) >= 0;
-    });
-    if (!shown.length) { list.appendChild(el('div', { class: 'empty' }, rows.length ? 'ما فيه حجوزات بهالفلتر.' : 'للحين ما فيه حجوزات. أول ما أحد يحجز من الموقع، بيطلع هنا.')); return; }
-    shown.forEach(function (r) {
-      var row = el('article', { class: 'row', 'data-status': r.status });
-      var who = el('div', { class: 'who' });
-      who.appendChild(el('strong', null, r.parent_name));
-      var meta = el('div', { class: 'meta' });
-      meta.appendChild(el('span', { class: 'pill phone' }, '+965 ' + r.phone));
-      meta.appendChild(el('span', { class: 'pill' }, AGE[r.age_group] || r.age_group));
-      meta.appendChild(el('span', { class: 'pill' }, LANG[r.app_lang] || r.app_lang));
-      who.appendChild(meta);
-      row.appendChild(who);
-      row.appendChild(el('span', { class: 'when' }, fmt.format(new Date(r.created_at))));
-
-      var actions = el('div', { class: 'actions' });
-      var wa = el('a', { class: 'wa', href: waLink(r), target: '_blank', rel: 'noopener' }, 'واتساب');
-      wa.addEventListener('click', function () { if (r.status === 'new') setStatus(r, 'contacted', sel); });
-      actions.appendChild(wa);
-      var sel = el('select', { 'aria-label': 'حالة ' + r.parent_name });
-      Object.keys(STATUS).forEach(function (k) { var o = el('option', { value: k }, STATUS[k]); if (k === r.status) o.selected = true; sel.appendChild(o); });
-      sel.addEventListener('change', function () { setStatus(r, sel.value, sel); });
-      actions.appendChild(sel);
-      row.appendChild(actions);
-
-      var notes = el('div', { class: 'notes' });
-      var ta = el('textarea', { placeholder: 'ملاحظات', 'aria-label': 'ملاحظات عن ' + r.parent_name });
-      ta.value = r.notes || '';
-      ta.addEventListener('change', function () { saveNotes(r, ta.value); });
-      notes.appendChild(ta);
-      row.appendChild(notes);
-      list.appendChild(row);
-    });
-  }
-
-  async function setStatus(r, status, sel) {
-    var old = r.status; r.status = status;
-    try {
-      await api('signups?id=eq.' + r.id, { method: 'PATCH', body: { status: status }, headers: { Prefer: 'return=minimal' } });
-      renderStats(); renderList(); toast('تم الحفظ: ' + STATUS[status]);
-    } catch (e) { r.status = old; if (sel) sel.value = old; toast('ما انحفظ. جرّب مرة ثانية'); }
-  }
-  async function saveNotes(r, text) {
-    try {
-      await api('signups?id=eq.' + r.id, { method: 'PATCH', body: { notes: text || null }, headers: { Prefer: 'return=minimal' } });
-      r.notes = text; toast('انحفظت الملاحظة');
-    } catch (e) { toast('ما انحفظت الملاحظة'); }
-  }
-
-  async function loadCodes() {
-    var codes = await api('box_codes?select=code,box,used_at,multi_use&order=created_at.desc');
-    var real = codes.filter(function (c) { return !c.multi_use; });
-    var used = real.filter(function (c) { return c.used_at; }).length;
-    $('codes-summary').textContent = 'عندك ' + real.length.toLocaleString('ar') + ' كود، انستخدم منهم ' + used.toLocaleString('ar') + '.';
-    var box = $('all-codes'); box.textContent = '';
-    codes.forEach(function (c) { box.appendChild(el('code', { class: c.used_at && !c.multi_use ? 'code-used' : '' }, c.code)); });
-  }
-
   async function refresh() {
-    $('refresh-btn').disabled = true;
     try {
-      var data = await Promise.all([
-        api('signups?select=*&order=created_at.desc'),
-        api('profiles?select=user_id', { headers: { Prefer: 'count=exact', Range: '0-0' }, count: true }),
-      ]);
-      rows = data[0].filter(function (r) { return !/^TEST/.test(r.parent_name); });
-      $('t-app').textContent = data[1].toLocaleString('ar');
-      renderStats(); renderList();
-      await loadCodes();
-    } catch (e) {
-      if (/JWT|signed out|refresh/i.test(e.message)) { save(null); show('login'); }
-      else toast('ما قدرنا نحمّل البيانات: ' + e.message);
-    } finally { $('refresh-btn').disabled = false; }
+      var rows = (await api('signups?select=id,created_at,parent_name,phone,age_group,app_lang&order=created_at.desc'))
+        .filter(function (r) { return !/^TEST/.test(r.parent_name); });
+      $('total').textContent = rows.length;
+      var list = $('list'); list.textContent = '';
+      if (!rows.length) {
+        var e = document.createElement('div'); e.className = 'empty';
+        e.textContent = 'للحين ما فيه حجوزات. أول ما أحد يحجز من الموقع، بيطلع هنا.';
+        list.appendChild(e);
+      }
+      rows.forEach(function (r) {
+        var item = document.createElement('div'); item.className = 'person';
+        var info = document.createElement('div'); info.className = 'info';
+        var name = document.createElement('strong'); name.textContent = r.parent_name;
+        var line1 = document.createElement('small');
+        var ph = document.createElement('span'); ph.className = 'phone'; ph.textContent = '+965 ' + r.phone;
+        line1.appendChild(ph); line1.appendChild(document.createTextNode(' · ' + (AGE[r.age_group] || r.age_group) + (r.app_lang === 'en' ? ' · English' : '')));
+        var line2 = document.createElement('small'); line2.textContent = fmt.format(new Date(r.created_at));
+        info.appendChild(name); info.appendChild(line1); info.appendChild(line2);
+        var wa = document.createElement('a'); wa.className = 'wa'; wa.href = waLink(r); wa.target = '_blank'; wa.rel = 'noopener'; wa.textContent = 'واتساب';
+        item.appendChild(info); item.appendChild(wa);
+        list.appendChild(item);
+      });
+    } catch (e) { save(null); show('login'); }
   }
 
   async function start() {
-    var ok = await api('rpc/is_admin', { method: 'POST', body: {} });
-    if (!ok) { save(null); show('login'); $('login-err').textContent = 'هذا الحساب ما عنده صلاحية دخول اللوحة.'; return; }
+    var ok = await api('rpc/is_admin', 'POST');
+    if (!ok) { save(null); show('login'); $('login-err').textContent = 'هذا الحساب ما عنده صلاحية.'; return; }
     show('app'); refresh();
   }
 
   $('login-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    $('login-err').textContent = '';
-    $('login-btn').disabled = true;
-    try {
-      save(await auth('password', { email: $('email').value.trim(), password: $('password').value }));
-      await start();
-    } catch (err) {
-      $('login-err').textContent = /Invalid login/i.test(err.message) ? 'الإيميل أو كلمة السر غلط.' : 'ما قدرنا ندخل: ' + err.message;
-    } finally { $('login-btn').disabled = false; }
+    e.preventDefault(); $('login-err').textContent = ''; $('login-btn').disabled = true;
+    try { save(await auth('password', { email: $('email').value.trim(), password: $('password').value })); await start(); }
+    catch (err) { $('login-err').textContent = /Invalid login/i.test(err.message) ? 'الإيميل أو كلمة السر غلط.' : 'ما قدرنا ندخل. جرّب مرة ثانية.'; }
+    finally { $('login-btn').disabled = false; }
   });
-
-  $('logout-btn').addEventListener('click', function () { save(null); rows = []; show('login'); });
+  $('logout-btn').addEventListener('click', function () { save(null); show('login'); });
   $('refresh-btn').addEventListener('click', refresh);
-  $('search').addEventListener('input', renderList);
-  $('filters').addEventListener('click', function (e) {
-    var b = e.target.closest('button'); if (!b) return;
-    filter = b.getAttribute('data-f');
-    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-    renderList();
-  });
 
-  $('export-btn').addEventListener('click', function () {
-    var head = ['وقت الحجز', 'الاسم', 'الرقم', 'العمر', 'اللغة', 'الحالة', 'ملاحظات', 'واتساب'];
-    var lines = [head].concat(rows.map(function (r) {
-      return [fmt.format(new Date(r.created_at)), r.parent_name, '+965' + r.phone, AGE[r.age_group] || r.age_group, LANG[r.app_lang] || r.app_lang, STATUS[r.status], r.notes || '', 'https://wa.me/965' + r.phone];
-    })).map(function (cols) { return cols.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(','); });
-    var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
-    var a = el('a', { href: URL.createObjectURL(blob), download: 'fizzplay-signups.csv' });
-    document.body.appendChild(a); a.click(); a.remove();
-  });
-
-  var lastCodes = [];
-  $('codes-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var box = parseInt($('c-box').value, 10), count = parseInt($('c-count').value, 10);
-    if (!(box >= 1) || !(count >= 1 && count <= 500)) { toast('اكتب رقم صندوق، وعدد من ١ إلى ٥٠٠'); return; }
-    $('codes-btn').disabled = true;
-    try {
-      lastCodes = await api('rpc/admin_make_codes', { method: 'POST', body: { p_box: box, p_count: count } });
-      var out = $('new-codes-list'); out.textContent = '';
-      lastCodes.forEach(function (c) { out.appendChild(el('code', null, c)); });
-      $('new-codes').hidden = false;
-      toast('انسوّت ' + lastCodes.length.toLocaleString('ar') + ' كود');
-      loadCodes();
-    } catch (err) { toast('ما قدرنا نسوي الأكواد: ' + err.message); }
-    finally { $('codes-btn').disabled = false; }
-  });
-  $('copy-codes').addEventListener('click', function () {
-    var text = lastCodes.join('\n');
-    navigator.clipboard.writeText(text).then(function () { toast('انسخت الأكواد'); }, function () { toast('ما قدرنا ننسخ، حددها يدوي'); });
-  });
-
-  session = load();
-  if (session) start().catch(function () { save(null); show('login'); });
-  else show('login');
+  try { session = JSON.parse(localStorage.getItem(STORE)); } catch (e) {}
+  if (session) start().catch(function () { save(null); show('login'); }); else show('login');
 })();
 </script>
 </body>
