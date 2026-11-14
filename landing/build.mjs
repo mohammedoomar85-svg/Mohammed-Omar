@@ -1,7 +1,7 @@
 // Builds the public site for hosting (Cloudflare Pages).
 // landing/index.html is written as a page fragment; this wraps it in a full HTML document.
 // Usage: node landing/build.mjs   → landing/dist/index.html
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -29,4 +29,6 @@ ${body}
 `;
 mkdirSync(join(here, 'dist'), { recursive: true });
 writeFileSync(join(here, 'dist', 'index.html'), html);
-console.log('Built landing/dist/index.html');
+// The admin dashboard is already a full page.
+copyFileSync(join(here, 'admin.html'), join(here, 'dist', 'admin.html'));
+console.log('Built landing/dist/index.html and admin.html');
