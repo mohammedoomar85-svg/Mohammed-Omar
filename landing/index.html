@@ -1,11 +1,11 @@
 <title>فز و العب</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="فز و العب: صندوق شهري وتطبيق ألعاب ينمّي مهارات طفلك. كل شهر رحلة لدولة جديدة.">
+<meta name="description" content="فز و العب | Fizz & Play: صندوق ألعاب تعليمية شهري وتطبيق ألعاب بالعربي والإنجليزي للأطفال من ٣ إلى ٨ سنوات.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap">
 <style>
-/* Layout: playful RTL single column — a block-tower hero, then stepped bands, ending in a sign-up card shaped like a passport page. */
+/* Layout: playful single column that flips between RTL Arabic and LTR English — a block-tower hero, stepped bands, a week-by-week box plan, and a sign-up card shaped like a passport page. */
 :root {
   --bg: #FFFBF2;
   --surface: #FFFFFF;
@@ -39,7 +39,8 @@
 
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.7; }
-.page { direction: rtl; overflow-x: hidden; }
+.page { overflow-x: hidden; }
+.page[data-lang="ar"] [lang="en"], .page[data-lang="en"] [lang="ar"] { display: none !important; }
 .wrap { max-width: 1080px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; margin: 0; text-wrap: balance; }
 h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; }
@@ -51,14 +52,16 @@ a { color: inherit; }
 /* Header */
 header.top { padding-block: 18px; }
 header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-.logo-mark { display: inline-grid; grid-template-columns: repeat(2, 12px); gap: 3px; }
+.head-actions { display: flex; align-items: center; gap: 10px; }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; text-decoration: none; display: flex; align-items: center; gap: 10px; line-height: 1.2; }
+.logo-mark { display: inline-grid; grid-template-columns: repeat(2, 12px); gap: 3px; flex: none; }
 .logo-mark i { width: 12px; height: 12px; display: block; border-radius: 3px; }
 .logo-mark i:nth-child(1) { background: var(--coral); }
 .logo-mark i:nth-child(2) { background: var(--sun); border-radius: 50%; }
 .logo-mark i:nth-child(3) { background: var(--sea); }
 .logo-mark i:nth-child(4) { background: var(--leaf); }
 .logo .amp { color: var(--coral); }
+.lang-btn { font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; padding: 6px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; text-decoration: none; border: 0; cursor: pointer; padding: 12px 26px; border-radius: 999px; background: var(--sun); color: var(--on-sun); box-shadow: 0 4px 0 color-mix(in srgb, var(--sun) 55%, #8a5a00); transition: transform .15s ease, box-shadow .15s ease; }
 .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 color-mix(in srgb, var(--sun) 55%, #8a5a00); }
@@ -70,7 +73,7 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
 .hero-text { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .eyebrow { font-weight: 700; color: var(--sea); letter-spacing: .02em; }
-.hero h1 { font-size: clamp(2.4rem, 6.5vw, 4.2rem); font-weight: 800; }
+.hero h1 { font-size: clamp(2.3rem, 6vw, 4rem); font-weight: 800; }
 .hero h1 .hl { background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sun) 70%, transparent) 62%); padding-inline: 4px; }
 .hero .lead { font-size: 1.2rem; color: var(--muted); max-width: 34em; }
 .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
@@ -87,7 +90,7 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .b4 { width: 34%; aspect-ratio: 1; bottom: calc(42% + 14px); left: 33%; background: var(--coral); border-radius: 50%; animation-delay: .45s; }
 .b5 { width: 0; height: 0; bottom: calc(42% + 14px + 34% * 1.05); left: 50%; translate: -50% 0; border-left: 46px solid transparent; border-right: 46px solid transparent; border-bottom: 70px solid var(--sun); animation-delay: .6s; }
 @keyframes drop { from { transform: translateY(-60px); opacity: 0; } to { transform: none; opacity: 1; } }
-.stamp { position: absolute; top: 4%; right: -2%; rotate: 10deg; border: 3px dashed var(--coral); color: var(--coral); border-radius: 14px; padding: 6px 14px; background: color-mix(in srgb, var(--bg) 85%, transparent); font-family: var(--font-display); font-weight: 800; line-height: 1.3; text-align: center; font-size: .95rem; }
+.stamp { position: absolute; top: 4%; inset-inline-start: -2%; rotate: 10deg; border: 3px dashed var(--coral); color: var(--coral); border-radius: 14px; padding: 6px 14px; background: color-mix(in srgb, var(--bg) 85%, transparent); font-family: var(--font-display); font-weight: 800; line-height: 1.3; text-align: center; font-size: .95rem; }
 .stamp small { display: block; font-weight: 500; font-size: .8rem; }
 
 /* Sections */
@@ -99,7 +102,8 @@ section.band { background: var(--band); }
 /* Steps */
 .steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; list-style: none; padding: 0; margin: 0; counter-reset: s; }
 .steps li { counter-increment: s; background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.steps li::before { content: counter(s, arabic-indic); font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--sea-soft); color: var(--sea); }
+.steps li::before { content: counter(s); font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--sea-soft); color: var(--sea); }
+.page[data-lang="ar"] .steps li::before { content: counter(s, arabic-indic); }
 .steps p { color: var(--muted); font-size: .98rem; }
 
 /* Skills */
@@ -109,35 +113,48 @@ section.band { background: var(--band); }
 .ico { flex: none; width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--line); }
 .ico span { display: block; }
 .i-build span { width: 26px; height: 10px; background: var(--sea); border-radius: 3px; box-shadow: 0 -12px 0 -1px var(--leaf); translate: 0 6px; }
-.i-letters span { font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; color: var(--coral); line-height: 1; }
+.i-letters span { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--coral); line-height: 1; }
 .i-shapes span { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 24px solid var(--sun); }
-.i-numbers span { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--plum); line-height: 1; }
-.i-world span { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 40%, var(--leaf) 0 28%, transparent 30%), radial-gradient(circle at 68% 66%, var(--leaf) 0 20%, transparent 22%), var(--sea); }
-.i-think span { width: 24px; height: 24px; border: 4px solid var(--coral); border-radius: 4px; border-top-color: transparent; rotate: 45deg; }
+.i-numbers span { font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--leaf); line-height: 1; }
+.i-words span { width: 26px; height: 26px; border-radius: 50% 50% 50% 8px; background: var(--plum); }
+.i-lang span { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--sea); line-height: 1; }
 
-/* First trip */
-.trip { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-.trip-card { background: var(--surface); border-radius: var(--radius); border: 2px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.trip-card .tag { align-self: flex-start; font-weight: 700; font-size: .9rem; padding: 2px 12px; border-radius: 999px; }
-.tag.box { background: color-mix(in srgb, var(--coral) 16%, transparent); color: var(--coral); }
-.tag.app { background: var(--sea-soft); color: var(--sea); }
-.trip-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.trip-card li { display: flex; gap: 10px; align-items: baseline; }
-.trip-card li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sun); translate: 0 -2px; }
-.trip-card li b { font-weight: 700; }
-.trip-card li span { color: var(--muted); }
-.flag { display: inline-grid; grid-template-rows: repeat(3, 1fr); width: 30px; height: 20px; border-radius: 3px; overflow: hidden; position: relative; vertical-align: middle; margin-inline-start: 6px; box-shadow: 0 0 0 1px var(--line); }
-.flag i:nth-child(1) { background: #007A3D; } .flag i:nth-child(2) { background: #fff; } .flag i:nth-child(3) { background: #CE1126; }
-.flag::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 10px; background: #000; clip-path: polygon(0 0, 100% 33%, 100% 67%, 0 100%); }
-.trip-foot { margin-top: 20px; color: var(--muted); }
+/* Month plan */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.tab { font: inherit; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; cursor: pointer; padding: 10px 20px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.contents { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+.chip { font-size: .92rem; padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 2px solid var(--line); }
+.chip.own { border-style: dashed; border-color: var(--coral); }
+.legend { margin-top: 16px; font-size: .88rem; color: var(--muted); }
+.weeks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.week { background: var(--surface); border: 2px solid var(--line); border-top: 6px solid var(--c); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.week .wk { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.week .skill-tag { align-self: flex-start; font-size: .82rem; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--ink); }
+.week p { font-size: .95rem; color: var(--muted); }
+.week p b { color: var(--ink); }
+.week .dare { margin-top: auto; padding-top: 8px; border-top: 2px dashed var(--line); color: var(--ink); font-weight: 700; font-size: .93rem; }
 
-/* Parents */
+/* Pricing */
+.prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 820px; }
+.price-card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tag { align-self: flex-start; font-weight: 700; font-size: .9rem; padding: 2px 12px; border-radius: 999px; background: color-mix(in srgb, var(--coral) 16%, transparent); color: var(--coral); }
+.amount { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
+.amount .big { font-size: 2.6rem; color: var(--sea); }
+.amount small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: .95rem; }
+.price-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
+.price-card li { display: flex; gap: 10px; align-items: baseline; }
+.price-card li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sun); translate: 0 -2px; }
+.price-card .btn { margin-top: auto; align-self: flex-start; }
+.foot-note { margin-top: 20px; color: var(--muted); }
+
+/* Parents / shop */
 .promises { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 .promise { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); min-width: 0; }
 .check { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--leaf); display: grid; place-items: center; }
 .check::after { content: ""; width: 10px; height: 6px; border-left: 3px solid #fff; border-bottom: 3px solid #fff; rotate: -45deg; translate: 0 -1px; }
 .promise b { display: block; }
-.promise span { color: var(--muted); font-size: .95rem; }
+.promise > div > span { color: var(--muted); font-size: .95rem; }
 
 /* Sign-up */
 .signup { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 36px; align-items: center; }
@@ -147,20 +164,21 @@ section.band { background: var(--band); }
 .passport { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 28px; position: relative; box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--ink) 40%, transparent); min-width: 0; }
 .passport::before { content: ""; position: absolute; inset: 10px; border: 2px dashed var(--line); border-radius: 14px; pointer-events: none; }
 form { display: flex; flex-direction: column; gap: 16px; position: relative; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-label { font-weight: 700; }
+.field { display: flex; flex-direction: column; gap: 6px; border: 0; padding: 0; margin: 0; }
+label, legend { font-weight: 700; }
+legend { margin-bottom: 6px; padding: 0; }
 .hint { font-size: .88rem; color: var(--muted); }
-input, select { font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 11px 14px; width: 100%; }
-input:focus, select:focus { outline: none; border-color: var(--sea); }
+input { font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 11px 14px; width: 100%; }
+input:focus { outline: none; border-color: var(--sea); }
 .phone { display: flex; gap: 8px; direction: ltr; }
 .phone .cc { flex: none; display: grid; place-items: center; padding-inline: 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--band); font-weight: 700; }
 .phone input { direction: ltr; text-align: left; }
 .err { color: var(--coral); font-size: .9rem; min-height: 1.2em; }
-.ages { display: flex; flex-wrap: wrap; gap: 8px; }
-.ages input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.ages label { font-weight: 500; padding: 8px 16px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer; background: var(--bg); }
-.ages input:checked + label { border-color: var(--sea); background: var(--sea-soft); color: var(--sea); font-weight: 700; }
-.ages input:focus-visible + label { outline: 3px solid var(--sea); outline-offset: 2px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pills input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pills label { font-weight: 500; padding: 8px 16px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer; background: var(--bg); }
+.pills input:checked + label { border-color: var(--sea); background: var(--sea-soft); color: var(--sea); font-weight: 700; }
+.pills input:focus-visible + label { outline: 3px solid var(--sea); outline-offset: 2px; }
 .done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; padding-block: 20px; position: relative; }
 .done .stamp-big { border: 3px dashed var(--leaf); color: var(--leaf); rotate: -8deg; padding: 8px 18px; border-radius: 14px; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
 .done p { color: var(--muted); }
@@ -177,37 +195,10 @@ details p { color: var(--muted); margin-top: 10px; }
 footer { padding-block: 36px; border-top: 2px solid var(--line); color: var(--muted); font-size: .95rem; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; }
 
-/* Month plan */
-.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-.tab { font: inherit; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; cursor: pointer; padding: 10px 20px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
-.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.contents { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
-.chip { font-size: .92rem; padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 2px solid var(--line); }
-.chip.own { border-style: dashed; border-color: var(--coral); }
-.weeks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.week { background: var(--surface); border: 2px solid var(--line); border-top: 6px solid var(--c); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.week .wk { font-size: .85rem; color: var(--muted); font-weight: 700; }
-.week .skill-tag { align-self: flex-start; font-size: .82rem; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--ink); }
-.week p { font-size: .95rem; color: var(--muted); }
-.week p b { color: var(--ink); }
-.week .dare { margin-top: auto; padding-top: 8px; border-top: 2px dashed var(--line); color: var(--ink); font-weight: 700; font-size: .93rem; }
-/* Pricing */
-.prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 820px; }
-.price-card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.price-card .tag { align-self: flex-start; font-weight: 700; font-size: .9rem; padding: 2px 12px; border-radius: 999px; }
-.amount { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
-.amount span { font-size: 2.6rem; color: var(--sea); }
-.amount small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: .95rem; }
-.price-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
-.price-card li { display: flex; gap: 10px; align-items: baseline; }
-.price-card li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sun); translate: 0 -2px; }
-.price-card .btn { margin-top: auto; align-self: flex-start; }
-
 @media (max-width: 860px) {
-  .hero .wrap, .trip, .signup { grid-template-columns: 1fr; }
+  .hero .wrap, .signup { grid-template-columns: 1fr; }
   .tower { max-width: 300px; }
-  .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps, .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 520px) {
@@ -215,7 +206,9 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   .steps, .skills, .weeks, .prices { grid-template-columns: 1fr; }
   section.block { padding-block: 48px; }
   .passport { padding: 22px 18px; }
-  .stamp { right: 0; }
+  .stamp { inset-inline-start: 0; }
+  .logo { font-size: 1.25rem; }
+  .head-actions .btn { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .blk { animation: none; }
@@ -223,15 +216,19 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 }
 </style>
 
-<div class="page" dir="rtl" lang="ar">
+<div class="page" id="page" dir="rtl" lang="ar" data-lang="ar">
 
 <header class="top">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="فز و العب">
+    <a class="logo" href="#top">
       <span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <span>فز <span class="amp">و</span> العب</span>
+      <span lang="ar">فز <span class="amp">و</span> العب</span>
+      <span lang="en">Fizz <span class="amp">&amp;</span> Play</span>
     </a>
-    <a class="btn small" href="#signup">احجز صندوقك</a>
+    <div class="head-actions">
+      <button class="lang-btn" id="lang-btn" type="button"><span lang="ar">English</span><span lang="en">العربية</span></button>
+      <a class="btn small" href="#signup"><span lang="ar">احجز صندوقك</span><span lang="en">Reserve a box</span></a>
+    </div>
   </div>
 </header>
 
@@ -239,22 +236,34 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <section class="hero">
     <div class="wrap">
       <div class="hero-text">
-        <span class="eyebrow">صندوق شهري وتطبيق ألعاب للأطفال من ٣ إلى ٨ سنوات</span>
-        <h1>كل شهر <span class="hl">رحلة</span> لدولة جديدة</h1>
-        <p class="lead">يوصلك صندوق فيه ألعاب بناء وتركيب وأنشطة، وتطبيق فيه ألعاب تعليمية مربوطة فيه. طفلك يبني ويتعلّم الحروف والأرقام والأشكال، ويجمع أختام الدول في جوازه.</p>
+        <span class="eyebrow">
+          <span lang="ar">صندوق ألعاب شهري وتطبيق تعليمي للأطفال من ٣ إلى ٨ سنوات</span>
+          <span lang="en">A monthly toy box and learning app for kids aged 3 to 8</span>
+        </span>
+        <h1>
+          <span lang="ar">يلعب <span class="hl">بيده</span>، ويتعلّم على الشاشة</span>
+          <span lang="en">Play with your <span class="hl">hands</span>, learn on the screen</span>
+        </h1>
+        <p class="lead">
+          <span lang="ar">كل شهر يوصلك صندوق فيه ألعاب تعليمية أصلية، وتطبيق فيه ألعاب مربوطة فيها. طفلك يبني ويتعلّم الأشكال والحروف والأرقام، بالعربي أو بالإنجليزي.</span>
+          <span lang="en">Every month a box of original learning toys arrives at your door, with an app full of games that go with them. Your child builds and learns shapes, letters and numbers, in English or Arabic.</span>
+        </p>
         <div class="hero-cta">
-          <a class="btn" href="#signup">احجز صندوقك الأول</a>
-          <span class="hero-note">أول ١٠٠ عائلة لهم <b>خصم المؤسسين</b></span>
+          <a class="btn" href="#signup"><span lang="ar">احجز صندوقك الأول</span><span lang="en">Reserve your first box</span></a>
+          <span class="hero-note">
+            <span lang="ar">أول ١٠٠ عائلة لهم <b>سعر المؤسسين</b></span>
+            <span lang="en">The first 100 families get the <b>founders' price</b></span>
+          </span>
         </div>
       </div>
       <div class="tower" aria-hidden="true">
         <div class="ground"></div>
-        <div class="blk b1">ب</div>
-        <div class="blk b2">٣</div>
+        <div class="blk b1"><span lang="ar">ب</span><span lang="en">A</span></div>
+        <div class="blk b2"><span lang="ar">٣</span><span lang="en">3</span></div>
         <div class="blk b3"></div>
         <div class="blk b4"></div>
         <div class="blk b5"></div>
-        <div class="stamp">الرحلة ١<small>الكويت</small></div>
+        <div class="stamp"><span lang="ar">الصندوق ١<small>المستكشف الصغير</small></span><span lang="en">Box 1<small>Little Explorer</small></span></div>
       </div>
     </div>
   </section>
@@ -262,14 +271,26 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <section class="block band" id="how">
     <div class="wrap">
       <div class="section-head">
-        <h2>شلون يشتغل؟</h2>
-        <p>الصندوق والتطبيق يكمّلون بعض. اللي يتعلمه الطفل على الشاشة، يطبّقه بيده.</p>
+        <h2><span lang="ar">شلون يشتغل؟</span><span lang="en">How it works</span></h2>
+        <p><span lang="ar">الصندوق والتطبيق يكمّلون بعض. اللي يتعلمه الطفل على الشاشة، يطبّقه بيده.</span><span lang="en">The box and the app work together. What your child learns on screen, they practise with their hands.</span></p>
       </div>
       <ol class="steps">
-        <li><h3>يوصلك الصندوق</h3><p>كل شهر صندوق لدولة جديدة، فيه ألعاب تركيب وأنشطة وكروت.</p></li>
-        <li><h3>امسح الكود</h3><p>كل صندوق فيه كود يفتح رحلة الشهر في التطبيق ويحط ختم في الجواز.</p></li>
-        <li><h3>العب وتعلّم</h3><p>ألعاب قصيرة على الشاشة، وبعدها تحدّي يسويه الطفل بيده من الصندوق.</p></li>
-        <li><h3>تابع تقدّمه</h3><p>تقرير بسيط للأهل يوضح شنو تعلّم طفلك، ووين يحتاج تقوية.</p></li>
+        <li>
+          <h3><span lang="ar">يوصلك الصندوق</span><span lang="en">The box arrives</span></h3>
+          <p><span lang="ar">ألعاب تعليمية أصلية وكروت أنشطة، حسب عمر طفلك.</span><span lang="en">Original learning toys and activity cards, chosen for your child's age.</span></p>
+        </li>
+        <li>
+          <h3><span lang="ar">أدخل الكود</span><span lang="en">Enter the code</span></h3>
+          <p><span lang="ar">كل صندوق فيه كود يفتح ألعاب الشهر في التطبيق ويعطي الطفل ختم في جوازه.</span><span lang="en">Each box has a code that unlocks the month's games and adds a stamp to your child's passport.</span></p>
+        </li>
+        <li>
+          <h3><span lang="ar">العب وتعلّم</span><span lang="en">Play and learn</span></h3>
+          <p><span lang="ar">ألعاب قصيرة على الشاشة، وبعدها تحدّي يسويه الطفل بيده من الصندوق.</span><span lang="en">Short games on screen, then a hands-on challenge with the toys in the box.</span></p>
+        </li>
+        <li>
+          <h3><span lang="ar">تابع تقدّمه</span><span lang="en">See the progress</span></h3>
+          <p><span lang="ar">تقرير بسيط للأهل يوضح شنو تعلّم طفلك، ووين يحتاج تقوية.</span><span lang="en">A simple parent report shows what your child learned and what needs more practice.</span></p>
+        </li>
       </ol>
     </div>
   </section>
@@ -277,165 +298,184 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <section class="block" id="skills">
     <div class="wrap">
       <div class="section-head">
-        <h2>ألعاب تقوّي طفلك</h2>
-        <p>كل لعبة مصممة عشان تنمّي مهارة معيّنة، والصعوبة تتغير حسب عمر الطفل ومستواه.</p>
+        <h2><span lang="ar">ألعاب تقوّي طفلك</span><span lang="en">Games that build real skills</span></h2>
+        <p><span lang="ar">كل لعبة تنمّي مهارة وحدة، والصعوبة تتغير حسب عمر الطفل.</span><span lang="en">Each game builds one skill, and gets harder or easier with your child's age.</span></p>
       </div>
       <div class="skills">
-        <div class="skill"><div class="ico i-build"><span></span></div><div><h3>البناء والتركيب</h3><p>يركّب معالم الدول بالمكعبات، ويتعلم التوازن والتخطيط.</p></div></div>
-        <div class="skill"><div class="ico i-letters"><span>أ</span></div><div><h3>الحروف واللغة</h3><p>يتتبّع الحرف بإصبعه ويسمع صوته، ويركّب كلمات عربية وإنجليزية.</p></div></div>
-        <div class="skill"><div class="ico i-shapes"><span></span></div><div><h3>الأشكال والألوان</h3><p>يفرز الأشكال ويكمّل الأنماط، ويتعرف على الألوان.</p></div></div>
-        <div class="skill"><div class="ico i-numbers"><span>١٢٣</span></div><div><h3>الأرقام والحساب</h3><p>يعد ويقارن ويجمع بألعاب فيها حركة وقصة.</p></div></div>
-        <div class="skill"><div class="ico i-world"><span></span></div><div><h3>الدول والخرائط</h3><p>يتعرف على الأعلام والمعالم والحيوانات، ويحط كل دولة مكانها في الخريطة.</p></div></div>
-        <div class="skill"><div class="ico i-think"><span></span></div><div><h3>التفكير وحل المشكلات</h3><p>متاهات وألغاز وبرمجة بسيطة بالأسهم.</p></div></div>
+        <div class="skill"><div class="ico i-shapes"><span></span></div><div>
+          <h3><span lang="ar">الأشكال</span><span lang="en">Shapes</span></h3>
+          <p><span lang="ar">يطابق كل شكل مع ظله، ويفرّق بين الأشكال المتشابهة.</span><span lang="en">Match each shape to its shadow and tell look-alike shapes apart.</span></p>
+        </div></div>
+        <div class="skill"><div class="ico i-build"><span></span></div><div>
+          <h3><span lang="ar">البناء والتركيب</span><span lang="en">Building</span></h3>
+          <p><span lang="ar">يكمّل مخطط بيت أو صاروخ أو قارب بالمربعات والمثلثات.</span><span lang="en">Fill a house, rocket or boat plan with squares and triangles.</span></p>
+        </div></div>
+        <div class="skill"><div class="ico i-letters"><span><span lang="ar">أ</span><span lang="en">A</span></span></div><div>
+          <h3><span lang="ar">الحروف</span><span lang="en">Letters</span></h3>
+          <p><span lang="ar">يتتبّع الحرف بإصبعه ويسمع صوته.</span><span lang="en">Trace each letter with a finger and hear how it sounds.</span></p>
+        </div></div>
+        <div class="skill"><div class="ico i-numbers"><span><span lang="ar">١٢٣</span><span lang="en">123</span></span></div><div>
+          <h3><span lang="ar">الأرقام</span><span lang="en">Numbers</span></h3>
+          <p><span lang="ar">يعد لين ١٠، والكبار يتعلمون الجمع.</span><span lang="en">Count to 10, and older kids move on to adding.</span></p>
+        </div></div>
+        <div class="skill"><div class="ico i-words"><span></span></div><div>
+          <h3><span lang="ar">الكلمات</span><span lang="en">Words</span></h3>
+          <p><span lang="ar">يجمع الحروف من المحار بالترتيب ويركّب الكلمة.</span><span lang="en">Collect letters from the shells in order to spell the word.</span></p>
+        </div></div>
+        <div class="skill"><div class="ico i-lang"><span>ع/E</span></div><div>
+          <h3><span lang="ar">لغتين</span><span lang="en">Two languages</span></h3>
+          <p><span lang="ar">التطبيق كله عربي أو إنجليزي، وتقدر تغيّر اللغة بأي وقت.</span><span lang="en">The whole app works in English or Arabic, and you can switch any time.</span></p>
+        </div></div>
       </div>
     </div>
   </section>
 
-  <section class="block band" id="trip">
+  <section class="block band" id="plan">
     <div class="wrap">
       <div class="section-head">
-        <h2>الرحلة الأولى: الكويت <span class="flag" role="img" aria-label="علم الكويت"><i></i><i></i><i></i></span></h2>
-        <p>شهر كامل من اللعب. كل أسبوع مهارة جديدة: نشاط بيده من الصندوق، ولعبة على الشاشة تكمّله.</p>
+        <h2><span lang="ar">الصندوق الأول: المستكشف الصغير</span><span lang="en">Box 1: Little Explorer</span></h2>
+        <p><span lang="ar">شهر كامل من اللعب. كل أسبوع مهارة: نشاط بيده من الصندوق، ولعبة في التطبيق تكمّله.</span><span lang="en">A full month of play. One skill a week: a hands-on activity from the box, and a game in the app that goes with it.</span></p>
       </div>
 
-      <div class="tabs" role="tablist" aria-label="اختار عمر طفلك">
-        <button class="tab" role="tab" id="tab-small" aria-controls="plan-small" aria-selected="true">صندوق الصغار · ٣ إلى ٥</button>
-        <button class="tab" role="tab" id="tab-big" aria-controls="plan-big" aria-selected="false">صندوق الكبار · ٦ إلى ٨</button>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tab-small" aria-controls="plan-small" aria-selected="true"><span lang="ar">صندوق الصغار · ٣ إلى ٥</span><span lang="en">Little box · ages 3 to 5</span></button>
+        <button class="tab" role="tab" id="tab-big" aria-controls="plan-big" aria-selected="false"><span lang="ar">صندوق الكبار · ٦ إلى ٨</span><span lang="en">Big box · ages 6 to 8</span></button>
       </div>
 
       <div class="plan" id="plan-small" role="tabpanel" aria-labelledby="tab-small">
         <div class="contents">
-          <b>في الصندوق:</b>
-          <span class="chip">مكعبات مغناطيسية ٢٤ قطعة</span>
-          <span class="chip">بازل الأشكال الخشبي</span>
-          <span class="chip own">كروت الحروف العربية</span>
-          <span class="chip own">لوحة مخطط الأبراج</span>
-          <span class="chip own">جواز السفر</span>
+          <b><span lang="ar">في الصندوق:</span><span lang="en">In the box:</span></b>
+          <span class="chip"><span lang="ar">مكعبات مغناطيسية ٢٤ قطعة</span><span lang="en">24-piece magnetic tiles</span></span>
+          <span class="chip"><span lang="ar">بازل الأشكال الخشبي</span><span lang="en">Wooden shape puzzle</span></span>
+          <span class="chip own"><span lang="ar">كروت الحروف</span><span lang="en">Letter cards</span></span>
+          <span class="chip own"><span lang="ar">كروت مخططات البناء</span><span lang="en">Building plan cards</span></span>
+          <span class="chip own"><span lang="ar">جواز الأختام</span><span lang="en">Stamp passport</span></span>
         </div>
         <ol class="weeks">
           <li class="week" style="--c: var(--sun)">
-            <span class="wk">الأسبوع ١</span><span class="skill-tag">الأشكال</span>
-            <h3>صيّاد الأشكال</h3>
-            <p><b>بيده:</b> يركّب بازل الأشكال ويسمّي كل شكل: دائرة، مثلث، مربع.</p>
-            <p><b>بالتطبيق:</b> لعبة "طابق الظل": يسحب الشكل لظله الصحيح.</p>
-            <p class="dare">التحدّي: دوّر على ٣ دوائر في البيت!</p>
+            <span class="wk"><span lang="ar">الأسبوع ١</span><span lang="en">Week 1</span></span><span class="skill-tag"><span lang="ar">الأشكال</span><span lang="en">Shapes</span></span>
+            <h3><span lang="ar">صيّاد الأشكال</span><span lang="en">Shape hunter</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يركّب بازل الأشكال ويسمّي كل شكل.</span><span lang="en">Fit the shape puzzle and name each shape.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">لعبة "طابق الظل".</span><span lang="en">Shadow Match.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: دوّر على ٣ دوائر في البيت!</span><span lang="en">Challenge: find 3 circles at home!</span></p>
           </li>
           <li class="week" style="--c: var(--sea)">
-            <span class="wk">الأسبوع ٢</span><span class="skill-tag">البناء</span>
-            <h3>نبني أبراج الكويت</h3>
-            <p><b>بيده:</b> يحط المكعبات المغناطيسية على لوحة المخطط لين يكمّل البرج.</p>
-            <p><b>بالتطبيق:</b> لعبة "ركّب البرج": نفس المخطط على الشاشة، مع أصوات وتشجيع.</p>
-            <p class="dare">التحدّي: ابنِ برج أطول من القلم!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٢</span><span lang="en">Week 2</span></span><span class="skill-tag"><span lang="ar">البناء</span><span lang="en">Building</span></span>
+            <h3><span lang="ar">البنّاء الصغير</span><span lang="en">Little builder</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يحط المكعبات على كروت المخططات: بيت، شجرة، صاروخ، قارب.</span><span lang="en">Lay the tiles on the plan cards: house, tree, rocket, boat.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">لعبة "ركّب الشكل".</span><span lang="en">Build It.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: ابنِ بيت لدميتك!</span><span lang="en">Challenge: build a house for your toy!</span></p>
           </li>
           <li class="week" style="--c: var(--coral)">
-            <span class="wk">الأسبوع ٣</span><span class="skill-tag">الحروف</span>
-            <h3>حروف الكويت</h3>
-            <p><b>بيده:</b> يرتّب كروت ك، و، ي، ت، ويسوي حرف ا وحرف ل بالمكعبات.</p>
-            <p><b>بالتطبيق:</b> لعبة "تتبّع الحرف": يكتب الحرف بإصبعه ويسمع صوته.</p>
-            <p class="dare">التحدّي: قول ٣ كلمات تبدأ بحرف الكاف!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٣</span><span lang="en">Week 3</span></span><span class="skill-tag"><span lang="ar">الحروف</span><span lang="en">Letters</span></span>
+            <h3><span lang="ar">أول الحروف</span><span lang="en">First letters</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يرتّب كروت ب، ت، ن، و، ويسوي الحرف بالمكعبات.</span><span lang="en">Sort the L, C, O, U cards and make the letters with tiles.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">لعبة "تتبّع الحرف".</span><span lang="en">Letter Trace.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: قول ٣ كلمات تبدأ بحرف الباء!</span><span lang="en">Challenge: say 3 words that start with C!</span></p>
           </li>
           <li class="week" style="--c: var(--leaf)">
-            <span class="wk">الأسبوع ٤</span><span class="skill-tag">الأرقام</span>
-            <h3>كم مكعب؟</h3>
-            <p><b>بيده:</b> يعد المكعبات ويبني برج من ٥، وبعدها برج من ١٠.</p>
-            <p><b>بالتطبيق:</b> لعبة "عد وطابق": يعد الأشياء ويختار الرقم الصح.</p>
-            <p class="dare">التحدّي الأخير: صوّر برجك وخذ ختم الكويت!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٤</span><span lang="en">Week 4</span></span><span class="skill-tag"><span lang="ar">الأرقام</span><span lang="en">Numbers</span></span>
+            <h3><span lang="ar">كم قطعة؟</span><span lang="en">How many pieces?</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يعد القطع ويبني عمود من ٥، وبعدها من ١٠.</span><span lang="en">Count the tiles and build a stack of 5, then 10.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">لعبة "عد وطابق".</span><span lang="en">Count &amp; Match.</span></p>
+            <p class="dare"><span lang="ar">التحدّي الأخير: صوّر بناءك وخذ الختم!</span><span lang="en">Final challenge: take a photo of your build and earn the stamp!</span></p>
           </li>
         </ol>
       </div>
 
       <div class="plan" id="plan-big" role="tabpanel" aria-labelledby="tab-big" hidden>
         <div class="contents">
-          <b>في الصندوق:</b>
-          <span class="chip">مكعبات مغناطيسية ٢٤ قطعة</span>
-          <span class="chip">حفرية الكنز</span>
-          <span class="chip own">كروت المخططات بثلاث مستويات</span>
-          <span class="chip own">كروت الكلمات العربية</span>
-          <span class="chip own">قصة الغوّاص وجواز السفر</span>
+          <b><span lang="ar">في الصندوق:</span><span lang="en">In the box:</span></b>
+          <span class="chip"><span lang="ar">مكعبات مغناطيسية ٢٤ قطعة</span><span lang="en">24-piece magnetic tiles</span></span>
+          <span class="chip"><span lang="ar">حفرية الكنز</span><span lang="en">Treasure dig kit</span></span>
+          <span class="chip own"><span lang="ar">كروت مخططات بثلاث مستويات</span><span lang="en">Plan cards in 3 levels</span></span>
+          <span class="chip own"><span lang="ar">كروت الكلمات</span><span lang="en">Word cards</span></span>
+          <span class="chip own"><span lang="ar">جواز الأختام</span><span lang="en">Stamp passport</span></span>
         </div>
         <ol class="weeks">
           <li class="week" style="--c: var(--sea)">
-            <span class="wk">الأسبوع ١</span><span class="skill-tag">الهندسة</span>
-            <h3>المهندس الصغير</h3>
-            <p><b>بيده:</b> يبني برج التحرير وأبراج الكويت بالمكعبات من كروت المخططات، من السهل للصعب.</p>
-            <p><b>بالتطبيق:</b> لعبة "قطع محدودة": يكمّل المخطط بأقل عدد قطع.</p>
-            <p class="dare">التحدّي: برج يوقف بدون ما يطيح بـ ١٥ قطعة!</p>
+            <span class="wk"><span lang="ar">الأسبوع ١</span><span lang="en">Week 1</span></span><span class="skill-tag"><span lang="ar">الهندسة</span><span lang="en">Engineering</span></span>
+            <h3><span lang="ar">المهندس الصغير</span><span lang="en">Young engineer</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يبني قلعة وصاروخ وسفينة من كروت المخططات، من السهل للصعب.</span><span lang="en">Build a castle, rocket and ship from the plan cards, from easy to hard.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">"ركّب الشكل" مع المثلثات المقلوبة.</span><span lang="en">Build It, with upside-down triangles.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: ابنِ مجسم واقف من ١٥ قطعة!</span><span lang="en">Challenge: build a standing model with 15 pieces!</span></p>
           </li>
           <li class="week" style="--c: var(--plum)">
-            <span class="wk">الأسبوع ٢</span><span class="skill-tag">الاستكشاف</span>
-            <h3>كنز الغوّاص</h3>
-            <p><b>بيده:</b> يقرأ قصة الغوّاص مع أهله، وبعدها يحفر ويطلّع الكنز بالأدوات مثل المستكشفين.</p>
-            <p><b>بالتطبيق:</b> لعبة "غوص اللؤلؤ": يغوص ويجمع المحار قبل لا يخلص النَفَس.</p>
-            <p class="dare">التحدّي: احكِ القصة لأحد من أهلك بكلامك!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٢</span><span lang="en">Week 2</span></span><span class="skill-tag"><span lang="ar">الاستكشاف</span><span lang="en">Exploring</span></span>
+            <h3><span lang="ar">صيّاد الكنز</span><span lang="en">Treasure hunter</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يحفر ويطلّع الكنز بالأدوات مثل المستكشفين.</span><span lang="en">Dig out the treasure with real tools, like an explorer.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">لعبة "غوص الكنز".</span><span lang="en">Treasure Dive.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: احكِ لأهلك شنو لقيت!</span><span lang="en">Challenge: tell your family what you found!</span></p>
           </li>
           <li class="week" style="--c: var(--coral)">
-            <span class="wk">الأسبوع ٣</span><span class="skill-tag">الكلمات</span>
-            <h3>كلمات البحر</h3>
-            <p><b>بيده:</b> يركّب كلمات من الكروت: بحر، برج، لؤلؤ، سفينة.</p>
-            <p><b>بالتطبيق:</b> كل محارة فيها حرف، ويجمعها بالترتيب عشان يكوّن الكلمة.</p>
-            <p class="dare">التحدّي: اكتب كلمة "الكويت" بدون ما تشوف!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٣</span><span lang="en">Week 3</span></span><span class="skill-tag"><span lang="ar">الكلمات</span><span lang="en">Words</span></span>
+            <h3><span lang="ar">كلمات البحر</span><span lang="en">Sea words</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">يركّب كلمات من الكروت: سمكة، نجمة، قارب.</span><span lang="en">Make words from the cards: FISH, STAR, BOAT.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">يجمع الحروف من المحار بالترتيب.</span><span lang="en">Collect the letters from the shells in order.</span></p>
+            <p class="dare"><span lang="ar">التحدّي: اكتب كلمة بدون ما تشوف الكرت!</span><span lang="en">Challenge: spell a word without looking at the card!</span></p>
           </li>
           <li class="week" style="--c: var(--leaf)">
-            <span class="wk">الأسبوع ٤</span><span class="skill-tag">الحساب</span>
-            <h3>حساب الغوّاص</h3>
-            <p><b>بيده:</b> يقيس طول برجه بعدد المكعبات، ويقارن بين برجين: أيهم أطول؟ وبكم؟</p>
-            <p><b>بالتطبيق:</b> لعبة "اجمع اللؤلؤ": جمع وطرح بقصة الغوص.</p>
-            <p class="dare">التحدّي الأخير: صوّر برجك وخذ ختم الكويت!</p>
+            <span class="wk"><span lang="ar">الأسبوع ٤</span><span lang="en">Week 4</span></span><span class="skill-tag"><span lang="ar">الحساب</span><span lang="en">Maths</span></span>
+            <h3><span lang="ar">حساب القطع</span><span lang="en">Tile maths</span></h3>
+            <p><b><span lang="ar">بيده:</span><span lang="en">Hands-on:</span></b> <span lang="ar">٣ مربعات + ٢ مثلث = كم قطعة؟ يجمع ويتأكد بالعد.</span><span lang="en">3 squares + 2 triangles = how many pieces? Add, then check by counting.</span></p>
+            <p><b><span lang="ar">بالتطبيق:</span><span lang="en">In the app:</span></b> <span lang="ar">"عد وطابق" بالجمع.</span><span lang="en">Count &amp; Match with adding.</span></p>
+            <p class="dare"><span lang="ar">التحدّي الأخير: صوّر بناءك وخذ الختم!</span><span lang="en">Final challenge: take a photo of your build and earn the stamp!</span></p>
           </li>
         </ol>
       </div>
+      <p class="legend"><span lang="ar">الإطار المتقطع = محتوى من تصميم فز و العب.</span><span lang="en">Dashed outline = made by Fizz &amp; Play.</span></p>
     </div>
   </section>
 
   <section class="block" id="pricing">
     <div class="wrap">
       <div class="section-head">
-        <h2>اختار صندوق طفلك</h2>
-        <p>اشتراك شهري، وتقدر توقفه في أي وقت. التطبيق داخل مع الاشتراك.</p>
+        <h2><span lang="ar">اختار صندوق طفلك</span><span lang="en">Choose your child's box</span></h2>
+        <p><span lang="ar">اشتراك شهري، وتقدر توقفه بأي وقت. التطبيق داخل مع الاشتراك.</span><span lang="en">A monthly subscription you can stop any time. The app is included.</span></p>
       </div>
       <div class="prices">
         <div class="price-card">
-          <span class="tag box">٣ إلى ٥ سنوات</span>
-          <h3>صندوق الصغار</h3>
-          <p class="amount"><span>١٤٫٩</span> د.ك <small>بالشهر</small></p>
+          <span class="tag"><span lang="ar">٣ إلى ٥ سنوات</span><span lang="en">Ages 3 to 5</span></span>
+          <h3><span lang="ar">صندوق الصغار</span><span lang="en">Little box</span></h3>
+          <p class="amount"><span lang="ar"><span class="big">١٤٫٩</span> د.ك <small>بالشهر</small></span><span lang="en"><span class="big">14.9</span> KWD <small>/ month</small></span></p>
           <ul>
-            <li>لعبتين تعليميتين أصليتين</li>
-            <li>كروت الحروف ولوحة المخطط</li>
-            <li>رحلة كاملة في التطبيق</li>
-            <li>تقرير شهري للأهل</li>
+            <li><span lang="ar">لعبتين تعليميتين أصليتين</span><span lang="en">Two original learning toys</span></li>
+            <li><span lang="ar">كروت الحروف والمخططات</span><span lang="en">Letter and plan cards</span></li>
+            <li><span lang="ar">كل ألعاب الصندوق في التطبيق</span><span lang="en">All the box games in the app</span></li>
+            <li><span lang="ar">تقرير شهري للأهل</span><span lang="en">Monthly parent report</span></li>
           </ul>
-          <a class="btn" href="#signup" data-age="age-3">احجز صندوق الصغار</a>
+          <a class="btn" href="#signup" data-age="age-3"><span lang="ar">احجز صندوق الصغار</span><span lang="en">Reserve the little box</span></a>
         </div>
         <div class="price-card">
-          <span class="tag box">٦ إلى ٨ سنوات</span>
-          <h3>صندوق الكبار</h3>
-          <p class="amount"><span>١٦٫٩</span> د.ك <small>بالشهر</small></p>
+          <span class="tag"><span lang="ar">٦ إلى ٨ سنوات</span><span lang="en">Ages 6 to 8</span></span>
+          <h3><span lang="ar">صندوق الكبار</span><span lang="en">Big box</span></h3>
+          <p class="amount"><span lang="ar"><span class="big">١٦٫٩</span> د.ك <small>بالشهر</small></span><span lang="en"><span class="big">16.9</span> KWD <small>/ month</small></span></p>
           <ul>
-            <li>لعبتين تعليميتين أصليتين</li>
-            <li>كروت المخططات والكلمات والقصة</li>
-            <li>رحلة كاملة في التطبيق</li>
-            <li>تقرير شهري للأهل</li>
+            <li><span lang="ar">لعبتين تعليميتين أصليتين</span><span lang="en">Two original learning toys</span></li>
+            <li><span lang="ar">كروت المخططات والكلمات</span><span lang="en">Plan and word cards</span></li>
+            <li><span lang="ar">كل ألعاب الصندوق في التطبيق</span><span lang="en">All the box games in the app</span></li>
+            <li><span lang="ar">تقرير شهري للأهل</span><span lang="en">Monthly parent report</span></li>
           </ul>
-          <a class="btn" href="#signup" data-age="age-6">احجز صندوق الكبار</a>
+          <a class="btn" href="#signup" data-age="age-6"><span lang="ar">احجز صندوق الكبار</span><span lang="en">Reserve the big box</span></a>
         </div>
       </div>
-      <p class="trip-foot">التوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة تسجّل لهم خصم المؤسسين.</p>
+      <p class="foot-note"><span lang="ar">التوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة لهم سعر المؤسسين.</span><span lang="en">Delivery within Kuwait is included. The first 100 families get the founders' price.</span></p>
     </div>
   </section>
 
   <section class="block band" id="parents">
     <div class="wrap">
       <div class="section-head">
-        <h2>مصمم للأهل قبل الأطفال</h2>
-        <p>تطبيق آمن تقدر تعطيه طفلك وأنت مرتاح.</p>
+        <h2><span lang="ar">مصمم للأهل قبل الأطفال</span><span lang="en">Made with parents in mind</span></h2>
+        <p><span lang="ar">تطبيق آمن تقدر تعطيه طفلك وأنت مرتاح.</span><span lang="en">A safe app you can hand to your child with peace of mind.</span></p>
       </div>
       <div class="promises">
-        <div class="promise"><span class="check"></span><div><b>بدون إعلانات</b><span>ولا روابط خارجية ولا محادثات</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>قفل أبوي</b><span>الطفل ما يقدر يدفع أو يغيّر الإعدادات</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>وقت شاشة تحدده أنت</b><span>وبعدها يروح يلعب بصندوقه</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>تقرير شهري</b><span>شنو تعلّم وشنو يحتاج</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>عربي وإنجليزي</b><span>تختار لغة كل لعبة</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>بدون موسيقى</b><span>إذا تفضّل المؤثرات الصوتية بس</span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">بدون إعلانات</span><span lang="en">No ads</span></b><span><span lang="ar">ولا روابط خارجية ولا محادثات</span><span lang="en">No outside links and no chat</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">قفل أبوي</span><span lang="en">Parent lock</span></b><span><span lang="ar">قسم الأهل محمي بسؤال ما يحله إلا الكبار</span><span lang="en">The parent area is behind a grown-up question</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">تقرير المهارات</span><span lang="en">Skills report</span></b><span><span lang="ar">أقوى مهارة، واللي تحتاج تقوية</span><span lang="en">Strongest skill, and what needs practice</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">عربي وإنجليزي</span><span lang="en">English and Arabic</span></b><span><span lang="ar">تختار لغة التطبيق كله</span><span lang="en">Choose the language for the whole app</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">تحكم بالصوت</span><span lang="en">Sound control</span></b><span><span lang="ar">تقدر تطفي الصوت من الإعدادات</span><span lang="en">Turn sound off in settings</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">ألعاب أصلية</span><span lang="en">Genuine toys</span></b><span><span lang="ar">من وكلاء معتمدين، ومناسبة للعمر</span><span lang="en">From authorised distributors, matched to age</span></span></div></div>
       </div>
     </div>
   </section>
@@ -443,14 +483,14 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <section class="block" id="shop">
     <div class="wrap">
       <div class="section-head">
-        <h2>وبعد في المتجر</h2>
-        <p>ألعاب مختارة تقدر تطلبها مع الصندوق أو تهديها.</p>
+        <h2><span lang="ar">وبعد في المتجر</span><span lang="en">Also in the shop</span></h2>
+        <p><span lang="ar">ألعاب مختارة تقدر تطلبها مع الصندوق أو تهديها.</span><span lang="en">Hand-picked toys to add to your box or give as a gift.</span></p>
       </div>
       <div class="promises">
-        <div class="promise"><span class="check"></span><div><b>مجسمات بناء إسلامية</b><span>الكعبة والمسجد النبوي، وكل خطوة بناء معها قصة. هدية رمضان والعيد</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>المهندس الصغير</b><span>تركيب تروس ومسارات كرات وسيارات بالطاقة الشمسية</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>العالِم الصغير</b><span>ميكروسكوب، وحفريات ديناصورات، وتجارب دوائر كهربائية</span></div></div>
-        <div class="promise"><span class="check"></span><div><b>الأرقام والوقت</b><span>ميزان الحساب، وبازل الأرقام، وساعة تعليم الوقت</span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">المهندس الصغير</span><span lang="en">Little engineer</span></b><span><span lang="ar">تروس، ومسارات كرات، وسيارات بالطاقة الشمسية</span><span lang="en">Gears, marble runs and solar cars</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">العالِم الصغير</span><span lang="en">Little scientist</span></b><span><span lang="ar">ميكروسكوب، وحفريات، ودوائر كهربائية</span><span lang="en">Microscope, dig kits and circuits</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">الأرقام والوقت</span><span lang="en">Numbers and time</span></b><span><span lang="ar">ميزان الحساب، وبازل الأرقام، وساعة التعليم</span><span lang="en">Maths scale, number puzzle and teaching clock</span></span></div></div>
+        <div class="promise"><span class="check"></span><div><b><span lang="ar">مجسمات بناء إسلامية</span><span lang="en">Islamic building sets</span></b><span><span lang="ar">الكعبة والمسجد النبوي، هدية لرمضان والعيد</span><span lang="en">The Kaaba and the Prophet's Mosque, for Ramadan and Eid</span></span></div></div>
       </div>
     </div>
   </section>
@@ -458,42 +498,49 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <section class="block band" id="signup">
     <div class="wrap signup">
       <div class="signup-text">
-        <h2>احجز مكانك في أول دفعة</h2>
-        <p>أول دفعة محدودة داخل الكويت. سجّل الحين، ونتواصل معك على الواتساب قبل الإطلاق بالسعر والتفاصيل.</p>
-        <span class="perk">خصم المؤسسين لأول ١٠٠ عائلة</span>
+        <h2><span lang="ar">احجز مكانك في أول دفعة</span><span lang="en">Reserve a spot in the first batch</span></h2>
+        <p><span lang="ar">أول دفعة محدودة داخل الكويت. سجّل الحين، ونتواصل معك على الواتساب قبل الإطلاق.</span><span lang="en">The first batch is limited and ships within Kuwait. Sign up now and we'll message you on WhatsApp before launch.</span></p>
+        <span class="perk"><span lang="ar">سعر المؤسسين لأول ١٠٠ عائلة</span><span lang="en">Founders' price for the first 100 families</span></span>
       </div>
       <div class="passport">
         <form id="signup-form" novalidate>
           <div class="field">
-            <label for="parent">اسم ولي الأمر</label>
-            <input id="parent" name="parent" autocomplete="name" placeholder="مثال: أم سلمان">
+            <label for="parent"><span lang="ar">اسم ولي الأمر</span><span lang="en">Parent's name</span></label>
+            <input id="parent" name="parent" autocomplete="name">
             <span class="err" id="parent-err"></span>
           </div>
           <div class="field">
-            <label for="phone">رقم الواتساب</label>
+            <label for="phone"><span lang="ar">رقم الواتساب</span><span lang="en">WhatsApp number</span></label>
             <div class="phone">
               <span class="cc">+965</span>
               <input id="phone" name="phone" inputmode="numeric" autocomplete="tel-national" placeholder="5XXXXXXX" maxlength="8">
             </div>
             <span class="err" id="phone-err"></span>
           </div>
-          <fieldset class="field" style="border:0;padding:0;margin:0">
-            <legend style="font-weight:700;margin-bottom:6px">عمر طفلك</legend>
-            <div class="ages">
-              <input type="radio" id="age-3" name="age" value="3-5"><label for="age-3">٣ إلى ٥ سنوات</label>
-              <input type="radio" id="age-6" name="age" value="6-8"><label for="age-6">٦ إلى ٨ سنوات</label>
-              <input type="radio" id="age-more" name="age" value="more"><label for="age-more">أكثر من طفل</label>
+          <fieldset class="field">
+            <legend><span lang="ar">عمر طفلك</span><span lang="en">Your child's age</span></legend>
+            <div class="pills">
+              <input type="radio" id="age-3" name="age" value="3-5"><label for="age-3"><span lang="ar">٣ إلى ٥</span><span lang="en">3 to 5</span></label>
+              <input type="radio" id="age-6" name="age" value="6-8"><label for="age-6"><span lang="ar">٦ إلى ٨</span><span lang="en">6 to 8</span></label>
+              <input type="radio" id="age-more" name="age" value="more"><label for="age-more"><span lang="ar">أكثر من طفل</span><span lang="en">More than one child</span></label>
             </div>
             <span class="err" id="age-err"></span>
           </fieldset>
-          <button class="btn" type="submit">احجز مكاني</button>
-          <span class="hint">ما راح نرسل لك إلا رسائل عن إطلاق فز و العب.</span>
+          <fieldset class="field">
+            <legend><span lang="ar">لغة التطبيق</span><span lang="en">App language</span></legend>
+            <div class="pills">
+              <input type="radio" id="al-ar" name="applang" value="ar"><label for="al-ar">العربية</label>
+              <input type="radio" id="al-en" name="applang" value="en"><label for="al-en">English</label>
+            </div>
+          </fieldset>
+          <button class="btn" type="submit"><span lang="ar">احجز مكاني</span><span lang="en">Reserve my spot</span></button>
+          <span class="hint"><span lang="ar">ما نرسل لك إلا رسائل عن إطلاق فز و العب.</span><span lang="en">We'll only message you about the Fizz &amp; Play launch.</span></span>
         </form>
         <div class="done" id="done" hidden>
-          <span class="stamp-big">تم الحجز</span>
-          <h3 id="done-title">شكراً لك!</h3>
-          <p>بنتواصل معك على الواتساب قبل الإطلاق.</p>
-          <p class="hint">نسخة معاينة: النموذج ما يحفظ البيانات للحين.</p>
+          <span class="stamp-big"><span lang="ar">تم الحجز</span><span lang="en">Reserved</span></span>
+          <h3 id="done-title"></h3>
+          <p><span lang="ar">بنتواصل معك على الواتساب قبل الإطلاق.</span><span lang="en">We'll message you on WhatsApp before launch.</span></p>
+          <p class="hint"><span lang="ar">نسخة معاينة: النموذج ما يحفظ البيانات للحين.</span><span lang="en">Preview: this form doesn't save data yet.</span></p>
         </div>
       </div>
     </div>
@@ -501,15 +548,14 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
   <section class="block" id="faq">
     <div class="wrap">
-      <div class="section-head"><h2>أسئلة الأهالي</h2></div>
+      <div class="section-head"><h2><span lang="ar">أسئلة الأهالي</span><span lang="en">Parents ask</span></h2></div>
       <div class="faq">
-        <details><summary>متى يبدأ الاشتراك؟</summary><p>نجهّز أول دفعة الحين. المسجلين يوصلهم الخبر أول على الواتساب.</p></details>
-        <details><summary>كم سعر الاشتراك؟</summary><p>صندوق الصغار ١٤٫٩ د.ك، وصندوق الكبار ١٦٫٩ د.ك بالشهر، والتوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة لهم خصم المؤسسين.</p></details>
-        <details><summary>لأي عمر يناسب؟</summary><p>من ٣ إلى ٨ سنوات. فيه صندوق للصغار (٣ إلى ٥) وصندوق للكبار (٦ إلى ٨)، وألعاب التطبيق تصعب أو تسهل حسب مستوى الطفل.</p></details>
-        <details><summary>هل الألعاب آمنة؟</summary><p>نختار ألعاب أصلية من وكلاء معتمدين في الكويت، ومناسبة لعمر طفلك.</p></details>
-        <details><summary>هل التطبيق يشتغل بدون الصندوق؟</summary><p>إيه، فيه ألعاب مجانية. لكن الرحلات والأختام والتحديات تنفتح بكود الصندوق.</p></details>
-        <details><summary>وين يوصل الصندوق؟</summary><p>أول دفعة داخل الكويت، وبعدها نتوسع لدول الخليج.</p></details>
-        <details><summary>أقدر أوقف الاشتراك؟</summary><p>إيه، تقدر توقفه أو تلغيه في أي وقت.</p></details>
+        <details><summary><span lang="ar">متى يبدأ الاشتراك؟</span><span lang="en">When does it start?</span></summary><p><span lang="ar">نجهّز أول دفعة الحين. المسجلين يوصلهم الخبر أول على الواتساب.</span><span lang="en">We're preparing the first batch now. People who sign up hear first on WhatsApp.</span></p></details>
+        <details><summary><span lang="ar">كم السعر؟</span><span lang="en">How much is it?</span></summary><p><span lang="ar">صندوق الصغار ١٤٫٩ د.ك، وصندوق الكبار ١٦٫٩ د.ك بالشهر، والتوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة لهم سعر المؤسسين.</span><span lang="en">The little box is 14.9 KWD and the big box is 16.9 KWD a month, with delivery in Kuwait included. The first 100 families get the founders' price.</span></p></details>
+        <details><summary><span lang="ar">التطبيق بأي لغة؟</span><span lang="en">What language is the app in?</span></summary><p><span lang="ar">عربي أو إنجليزي، تختار وحدة وتقدر تغيّرها من قسم الأهل بأي وقت.</span><span lang="en">English or Arabic. Pick one, and switch any time from the parent area.</span></p></details>
+        <details><summary><span lang="ar">لأي عمر يناسب؟</span><span lang="en">What ages is it for?</span></summary><p><span lang="ar">من ٣ إلى ٨ سنوات. فيه صندوق للصغار وصندوق للكبار، والألعاب تتغير صعوبتها حسب العمر.</span><span lang="en">Ages 3 to 8. There's a little box and a big box, and the games adjust to your child's age.</span></p></details>
+        <details><summary><span lang="ar">هل التطبيق يشتغل بدون الصندوق؟</span><span lang="en">Does the app work without the box?</span></summary><p><span lang="ar">إيه، فيه لعبتين مجانيتين. باقي الألعاب والأختام تنفتح بكود الصندوق.</span><span lang="en">Yes, two games are free. The rest of the games and stamps unlock with the box code.</span></p></details>
+        <details><summary><span lang="ar">أقدر أوقف الاشتراك؟</span><span lang="en">Can I cancel?</span></summary><p><span lang="ar">إيه، توقفه أو تلغيه بأي وقت.</span><span lang="en">Yes, pause or cancel any time.</span></p></details>
       </div>
     </div>
   </section>
@@ -517,8 +563,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
 <footer>
   <div class="wrap">
-    <span class="logo" style="font-size:1.2rem"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>فز <span class="amp">و</span> العب</span></span>
-    <span>© ٢٠٢٦ فز و العب · الكويت</span>
+    <span class="logo" style="font-size:1.2rem"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span lang="ar">فز <span class="amp">و</span> العب</span><span lang="en">Fizz <span class="amp">&amp;</span> Play</span></span>
+    <span><span lang="ar">© ٢٠٢٦ فز و العب · الكويت</span><span lang="en">© 2026 Fizz &amp; Play · Kuwait</span></span>
   </div>
 </footer>
 
@@ -526,11 +572,26 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
 <script>
 (function () {
-  var form = document.getElementById('signup-form');
-  var done = document.getElementById('done');
-  function setErr(id, msg) { document.getElementById(id).textContent = msg || ''; }
-  var arDigits = '٠١٢٣٤٥٦٧٨٩';
-  function normalize(s) { return s.replace(/[٠-٩]/g, function (d) { return arDigits.indexOf(d); }).replace(/\D/g, ''); }
+  var page = document.getElementById('page');
+  var TEXT = {
+    ar: { title: 'فز و العب', namePh: 'مثال: أم سلمان', nameErr: 'اكتب اسمك عشان نعرف نخاطبك.', phoneErr: 'الرقم لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.', ageErr: 'اختار عمر طفلك.', thanks: 'شكراً ' },
+    en: { title: 'Fizz & Play', namePh: 'e.g. Priya', nameErr: 'Please enter your name.', phoneErr: 'The number should be 8 digits and start with 5, 6 or 9.', ageErr: "Please choose your child's age.", thanks: 'Thank you, ' }
+  };
+  var lang = 'ar';
+  function setLang(l) {
+    lang = l;
+    page.setAttribute('data-lang', l);
+    page.setAttribute('lang', l);
+    page.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+    document.getElementById('parent').placeholder = TEXT[l].namePh;
+    if (!document.querySelector('input[name="applang"]:checked')) document.getElementById(l === 'ar' ? 'al-ar' : 'al-en').checked = true;
+    try { localStorage.setItem('fp-lang', l); } catch (e) {}
+  }
+  var start = 'ar';
+  try { start = localStorage.getItem('fp-lang') || ((navigator.language || 'ar').slice(0, 2) === 'ar' ? 'ar' : 'en'); } catch (e) {}
+  setLang(start === 'en' ? 'en' : 'ar');
+  document.getElementById('lang-btn').addEventListener('click', function () { setLang(lang === 'ar' ? 'en' : 'ar'); });
+
   var tabs = document.querySelectorAll('.tab');
   tabs.forEach(function (t) {
     t.addEventListener('click', function () {
@@ -544,17 +605,23 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   document.querySelectorAll('[data-age]').forEach(function (a) {
     a.addEventListener('click', function () { var r = document.getElementById(a.getAttribute('data-age')); if (r) r.checked = true; });
   });
+
+  var form = document.getElementById('signup-form');
+  var done = document.getElementById('done');
+  function setErr(id, msg) { document.getElementById(id).textContent = msg || ''; }
+  var arDigits = '٠١٢٣٤٥٦٧٨٩';
+  function normalize(s) { return s.replace(/[٠-٩]/g, function (d) { return arDigits.indexOf(d); }).replace(/\D/g, ''); }
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var ok = true;
+    var T = TEXT[lang], ok = true;
     var name = form.parent.value.trim();
     var phone = normalize(form.phone.value);
     var age = form.querySelector('input[name="age"]:checked');
-    if (name.length < 2) { setErr('parent-err', 'اكتب اسمك عشان نعرف نخاطبك.'); ok = false; } else setErr('parent-err');
-    if (!/^[569]\d{7}$/.test(phone)) { setErr('phone-err', 'الرقم لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.'); ok = false; } else setErr('phone-err');
-    if (!age) { setErr('age-err', 'اختار عمر طفلك.'); ok = false; } else setErr('age-err');
+    if (name.length < 2) { setErr('parent-err', T.nameErr); ok = false; } else setErr('parent-err');
+    if (!/^[569]\d{7}$/.test(phone)) { setErr('phone-err', T.phoneErr); ok = false; } else setErr('phone-err');
+    if (!age) { setErr('age-err', T.ageErr); ok = false; } else setErr('age-err');
     if (!ok) return;
-    document.getElementById('done-title').textContent = 'شكراً ' + name + '!';
+    document.getElementById('done-title').textContent = T.thanks + name + '!';
     form.hidden = true;
     done.hidden = false;
   });
