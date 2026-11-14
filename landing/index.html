@@ -177,15 +177,42 @@ details p { color: var(--muted); margin-top: 10px; }
 footer { padding-block: 36px; border-top: 2px solid var(--line); color: var(--muted); font-size: .95rem; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; }
 
+/* Month plan */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.tab { font: inherit; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; cursor: pointer; padding: 10px 20px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.contents { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+.chip { font-size: .92rem; padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 2px solid var(--line); }
+.chip.own { border-style: dashed; border-color: var(--coral); }
+.weeks { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.week { background: var(--surface); border: 2px solid var(--line); border-top: 6px solid var(--c); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.week .wk { font-size: .85rem; color: var(--muted); font-weight: 700; }
+.week .skill-tag { align-self: flex-start; font-size: .82rem; font-weight: 700; padding: 1px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--ink); }
+.week p { font-size: .95rem; color: var(--muted); }
+.week p b { color: var(--ink); }
+.week .dare { margin-top: auto; padding-top: 8px; border-top: 2px dashed var(--line); color: var(--ink); font-weight: 700; font-size: .93rem; }
+/* Pricing */
+.prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 820px; }
+.price-card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 26px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.price-card .tag { align-self: flex-start; font-weight: 700; font-size: .9rem; padding: 2px 12px; border-radius: 999px; }
+.amount { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
+.amount span { font-size: 2.6rem; color: var(--sea); }
+.amount small { font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: .95rem; }
+.price-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; color: var(--muted); }
+.price-card li { display: flex; gap: 10px; align-items: baseline; }
+.price-card li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sun); translate: 0 -2px; }
+.price-card .btn { margin-top: auto; align-self: flex-start; }
+
 @media (max-width: 860px) {
   .hero .wrap, .trip, .signup { grid-template-columns: 1fr; }
   .tower { max-width: 300px; }
+  .weeks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 520px) {
   body { font-size: 16px; }
-  .steps, .skills { grid-template-columns: 1fr; }
+  .steps, .skills, .weeks, .prices { grid-template-columns: 1fr; }
   section.block { padding-block: 48px; }
   .passport { padding: 22px 18px; }
   .stamp { right: 0; }
@@ -268,44 +295,135 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <div class="wrap">
       <div class="section-head">
         <h2>الرحلة الأولى: الكويت <span class="flag" role="img" aria-label="علم الكويت"><i></i><i></i><i></i></span></h2>
-        <p>نبدأ من الديرة، وبعدها دول الخليج، وبعدها العالم. وكل صندوق يجي حسب عمر طفلك.</p>
+        <p>شهر كامل من اللعب. كل أسبوع مهارة جديدة: نشاط بيده من الصندوق، ولعبة على الشاشة تكمّله.</p>
       </div>
-      <div class="trip">
-        <div class="trip-card">
-          <span class="tag box">صندوق الصغار: ٣ إلى ٥ سنوات</span>
-          <ul>
-            <li><b>مكعبات مغناطيسية ٢٤ قطعة</b> <span>يبني فيها أبراج الكويت</span></li>
-            <li><b>بازل الأشكال الخشبي</b> <span>الدائرة والمثلث والمربع</span></li>
-            <li><b>بازل العد</b> <span>يطابق الرقم مع عدد الأشياء</span></li>
-            <li><b>كروت الحروف العربية</b> <span>حروف كلمة "الكويت"</span></li>
-            <li><b>جواز السفر</b> <span>وأول ختم فيه</span></li>
-          </ul>
-        </div>
-        <div class="trip-card">
-          <span class="tag box">صندوق الكبار: ٦ إلى ٨ سنوات</span>
-          <ul>
-            <li><b>مكعبات مغناطيسية ٢٤ قطعة</b> <span>يركّب الأبراج على مخطط</span></li>
-            <li><b>حفرية الكنز</b> <span>يحفر ويطلّع الكنز مثل الغواويص زمان</span></li>
-            <li><b>بازل الكلمات</b> <span>يركّب كلمات من ٤ حروف</span></li>
-            <li><b>كروت الحروف العربية</b> <span>وتحدّي كتابة "الكويت"</span></li>
-            <li><b>جواز السفر</b> <span>وأول ختم فيه</span></li>
-          </ul>
-        </div>
-        <div class="trip-card" style="grid-column: 1 / -1">
-          <span class="tag app">وفي التطبيق</span>
-          <ul>
-            <li><b>ركّب الأبراج</b> <span>نفس تحدّي المكعبات، على الشاشة</span></li>
-            <li><b>تتبّع الحروف</b> <span>يكتب "الكويت" بإصبعه</span></li>
-            <li><b>غوص الكنز</b> <span>يجمع المحار وكل محارة فيها حرف أو رقم</span></li>
-            <li><b>ختم الجواز</b> <span>ينفتح لما يمسح كود الصندوق</span></li>
-          </ul>
-        </div>
+
+      <div class="tabs" role="tablist" aria-label="اختار عمر طفلك">
+        <button class="tab" role="tab" id="tab-small" aria-controls="plan-small" aria-selected="true">صندوق الصغار · ٣ إلى ٥</button>
+        <button class="tab" role="tab" id="tab-big" aria-controls="plan-big" aria-selected="false">صندوق الكبار · ٦ إلى ٨</button>
       </div>
-      <p class="trip-foot">محتوى الصندوق ممكن يتغير شوي قبل الإطلاق.</p>
+
+      <div class="plan" id="plan-small" role="tabpanel" aria-labelledby="tab-small">
+        <div class="contents">
+          <b>في الصندوق:</b>
+          <span class="chip">مكعبات مغناطيسية ٢٤ قطعة</span>
+          <span class="chip">بازل الأشكال الخشبي</span>
+          <span class="chip own">كروت الحروف العربية</span>
+          <span class="chip own">لوحة مخطط الأبراج</span>
+          <span class="chip own">جواز السفر</span>
+        </div>
+        <ol class="weeks">
+          <li class="week" style="--c: var(--sun)">
+            <span class="wk">الأسبوع ١</span><span class="skill-tag">الأشكال</span>
+            <h3>صيّاد الأشكال</h3>
+            <p><b>بيده:</b> يركّب بازل الأشكال ويسمّي كل شكل: دائرة، مثلث، مربع.</p>
+            <p><b>بالتطبيق:</b> لعبة "طابق الظل": يسحب الشكل لظله الصحيح.</p>
+            <p class="dare">التحدّي: دوّر على ٣ دوائر في البيت!</p>
+          </li>
+          <li class="week" style="--c: var(--sea)">
+            <span class="wk">الأسبوع ٢</span><span class="skill-tag">البناء</span>
+            <h3>نبني أبراج الكويت</h3>
+            <p><b>بيده:</b> يحط المكعبات المغناطيسية على لوحة المخطط لين يكمّل البرج.</p>
+            <p><b>بالتطبيق:</b> لعبة "ركّب البرج": نفس المخطط على الشاشة، مع أصوات وتشجيع.</p>
+            <p class="dare">التحدّي: ابنِ برج أطول من القلم!</p>
+          </li>
+          <li class="week" style="--c: var(--coral)">
+            <span class="wk">الأسبوع ٣</span><span class="skill-tag">الحروف</span>
+            <h3>حروف الكويت</h3>
+            <p><b>بيده:</b> يرتّب كروت ك، و، ي، ت، ويسوي حرف ا وحرف ل بالمكعبات.</p>
+            <p><b>بالتطبيق:</b> لعبة "تتبّع الحرف": يكتب الحرف بإصبعه ويسمع صوته.</p>
+            <p class="dare">التحدّي: قول ٣ كلمات تبدأ بحرف الكاف!</p>
+          </li>
+          <li class="week" style="--c: var(--leaf)">
+            <span class="wk">الأسبوع ٤</span><span class="skill-tag">الأرقام</span>
+            <h3>كم مكعب؟</h3>
+            <p><b>بيده:</b> يعد المكعبات ويبني برج من ٥، وبعدها برج من ١٠.</p>
+            <p><b>بالتطبيق:</b> لعبة "عد وطابق": يعد الأشياء ويختار الرقم الصح.</p>
+            <p class="dare">التحدّي الأخير: صوّر برجك وخذ ختم الكويت!</p>
+          </li>
+        </ol>
+      </div>
+
+      <div class="plan" id="plan-big" role="tabpanel" aria-labelledby="tab-big" hidden>
+        <div class="contents">
+          <b>في الصندوق:</b>
+          <span class="chip">مكعبات مغناطيسية ٢٤ قطعة</span>
+          <span class="chip">حفرية الكنز</span>
+          <span class="chip own">كروت المخططات بثلاث مستويات</span>
+          <span class="chip own">كروت الكلمات العربية</span>
+          <span class="chip own">قصة الغوّاص وجواز السفر</span>
+        </div>
+        <ol class="weeks">
+          <li class="week" style="--c: var(--sea)">
+            <span class="wk">الأسبوع ١</span><span class="skill-tag">الهندسة</span>
+            <h3>المهندس الصغير</h3>
+            <p><b>بيده:</b> يبني برج التحرير وأبراج الكويت بالمكعبات من كروت المخططات، من السهل للصعب.</p>
+            <p><b>بالتطبيق:</b> لعبة "قطع محدودة": يكمّل المخطط بأقل عدد قطع.</p>
+            <p class="dare">التحدّي: برج يوقف بدون ما يطيح بـ ١٥ قطعة!</p>
+          </li>
+          <li class="week" style="--c: var(--plum)">
+            <span class="wk">الأسبوع ٢</span><span class="skill-tag">الاستكشاف</span>
+            <h3>كنز الغوّاص</h3>
+            <p><b>بيده:</b> يقرأ قصة الغوّاص مع أهله، وبعدها يحفر ويطلّع الكنز بالأدوات مثل المستكشفين.</p>
+            <p><b>بالتطبيق:</b> لعبة "غوص اللؤلؤ": يغوص ويجمع المحار قبل لا يخلص النَفَس.</p>
+            <p class="dare">التحدّي: احكِ القصة لأحد من أهلك بكلامك!</p>
+          </li>
+          <li class="week" style="--c: var(--coral)">
+            <span class="wk">الأسبوع ٣</span><span class="skill-tag">الكلمات</span>
+            <h3>كلمات البحر</h3>
+            <p><b>بيده:</b> يركّب كلمات من الكروت: بحر، برج، لؤلؤ، سفينة.</p>
+            <p><b>بالتطبيق:</b> كل محارة فيها حرف، ويجمعها بالترتيب عشان يكوّن الكلمة.</p>
+            <p class="dare">التحدّي: اكتب كلمة "الكويت" بدون ما تشوف!</p>
+          </li>
+          <li class="week" style="--c: var(--leaf)">
+            <span class="wk">الأسبوع ٤</span><span class="skill-tag">الحساب</span>
+            <h3>حساب الغوّاص</h3>
+            <p><b>بيده:</b> يقيس طول برجه بعدد المكعبات، ويقارن بين برجين: أيهم أطول؟ وبكم؟</p>
+            <p><b>بالتطبيق:</b> لعبة "اجمع اللؤلؤ": جمع وطرح بقصة الغوص.</p>
+            <p class="dare">التحدّي الأخير: صوّر برجك وخذ ختم الكويت!</p>
+          </li>
+        </ol>
+      </div>
     </div>
   </section>
 
-  <section class="block" id="parents">
+  <section class="block" id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>اختار صندوق طفلك</h2>
+        <p>اشتراك شهري، وتقدر توقفه في أي وقت. التطبيق داخل مع الاشتراك.</p>
+      </div>
+      <div class="prices">
+        <div class="price-card">
+          <span class="tag box">٣ إلى ٥ سنوات</span>
+          <h3>صندوق الصغار</h3>
+          <p class="amount"><span>١٤٫٩</span> د.ك <small>بالشهر</small></p>
+          <ul>
+            <li>لعبتين تعليميتين أصليتين</li>
+            <li>كروت الحروف ولوحة المخطط</li>
+            <li>رحلة كاملة في التطبيق</li>
+            <li>تقرير شهري للأهل</li>
+          </ul>
+          <a class="btn" href="#signup" data-age="age-3">احجز صندوق الصغار</a>
+        </div>
+        <div class="price-card">
+          <span class="tag box">٦ إلى ٨ سنوات</span>
+          <h3>صندوق الكبار</h3>
+          <p class="amount"><span>١٦٫٩</span> د.ك <small>بالشهر</small></p>
+          <ul>
+            <li>لعبتين تعليميتين أصليتين</li>
+            <li>كروت المخططات والكلمات والقصة</li>
+            <li>رحلة كاملة في التطبيق</li>
+            <li>تقرير شهري للأهل</li>
+          </ul>
+          <a class="btn" href="#signup" data-age="age-6">احجز صندوق الكبار</a>
+        </div>
+      </div>
+      <p class="trip-foot">التوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة تسجّل لهم خصم المؤسسين.</p>
+    </div>
+  </section>
+
+  <section class="block band" id="parents">
     <div class="wrap">
       <div class="section-head">
         <h2>مصمم للأهل قبل الأطفال</h2>
@@ -322,7 +440,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     </div>
   </section>
 
-  <section class="block band" id="shop">
+  <section class="block" id="shop">
     <div class="wrap">
       <div class="section-head">
         <h2>وبعد في المتجر</h2>
@@ -337,7 +455,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     </div>
   </section>
 
-  <section class="block" id="signup">
+  <section class="block band" id="signup">
     <div class="wrap signup">
       <div class="signup-text">
         <h2>احجز مكانك في أول دفعة</h2>
@@ -381,12 +499,12 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     </div>
   </section>
 
-  <section class="block band" id="faq">
+  <section class="block" id="faq">
     <div class="wrap">
       <div class="section-head"><h2>أسئلة الأهالي</h2></div>
       <div class="faq">
         <details><summary>متى يبدأ الاشتراك؟</summary><p>نجهّز أول دفعة الحين. المسجلين يوصلهم الخبر أول على الواتساب.</p></details>
-        <details><summary>كم سعر الاشتراك؟</summary><p>بنعلن السعر قريباً. المسجلين من أول ١٠٠ عائلة لهم خصم المؤسسين.</p></details>
+        <details><summary>كم سعر الاشتراك؟</summary><p>صندوق الصغار ١٤٫٩ د.ك، وصندوق الكبار ١٦٫٩ د.ك بالشهر، والتوصيل داخل الكويت مشمول. وأول ١٠٠ عائلة لهم خصم المؤسسين.</p></details>
         <details><summary>لأي عمر يناسب؟</summary><p>من ٣ إلى ٨ سنوات. فيه صندوق للصغار (٣ إلى ٥) وصندوق للكبار (٦ إلى ٨)، وألعاب التطبيق تصعب أو تسهل حسب مستوى الطفل.</p></details>
         <details><summary>هل الألعاب آمنة؟</summary><p>نختار ألعاب أصلية من وكلاء معتمدين في الكويت، ومناسبة لعمر طفلك.</p></details>
         <details><summary>هل التطبيق يشتغل بدون الصندوق؟</summary><p>إيه، فيه ألعاب مجانية. لكن الرحلات والأختام والتحديات تنفتح بكود الصندوق.</p></details>
@@ -413,6 +531,19 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   function setErr(id, msg) { document.getElementById(id).textContent = msg || ''; }
   var arDigits = '٠١٢٣٤٥٦٧٨٩';
   function normalize(s) { return s.replace(/[٠-٩]/g, function (d) { return arDigits.indexOf(d); }).replace(/\D/g, ''); }
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (o) {
+        var on = o === t;
+        o.setAttribute('aria-selected', on ? 'true' : 'false');
+        document.getElementById(o.getAttribute('aria-controls')).hidden = !on;
+      });
+    });
+  });
+  document.querySelectorAll('[data-age]').forEach(function (a) {
+    a.addEventListener('click', function () { var r = document.getElementById(a.getAttribute('data-age')); if (r) r.checked = true; });
+  });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var ok = true;
