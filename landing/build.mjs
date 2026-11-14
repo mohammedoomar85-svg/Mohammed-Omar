@@ -1,0 +1,32 @@
+// Builds the public site for hosting (Cloudflare Pages).
+// landing/index.html is written as a page fragment; this wraps it in a full HTML document.
+// Usage: node landing/build.mjs   → landing/dist/index.html
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const src = readFileSync(join(here, 'index.html'), 'utf8');
+const split = src.indexOf('<div class="page"');
+if (split < 0) throw new Error('Could not find the page wrapper in landing/index.html');
+const head = src.slice(0, split).trim();
+const body = src.slice(split).trim();
+
+const html = `<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:title" content="فز و العب · Fizz & Play">
+<meta property="og:description" content="صندوق ألعاب تعليمية شهري وتطبيق ألعاب بالعربي والإنجليزي للأطفال من ٣ إلى ٨ سنوات.">
+<meta name="theme-color" content="#FFC23D">
+${head}
+</head>
+<body>
+${body}
+</body>
+</html>
+`;
+mkdirSync(join(here, 'dist'), { recursive: true });
+writeFileSync(join(here, 'dist', 'index.html'), html);
+console.log('Built landing/dist/index.html');
