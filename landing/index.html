@@ -1,0 +1,405 @@
+<title>فز و العب</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="فز و العب: صندوق شهري وتطبيق ألعاب ينمّي مهارات طفلك. كل شهر رحلة لدولة جديدة.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout: playful RTL single column — a block-tower hero, then stepped bands, ending in a sign-up card shaped like a passport page. */
+:root {
+  --bg: #FFFBF2;
+  --surface: #FFFFFF;
+  --band: #FFF1D6;
+  --ink: #1B2A4A;
+  --muted: #55607A;
+  --line: #E9DFC9;
+  --sea: #0A7F96;
+  --sea-soft: #D6F0F4;
+  --sun: #FFC23D;
+  --on-sun: #1B2A4A;
+  --coral: #F2604F;
+  --leaf: #2E9E62;
+  --plum: #7B5CC9;
+  --font-display: "Baloo Bhaijaan 2", "Tajawal", system-ui, sans-serif;
+  --font-body: "Tajawal", "Segoe UI", system-ui, sans-serif;
+  --radius: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111A2C; --surface: #18233A; --band: #1C2944; --ink: #F4EFE4; --muted: #A9B3C8;
+    --line: #2C3A58; --sea: #4CC3D9; --sea-soft: #16384A; --sun: #FFC94F; --on-sun: #1B2A4A;
+    --coral: #FF7D6E; --leaf: #4FC487; --plum: #A98BF0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111A2C; --surface: #18233A; --band: #1C2944; --ink: #F4EFE4; --muted: #A9B3C8;
+  --line: #2C3A58; --sea: #4CC3D9; --sea-soft: #16384A; --sun: #FFC94F; --on-sun: #1B2A4A;
+  --coral: #FF7D6E; --leaf: #4FC487; --plum: #A98BF0; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.7; }
+.page { direction: rtl; overflow-x: hidden; }
+.wrap { max-width: 1080px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; }
+h3 { font-size: 1.25rem; font-weight: 700; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; border-radius: 8px; }
+
+/* Header */
+header.top { padding-block: 18px; }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+.logo-mark { display: inline-grid; grid-template-columns: repeat(2, 12px); gap: 3px; }
+.logo-mark i { width: 12px; height: 12px; display: block; border-radius: 3px; }
+.logo-mark i:nth-child(1) { background: var(--coral); }
+.logo-mark i:nth-child(2) { background: var(--sun); border-radius: 50%; }
+.logo-mark i:nth-child(3) { background: var(--sea); }
+.logo-mark i:nth-child(4) { background: var(--leaf); }
+.logo .amp { color: var(--coral); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; text-decoration: none; border: 0; cursor: pointer; padding: 12px 26px; border-radius: 999px; background: var(--sun); color: var(--on-sun); box-shadow: 0 4px 0 color-mix(in srgb, var(--sun) 55%, #8a5a00); transition: transform .15s ease, box-shadow .15s ease; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 color-mix(in srgb, var(--sun) 55%, #8a5a00); }
+.btn:active { transform: translateY(2px); box-shadow: 0 2px 0 color-mix(in srgb, var(--sun) 55%, #8a5a00); }
+.btn.small { font-size: 1rem; padding: 8px 18px; }
+
+/* Hero */
+.hero { padding-block: 24px 56px; }
+.hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+.hero-text { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.eyebrow { font-weight: 700; color: var(--sea); letter-spacing: .02em; }
+.hero h1 { font-size: clamp(2.4rem, 6.5vw, 4.2rem); font-weight: 800; }
+.hero h1 .hl { background: linear-gradient(transparent 62%, color-mix(in srgb, var(--sun) 70%, transparent) 62%); padding-inline: 4px; }
+.hero .lead { font-size: 1.2rem; color: var(--muted); max-width: 34em; }
+.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.hero-note { font-size: .95rem; color: var(--muted); }
+.hero-note b { color: var(--coral); }
+
+/* Block tower */
+.tower { position: relative; width: 100%; max-width: 380px; aspect-ratio: 1 / 1.05; margin-inline: auto; }
+.tower .ground { position: absolute; inset: auto 4% 0 4%; height: 14px; border-radius: 999px; background: var(--line); }
+.blk { position: absolute; display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; color: #fff; font-size: clamp(1.4rem, 4vw, 2rem); animation: drop .7s cubic-bezier(.3,1.4,.5,1) both; }
+.b1 { width: 38%; height: 26%; bottom: 14px; right: 8%; background: var(--sea); border-radius: 12px; animation-delay: .05s; }
+.b2 { width: 38%; height: 26%; bottom: 14px; left: 8%; background: var(--leaf); border-radius: 12px; animation-delay: .15s; }
+.b3 { width: 70%; height: 16%; bottom: calc(26% + 14px); left: 15%; background: var(--plum); border-radius: 12px; animation-delay: .3s; }
+.b4 { width: 34%; aspect-ratio: 1; bottom: calc(42% + 14px); left: 33%; background: var(--coral); border-radius: 50%; animation-delay: .45s; }
+.b5 { width: 0; height: 0; bottom: calc(42% + 14px + 34% * 1.05); left: 50%; translate: -50% 0; border-left: 46px solid transparent; border-right: 46px solid transparent; border-bottom: 70px solid var(--sun); animation-delay: .6s; }
+@keyframes drop { from { transform: translateY(-60px); opacity: 0; } to { transform: none; opacity: 1; } }
+.stamp { position: absolute; top: 4%; right: -2%; rotate: 10deg; border: 3px dashed var(--coral); color: var(--coral); border-radius: 14px; padding: 6px 14px; background: color-mix(in srgb, var(--bg) 85%, transparent); font-family: var(--font-display); font-weight: 800; line-height: 1.3; text-align: center; font-size: .95rem; }
+.stamp small { display: block; font-weight: 500; font-size: .8rem; }
+
+/* Sections */
+section.block { padding-block: 64px; }
+section.band { background: var(--band); }
+.section-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; max-width: 40em; }
+.section-head p { color: var(--muted); font-size: 1.1rem; }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; list-style: none; padding: 0; margin: 0; counter-reset: s; }
+.steps li { counter-increment: s; background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius); padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.steps li::before { content: counter(s, arabic-indic); font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--sea-soft); color: var(--sea); }
+.steps p { color: var(--muted); font-size: .98rem; }
+
+/* Skills */
+.skills { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.skill { display: flex; gap: 16px; align-items: flex-start; padding: 6px 0; min-width: 0; }
+.skill p { color: var(--muted); font-size: .98rem; }
+.ico { flex: none; width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--line); }
+.ico span { display: block; }
+.i-build span { width: 26px; height: 10px; background: var(--sea); border-radius: 3px; box-shadow: 0 -12px 0 -1px var(--leaf); translate: 0 6px; }
+.i-letters span { font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; color: var(--coral); line-height: 1; }
+.i-shapes span { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 24px solid var(--sun); }
+.i-numbers span { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--plum); line-height: 1; }
+.i-world span { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 35% 40%, var(--leaf) 0 28%, transparent 30%), radial-gradient(circle at 68% 66%, var(--leaf) 0 20%, transparent 22%), var(--sea); }
+.i-think span { width: 24px; height: 24px; border: 4px solid var(--coral); border-radius: 4px; border-top-color: transparent; rotate: 45deg; }
+
+/* First trip */
+.trip { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.trip-card { background: var(--surface); border-radius: var(--radius); border: 2px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.trip-card .tag { align-self: flex-start; font-weight: 700; font-size: .9rem; padding: 2px 12px; border-radius: 999px; }
+.tag.box { background: color-mix(in srgb, var(--coral) 16%, transparent); color: var(--coral); }
+.tag.app { background: var(--sea-soft); color: var(--sea); }
+.trip-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.trip-card li { display: flex; gap: 10px; align-items: baseline; }
+.trip-card li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--sun); translate: 0 -2px; }
+.trip-card li b { font-weight: 700; }
+.trip-card li span { color: var(--muted); }
+.flag { display: inline-grid; grid-template-rows: repeat(3, 1fr); width: 30px; height: 20px; border-radius: 3px; overflow: hidden; position: relative; vertical-align: middle; margin-inline-start: 6px; box-shadow: 0 0 0 1px var(--line); }
+.flag i:nth-child(1) { background: #007A3D; } .flag i:nth-child(2) { background: #fff; } .flag i:nth-child(3) { background: #CE1126; }
+.flag::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 10px; background: #000; clip-path: polygon(0 0, 100% 33%, 100% 67%, 0 100%); }
+.trip-foot { margin-top: 20px; color: var(--muted); }
+
+/* Parents */
+.promises { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.promise { display: flex; gap: 12px; align-items: flex-start; padding: 16px 18px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); min-width: 0; }
+.check { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--leaf); display: grid; place-items: center; }
+.check::after { content: ""; width: 10px; height: 6px; border-left: 3px solid #fff; border-bottom: 3px solid #fff; rotate: -45deg; translate: 0 -1px; }
+.promise b { display: block; }
+.promise span { color: var(--muted); font-size: .95rem; }
+
+/* Sign-up */
+.signup { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 36px; align-items: center; }
+.signup-text { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.signup-text p { color: var(--muted); font-size: 1.1rem; }
+.perk { display: inline-flex; align-self: flex-start; gap: 8px; align-items: center; background: color-mix(in srgb, var(--coral) 14%, transparent); color: var(--coral); font-weight: 700; padding: 6px 14px; border-radius: 999px; }
+.passport { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 28px; position: relative; box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--ink) 40%, transparent); min-width: 0; }
+.passport::before { content: ""; position: absolute; inset: 10px; border: 2px dashed var(--line); border-radius: 14px; pointer-events: none; }
+form { display: flex; flex-direction: column; gap: 16px; position: relative; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+label { font-weight: 700; }
+.hint { font-size: .88rem; color: var(--muted); }
+input, select { font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 11px 14px; width: 100%; }
+input:focus, select:focus { outline: none; border-color: var(--sea); }
+.phone { display: flex; gap: 8px; direction: ltr; }
+.phone .cc { flex: none; display: grid; place-items: center; padding-inline: 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--band); font-weight: 700; }
+.phone input { direction: ltr; text-align: left; }
+.err { color: var(--coral); font-size: .9rem; min-height: 1.2em; }
+.ages { display: flex; flex-wrap: wrap; gap: 8px; }
+.ages input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.ages label { font-weight: 500; padding: 8px 16px; border: 2px solid var(--line); border-radius: 999px; cursor: pointer; background: var(--bg); }
+.ages input:checked + label { border-color: var(--sea); background: var(--sea-soft); color: var(--sea); font-weight: 700; }
+.ages input:focus-visible + label { outline: 3px solid var(--sea); outline-offset: 2px; }
+.done { text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; padding-block: 20px; position: relative; }
+.done .stamp-big { border: 3px dashed var(--leaf); color: var(--leaf); rotate: -8deg; padding: 8px 18px; border-radius: 14px; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
+.done p { color: var(--muted); }
+
+/* FAQ */
+.faq { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+details { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 14px 20px; }
+summary { cursor: pointer; font-weight: 700; font-size: 1.08rem; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-family: var(--font-display); font-size: 1.4rem; line-height: 1; color: var(--sea); }
+details[open] summary::after { content: "−"; }
+details p { color: var(--muted); margin-top: 10px; }
+
+footer { padding-block: 36px; border-top: 2px solid var(--line); color: var(--muted); font-size: .95rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; }
+
+@media (max-width: 860px) {
+  .hero .wrap, .trip, .signup { grid-template-columns: 1fr; }
+  .tower { max-width: 300px; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  body { font-size: 16px; }
+  .steps, .skills { grid-template-columns: 1fr; }
+  section.block { padding-block: 48px; }
+  .passport { padding: 22px 18px; }
+  .stamp { right: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blk { animation: none; }
+  .btn { transition: none; }
+}
+</style>
+
+<div class="page" dir="rtl" lang="ar">
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="فز و العب">
+      <span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>فز <span class="amp">و</span> العب</span>
+    </a>
+    <a class="btn small" href="#signup">احجز صندوقك</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-text">
+        <span class="eyebrow">صندوق شهري وتطبيق ألعاب للأطفال من ٣ إلى ٨ سنوات</span>
+        <h1>كل شهر <span class="hl">رحلة</span> لدولة جديدة</h1>
+        <p class="lead">يوصلك صندوق فيه ألعاب بناء وتركيب وأنشطة، وتطبيق فيه ألعاب تعليمية مربوطة فيه. طفلك يبني ويتعلّم الحروف والأرقام والأشكال، ويجمع أختام الدول في جوازه.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#signup">احجز صندوقك الأول</a>
+          <span class="hero-note">أول ١٠٠ عائلة لهم <b>خصم المؤسسين</b></span>
+        </div>
+      </div>
+      <div class="tower" aria-hidden="true">
+        <div class="ground"></div>
+        <div class="blk b1">ب</div>
+        <div class="blk b2">٣</div>
+        <div class="blk b3"></div>
+        <div class="blk b4"></div>
+        <div class="blk b5"></div>
+        <div class="stamp">الرحلة ١<small>الكويت</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block band" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>شلون يشتغل؟</h2>
+        <p>الصندوق والتطبيق يكمّلون بعض. اللي يتعلمه الطفل على الشاشة، يطبّقه بيده.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>يوصلك الصندوق</h3><p>كل شهر صندوق لدولة جديدة، فيه ألعاب تركيب وأنشطة وكروت.</p></li>
+        <li><h3>امسح الكود</h3><p>كل صندوق فيه كود يفتح رحلة الشهر في التطبيق ويحط ختم في الجواز.</p></li>
+        <li><h3>العب وتعلّم</h3><p>ألعاب قصيرة على الشاشة، وبعدها تحدّي يسويه الطفل بيده من الصندوق.</p></li>
+        <li><h3>تابع تقدّمه</h3><p>تقرير بسيط للأهل يوضح شنو تعلّم طفلك، ووين يحتاج تقوية.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>ألعاب تقوّي طفلك</h2>
+        <p>كل لعبة مصممة عشان تنمّي مهارة معيّنة، والصعوبة تتغير حسب عمر الطفل ومستواه.</p>
+      </div>
+      <div class="skills">
+        <div class="skill"><div class="ico i-build"><span></span></div><div><h3>البناء والتركيب</h3><p>يركّب معالم الدول بالمكعبات، ويتعلم التوازن والتخطيط.</p></div></div>
+        <div class="skill"><div class="ico i-letters"><span>أ</span></div><div><h3>الحروف واللغة</h3><p>يتتبّع الحرف بإصبعه ويسمع صوته، ويركّب كلمات عربية وإنجليزية.</p></div></div>
+        <div class="skill"><div class="ico i-shapes"><span></span></div><div><h3>الأشكال والألوان</h3><p>يفرز الأشكال ويكمّل الأنماط، ويتعرف على الألوان.</p></div></div>
+        <div class="skill"><div class="ico i-numbers"><span>١٢٣</span></div><div><h3>الأرقام والحساب</h3><p>يعد ويقارن ويجمع بألعاب فيها حركة وقصة.</p></div></div>
+        <div class="skill"><div class="ico i-world"><span></span></div><div><h3>الدول والخرائط</h3><p>يتعرف على الأعلام والمعالم والحيوانات، ويحط كل دولة مكانها في الخريطة.</p></div></div>
+        <div class="skill"><div class="ico i-think"><span></span></div><div><h3>التفكير وحل المشكلات</h3><p>متاهات وألغاز وبرمجة بسيطة بالأسهم.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block band" id="trip">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>الرحلة الأولى: الكويت <span class="flag" role="img" aria-label="علم الكويت"><i></i><i></i><i></i></span></h2>
+        <p>نبدأ من الديرة، وبعدها دول الخليج، وبعدها العالم.</p>
+      </div>
+      <div class="trip">
+        <div class="trip-card">
+          <span class="tag box">في الصندوق</span>
+          <ul>
+            <li><b>مكعبات أبراج الكويت</b> <span>يركّبها على مخطط</span></li>
+            <li><b>لوح الحروف</b> <span>يكتب ويمسح ويعيد</span></li>
+            <li><b>بازل خريطة الكويت</b> <span>المحافظات وجزيرة فيلكا</span></li>
+            <li><b>جواز السفر</b> <span>وأول ختم فيه</span></li>
+            <li><b>كروت الشخصيات</b> <span>يجمعها كل شهر</span></li>
+          </ul>
+        </div>
+        <div class="trip-card">
+          <span class="tag app">في التطبيق</span>
+          <ul>
+            <li><b>ركّب الأبراج</b> <span>يسحب الأشكال ويحطها على المخطط</span></li>
+            <li><b>تتبّع الحروف</b> <span>يكتب "الكويت" بإصبعه</span></li>
+            <li><b>بازل العلم والخريطة</b> <span>ألوان وأشكال ومواقع</span></li>
+            <li><b>ختم الجواز</b> <span>ينفتح لما يمسح كود الصندوق</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="trip-foot">محتوى الصندوق ممكن يتغير شوي قبل الإطلاق.</p>
+    </div>
+  </section>
+
+  <section class="block" id="parents">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>مصمم للأهل قبل الأطفال</h2>
+        <p>تطبيق آمن تقدر تعطيه طفلك وأنت مرتاح.</p>
+      </div>
+      <div class="promises">
+        <div class="promise"><span class="check"></span><div><b>بدون إعلانات</b><span>ولا روابط خارجية ولا محادثات</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>قفل أبوي</b><span>الطفل ما يقدر يدفع أو يغيّر الإعدادات</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>وقت شاشة تحدده أنت</b><span>وبعدها يروح يلعب بصندوقه</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>تقرير شهري</b><span>شنو تعلّم وشنو يحتاج</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>عربي وإنجليزي</b><span>تختار لغة كل لعبة</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>بدون موسيقى</b><span>إذا تفضّل المؤثرات الصوتية بس</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block band" id="signup">
+    <div class="wrap signup">
+      <div class="signup-text">
+        <h2>احجز مكانك في أول دفعة</h2>
+        <p>أول دفعة محدودة داخل الكويت. سجّل الحين، ونتواصل معك على الواتساب قبل الإطلاق بالسعر والتفاصيل.</p>
+        <span class="perk">خصم المؤسسين لأول ١٠٠ عائلة</span>
+      </div>
+      <div class="passport">
+        <form id="signup-form" novalidate>
+          <div class="field">
+            <label for="parent">اسم ولي الأمر</label>
+            <input id="parent" name="parent" autocomplete="name" placeholder="مثال: أم سلمان">
+            <span class="err" id="parent-err"></span>
+          </div>
+          <div class="field">
+            <label for="phone">رقم الواتساب</label>
+            <div class="phone">
+              <span class="cc">+965</span>
+              <input id="phone" name="phone" inputmode="numeric" autocomplete="tel-national" placeholder="5XXXXXXX" maxlength="8">
+            </div>
+            <span class="err" id="phone-err"></span>
+          </div>
+          <fieldset class="field" style="border:0;padding:0;margin:0">
+            <legend style="font-weight:700;margin-bottom:6px">عمر طفلك</legend>
+            <div class="ages">
+              <input type="radio" id="age-3" name="age" value="3-5"><label for="age-3">٣ إلى ٥ سنوات</label>
+              <input type="radio" id="age-6" name="age" value="6-8"><label for="age-6">٦ إلى ٨ سنوات</label>
+              <input type="radio" id="age-more" name="age" value="more"><label for="age-more">أكثر من طفل</label>
+            </div>
+            <span class="err" id="age-err"></span>
+          </fieldset>
+          <button class="btn" type="submit">احجز مكاني</button>
+          <span class="hint">ما راح نرسل لك إلا رسائل عن إطلاق فز و العب.</span>
+        </form>
+        <div class="done" id="done" hidden>
+          <span class="stamp-big">تم الحجز</span>
+          <h3 id="done-title">شكراً لك!</h3>
+          <p>بنتواصل معك على الواتساب قبل الإطلاق.</p>
+          <p class="hint">نسخة معاينة: النموذج ما يحفظ البيانات للحين.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="section-head"><h2>أسئلة الأهالي</h2></div>
+      <div class="faq">
+        <details><summary>متى يبدأ الاشتراك؟</summary><p>نجهّز أول دفعة الحين. المسجلين يوصلهم الخبر أول على الواتساب.</p></details>
+        <details><summary>كم سعر الاشتراك؟</summary><p>بنعلن السعر قريباً. المسجلين من أول ١٠٠ عائلة لهم خصم المؤسسين.</p></details>
+        <details><summary>لأي عمر يناسب؟</summary><p>من ٣ إلى ٨ سنوات. الألعاب تصعب أو تسهل حسب عمر الطفل ومستواه.</p></details>
+        <details><summary>هل التطبيق يشتغل بدون الصندوق؟</summary><p>إيه، فيه ألعاب مجانية. لكن الرحلات والأختام والتحديات تنفتح بكود الصندوق.</p></details>
+        <details><summary>وين يوصل الصندوق؟</summary><p>أول دفعة داخل الكويت، وبعدها نتوسع لدول الخليج.</p></details>
+        <details><summary>أقدر أوقف الاشتراك؟</summary><p>إيه، تقدر توقفه أو تلغيه في أي وقت.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="logo" style="font-size:1.2rem"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span>فز <span class="amp">و</span> العب</span></span>
+    <span>© ٢٠٢٦ فز و العب · الكويت</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('signup-form');
+  var done = document.getElementById('done');
+  function setErr(id, msg) { document.getElementById(id).textContent = msg || ''; }
+  var arDigits = '٠١٢٣٤٥٦٧٨٩';
+  function normalize(s) { return s.replace(/[٠-٩]/g, function (d) { return arDigits.indexOf(d); }).replace(/\D/g, ''); }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+    var name = form.parent.value.trim();
+    var phone = normalize(form.phone.value);
+    var age = form.querySelector('input[name="age"]:checked');
+    if (name.length < 2) { setErr('parent-err', 'اكتب اسمك عشان نعرف نخاطبك.'); ok = false; } else setErr('parent-err');
+    if (!/^[569]\d{7}$/.test(phone)) { setErr('phone-err', 'الرقم لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.'); ok = false; } else setErr('phone-err');
+    if (!age) { setErr('age-err', 'اختار عمر طفلك.'); ok = false; } else setErr('age-err');
+    if (!ok) return;
+    document.getElementById('done-title').textContent = 'شكراً ' + name + '!';
+    form.hidden = true;
+    done.hidden = false;
+  });
+})();
+</script>
