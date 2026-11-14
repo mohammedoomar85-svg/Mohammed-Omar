@@ -1,0 +1,12 @@
+// Cloudflare Workers config for the landing page (static files only).
+// `wrangler deploy` runs the build below, then uploads landing/dist.
+{
+  "name": "mohammed-omar",
+  "compatibility_date": "2025-06-01",
+  "build": {
+    "command": "node landing/build.mjs"
+  },
+  "assets": {
+    "directory": "./landing/dist"
+  }
+}
