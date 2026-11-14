@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "Fizz & Play",
+    "slug": "fizz-and-play",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fizzandplay.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFBF2",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.fizzandplay.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "فز و العب · Fizz & Play",
+      "shortName": "Fizz & Play",
+      "lang": "ar",
+      "backgroundColor": "#FFFBF2",
+      "themeColor": "#FFC23D",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
