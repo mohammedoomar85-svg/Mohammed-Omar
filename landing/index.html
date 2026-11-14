@@ -268,25 +268,35 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     <div class="wrap">
       <div class="section-head">
         <h2>الرحلة الأولى: الكويت <span class="flag" role="img" aria-label="علم الكويت"><i></i><i></i><i></i></span></h2>
-        <p>نبدأ من الديرة، وبعدها دول الخليج، وبعدها العالم.</p>
+        <p>نبدأ من الديرة، وبعدها دول الخليج، وبعدها العالم. وكل صندوق يجي حسب عمر طفلك.</p>
       </div>
       <div class="trip">
         <div class="trip-card">
-          <span class="tag box">في الصندوق</span>
+          <span class="tag box">صندوق الصغار: ٣ إلى ٥ سنوات</span>
           <ul>
-            <li><b>مكعبات أبراج الكويت</b> <span>يركّبها على مخطط</span></li>
-            <li><b>لوح الحروف</b> <span>يكتب ويمسح ويعيد</span></li>
-            <li><b>بازل خريطة الكويت</b> <span>المحافظات وجزيرة فيلكا</span></li>
+            <li><b>مكعبات مغناطيسية ٢٤ قطعة</b> <span>يبني فيها أبراج الكويت</span></li>
+            <li><b>بازل الأشكال الخشبي</b> <span>الدائرة والمثلث والمربع</span></li>
+            <li><b>بازل العد</b> <span>يطابق الرقم مع عدد الأشياء</span></li>
+            <li><b>كروت الحروف العربية</b> <span>حروف كلمة "الكويت"</span></li>
             <li><b>جواز السفر</b> <span>وأول ختم فيه</span></li>
-            <li><b>كروت الشخصيات</b> <span>يجمعها كل شهر</span></li>
           </ul>
         </div>
         <div class="trip-card">
-          <span class="tag app">في التطبيق</span>
+          <span class="tag box">صندوق الكبار: ٦ إلى ٨ سنوات</span>
           <ul>
-            <li><b>ركّب الأبراج</b> <span>يسحب الأشكال ويحطها على المخطط</span></li>
+            <li><b>مكعبات مغناطيسية ٢٤ قطعة</b> <span>يركّب الأبراج على مخطط</span></li>
+            <li><b>حفرية الكنز</b> <span>يحفر ويطلّع الكنز مثل الغواويص زمان</span></li>
+            <li><b>بازل الكلمات</b> <span>يركّب كلمات من ٤ حروف</span></li>
+            <li><b>كروت الحروف العربية</b> <span>وتحدّي كتابة "الكويت"</span></li>
+            <li><b>جواز السفر</b> <span>وأول ختم فيه</span></li>
+          </ul>
+        </div>
+        <div class="trip-card" style="grid-column: 1 / -1">
+          <span class="tag app">وفي التطبيق</span>
+          <ul>
+            <li><b>ركّب الأبراج</b> <span>نفس تحدّي المكعبات، على الشاشة</span></li>
             <li><b>تتبّع الحروف</b> <span>يكتب "الكويت" بإصبعه</span></li>
-            <li><b>بازل العلم والخريطة</b> <span>ألوان وأشكال ومواقع</span></li>
+            <li><b>غوص الكنز</b> <span>يجمع المحار وكل محارة فيها حرف أو رقم</span></li>
             <li><b>ختم الجواز</b> <span>ينفتح لما يمسح كود الصندوق</span></li>
           </ul>
         </div>
@@ -312,7 +322,22 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     </div>
   </section>
 
-  <section class="block band" id="signup">
+  <section class="block band" id="shop">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>وبعد في المتجر</h2>
+        <p>ألعاب مختارة تقدر تطلبها مع الصندوق أو تهديها.</p>
+      </div>
+      <div class="promises">
+        <div class="promise"><span class="check"></span><div><b>مجسمات بناء إسلامية</b><span>الكعبة والمسجد النبوي، وكل خطوة بناء معها قصة. هدية رمضان والعيد</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>المهندس الصغير</b><span>تركيب تروس ومسارات كرات وسيارات بالطاقة الشمسية</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>العالِم الصغير</b><span>ميكروسكوب، وحفريات ديناصورات، وتجارب دوائر كهربائية</span></div></div>
+        <div class="promise"><span class="check"></span><div><b>الأرقام والوقت</b><span>ميزان الحساب، وبازل الأرقام، وساعة تعليم الوقت</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="signup">
     <div class="wrap signup">
       <div class="signup-text">
         <h2>احجز مكانك في أول دفعة</h2>
@@ -356,13 +381,14 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     </div>
   </section>
 
-  <section class="block" id="faq">
+  <section class="block band" id="faq">
     <div class="wrap">
       <div class="section-head"><h2>أسئلة الأهالي</h2></div>
       <div class="faq">
         <details><summary>متى يبدأ الاشتراك؟</summary><p>نجهّز أول دفعة الحين. المسجلين يوصلهم الخبر أول على الواتساب.</p></details>
         <details><summary>كم سعر الاشتراك؟</summary><p>بنعلن السعر قريباً. المسجلين من أول ١٠٠ عائلة لهم خصم المؤسسين.</p></details>
-        <details><summary>لأي عمر يناسب؟</summary><p>من ٣ إلى ٨ سنوات. الألعاب تصعب أو تسهل حسب عمر الطفل ومستواه.</p></details>
+        <details><summary>لأي عمر يناسب؟</summary><p>من ٣ إلى ٨ سنوات. فيه صندوق للصغار (٣ إلى ٥) وصندوق للكبار (٦ إلى ٨)، وألعاب التطبيق تصعب أو تسهل حسب مستوى الطفل.</p></details>
+        <details><summary>هل الألعاب آمنة؟</summary><p>نختار ألعاب أصلية من وكلاء معتمدين في الكويت، ومناسبة لعمر طفلك.</p></details>
         <details><summary>هل التطبيق يشتغل بدون الصندوق؟</summary><p>إيه، فيه ألعاب مجانية. لكن الرحلات والأختام والتحديات تنفتح بكود الصندوق.</p></details>
         <details><summary>وين يوصل الصندوق؟</summary><p>أول دفعة داخل الكويت، وبعدها نتوسع لدول الخليج.</p></details>
         <details><summary>أقدر أوقف الاشتراك؟</summary><p>إيه، تقدر توقفه أو تلغيه في أي وقت.</p></details>
