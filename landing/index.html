@@ -540,7 +540,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
           <span class="stamp-big"><span lang="ar">تم الحجز</span><span lang="en">Reserved</span></span>
           <h3 id="done-title"></h3>
           <p><span lang="ar">بنتواصل معك على الواتساب قبل الإطلاق.</span><span lang="en">We'll message you on WhatsApp before launch.</span></p>
-          <p class="hint"><span lang="ar">نسخة معاينة: النموذج ما يحفظ البيانات للحين.</span><span lang="en">Preview: this form doesn't save data yet.</span></p>
+          <p class="hint" id="preview-note"><span lang="ar">نسخة معاينة: النموذج ما يحفظ البيانات للحين.</span><span lang="en">Preview: this form doesn't save data yet.</span></p>
         </div>
       </div>
     </div>
@@ -572,10 +572,13 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
 <script>
 (function () {
+  // Supabase project settings (Project URL + anon/publishable key). Leave empty for preview mode.
+  var SUPABASE_URL = '';
+  var SUPABASE_ANON_KEY = '';
   var page = document.getElementById('page');
   var TEXT = {
-    ar: { title: 'فز و العب', namePh: 'مثال: أم سلمان', nameErr: 'اكتب اسمك عشان نعرف نخاطبك.', phoneErr: 'الرقم لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.', ageErr: 'اختار عمر طفلك.', thanks: 'شكراً ' },
-    en: { title: 'Fizz & Play', namePh: 'e.g. Priya', nameErr: 'Please enter your name.', phoneErr: 'The number should be 8 digits and start with 5, 6 or 9.', ageErr: "Please choose your child's age.", thanks: 'Thank you, ' }
+    ar: { title: 'فز و العب', namePh: 'مثال: أم سلمان', nameErr: 'اكتب اسمك عشان نعرف نخاطبك.', phoneErr: 'الرقم لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.', ageErr: 'اختار عمر طفلك.', sendErr: 'ما قدرنا نرسل الحجز. تأكد من الإنترنت وجرّب مرة ثانية.', thanks: 'شكراً ' },
+    en: { title: 'Fizz & Play', namePh: 'e.g. Priya', nameErr: 'Please enter your name.', phoneErr: 'The number should be 8 digits and start with 5, 6 or 9.', ageErr: "Please choose your child's age.", sendErr: "We couldn't send your reservation. Check your internet and try again.", thanks: 'Thank you, ' }
   };
   var lang = 'ar';
   function setLang(l) {
@@ -621,9 +624,26 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     if (!/^[569]\d{7}$/.test(phone)) { setErr('phone-err', T.phoneErr); ok = false; } else setErr('phone-err');
     if (!age) { setErr('age-err', T.ageErr); ok = false; } else setErr('age-err');
     if (!ok) return;
-    document.getElementById('done-title').textContent = T.thanks + name + '!';
-    form.hidden = true;
-    done.hidden = false;
+    function success() {
+      document.getElementById('done-title').textContent = T.thanks + name + '!';
+      document.getElementById('preview-note').hidden = !!SUPABASE_URL;
+      form.hidden = true;
+      done.hidden = false;
+    }
+    if (!SUPABASE_URL) return success();
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    var appLang = form.querySelector('input[name="applang"]:checked');
+    fetch(SUPABASE_URL + '/rest/v1/signups', {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ parent_name: name, phone: phone, age_group: age.value, app_lang: appLang ? appLang.value : lang, page_lang: lang })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      success();
+    }).catch(function () {
+      setErr('phone-err', T.sendErr);
+    }).then(function () { btn.disabled = false; });
   });
 })();
 </script>

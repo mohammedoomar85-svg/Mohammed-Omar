@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, I18nManager, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import { AppContext } from './src/ui';
 import { makeT } from './src/i18n';
 import { colors } from './src/theme';
 import { initialState, loadState, saveState } from './src/store';
+import { signOut, syncDown, syncUp } from './src/supabase';
 import Welcome from './src/screens/Welcome';
 import Home from './src/screens/Home';
 import BoxCode from './src/screens/BoxCode';
@@ -51,14 +52,27 @@ export default function App() {
   const [state, setState] = useState(null);
   const [screen, setScreen] = useState('home');
 
+  const pushTimer = useRef(null);
+
   useEffect(() => {
-    loadState().then(setState);
+    loadState().then(async (local) => {
+      setState(local);
+      const merged = await syncDown(local);
+      if (merged !== local) {
+        saveState(merged);
+        setState(merged);
+      }
+    });
   }, []);
 
   const update = useCallback((fn) => {
     setState((prev) => {
-      const next = typeof fn === 'function' ? fn(prev) : { ...prev, ...fn };
+      const changed = typeof fn === 'function' ? fn(prev) : { ...prev, ...fn };
+      const next = { ...changed, updatedAt: Date.now() };
       saveState(next);
+      // Send progress to the server a moment after the last change.
+      clearTimeout(pushTimer.current);
+      pushTimer.current = setTimeout(() => syncUp(next), 1500);
       return next;
     });
   }, []);
@@ -79,6 +93,7 @@ export default function App() {
   );
 
   const reset = useCallback(() => {
+    signOut();
     const fresh = initialState();
     saveState(fresh);
     setState(fresh);

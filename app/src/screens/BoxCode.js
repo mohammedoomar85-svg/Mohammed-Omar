@@ -3,17 +3,28 @@ import { Animated, StyleSheet, TextInput, View } from 'react-native';
 import { Btn, Pop, Screen, T, TopBar, useApp, useShake } from '../ui';
 import { colors, fonts } from '../theme';
 import { isValidCode } from '../store';
+import { online, redeemCode } from '../supabase';
 
 export default function BoxCode() {
   const { state, update, t, go } = useApp();
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [done, setDone] = useState(state.boxUnlocked);
+  const [busy, setBusy] = useState(false);
   const [shakeStyle, shake] = useShake();
 
-  const submit = () => {
-    if (!isValidCode(code)) {
-      setErr(t('codeBad'));
+  const submit = async () => {
+    if (busy) return;
+    let result = 'invalid';
+    if (online) {
+      setBusy(true);
+      result = await redeemCode(code);
+      setBusy(false);
+    } else if (isValidCode(code)) {
+      result = 'ok';
+    }
+    if (result !== 'ok') {
+      setErr(t(result === 'used' ? 'codeUsed' : result === 'offline' ? 'codeOffline' : 'codeBad'));
       shake();
       return;
     }
@@ -53,10 +64,12 @@ export default function BoxCode() {
             />
           </Animated.View>
           {!!err && <T style={{ color: colors.coral }}>{err}</T>}
-          <Btn label={t('codeBtn')} onPress={submit} />
-          <View style={styles.demo}>
-            <T center style={{ color: colors.muted, fontSize: 15 }}>{t('codeDemo')}</T>
-          </View>
+          <Btn label={t('codeBtn')} onPress={submit} disabled={busy} />
+          {(!online || __DEV__) && (
+            <View style={styles.demo}>
+              <T center style={{ color: colors.muted, fontSize: 15 }}>{t('codeDemo')}</T>
+            </View>
+          )}
         </>
       )}
     </Screen>

@@ -17,6 +17,7 @@ export const initialState = () => ({
   stamps: [], // ids: box1, shapes, build, letters, count, words
   stats: emptyStats(),
   sound: true,
+  updatedAt: 0,
 });
 
 export async function loadState() {
