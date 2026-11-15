@@ -176,6 +176,7 @@ form { display: flex; flex-direction: column; gap: 16px; position: relative; }
 label, legend { font-weight: 700; }
 legend { margin-bottom: 6px; padding: 0; }
 .hint { font-size: .88rem; color: var(--muted); }
+.hint a { color: var(--sea); }
 input { font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 11px 14px; width: 100%; }
 input:focus { outline: none; border-color: var(--sea); }
 .phone-in { display: flex; gap: 8px; direction: ltr; }
@@ -473,7 +474,7 @@ footer .logo .amp { color: var(--coral); }
             </div>
           </fieldset>
           <button class="btn" type="submit"><span lang="ar">احجز مكاني</span><span lang="en">Reserve my spot</span></button>
-          <span class="hint"><span lang="ar">ما نرسل لك إلا رسائل عن إطلاق فز و العب.</span><span lang="en">We'll only message you about the Fizz &amp; Play launch.</span></span>
+          <span class="hint"><span lang="ar">ما نرسل لك إلا رسائل عن إطلاق فز و العب. بالحجز توافق على <a href="/privacy">سياسة الخصوصية</a>.</span><span lang="en">We'll only message you about the Fizz &amp; Play launch. By reserving you agree to our <a href="/privacy">privacy policy</a>.</span></span>
         </form>
         <div class="done" id="done" hidden>
           <span class="stamp-big"><span lang="ar">تم الحجز</span><span lang="en">Reserved</span></span>
@@ -511,7 +512,7 @@ footer .logo .amp { color: var(--coral); }
 <footer>
   <div class="wrap">
     <span class="logo"><span class="logo-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span lang="ar">فز <span class="amp">و</span> العب</span><span lang="en">Fizz <span class="amp">&amp;</span> Play</span></span>
-    <span><span lang="ar">© ٢٠٢٦ فز و العب · الكويت</span><span lang="en">© 2026 Fizz &amp; Play · Kuwait</span></span>
+    <span><a href="/privacy" style="color:inherit"><span lang="ar">سياسة الخصوصية</span><span lang="en">Privacy policy</span></a> · <span lang="ar">© ٢٠٢٦ فز و العب · الكويت</span><span lang="en">© 2026 Fizz &amp; Play · Kuwait</span></span>
   </div>
 </footer>
 

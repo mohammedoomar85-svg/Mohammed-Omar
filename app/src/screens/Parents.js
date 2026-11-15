@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Btn, Screen, T, TopBar, useApp, useDir } from '../ui';
 import { colors, fonts, games } from '../theme';
 import { num } from '../i18n';
@@ -161,6 +161,11 @@ export default function Parents() {
         />
       </View>
 
+      {Platform.OS === 'web' && (
+        <Pressable accessibilityRole="link" onPress={() => window.open('/privacy', '_blank')} style={{ alignSelf: 'center', padding: 6 }}>
+          <T style={{ color: colors.sea, textDecorationLine: 'underline' }}>{t('privacy')}</T>
+        </Pressable>
+      )}
       <Btn
         label={confirm ? t('resetConfirm') : t('reset')}
         color={confirm ? colors.coral : colors.surface}

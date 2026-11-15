@@ -99,6 +99,7 @@ const ar = {
   off: 'مطفي',
   age: 'العمر',
   reset: 'مسح كل البيانات',
+  privacy: 'سياسة الخصوصية',
   resetConfirm: 'متأكد؟ اضغط مرة ثانية للمسح',
   close: 'رجوع',
 };
@@ -197,6 +198,7 @@ const en = {
   off: 'Off',
   age: 'Age',
   reset: 'Erase all data',
+  privacy: 'Privacy policy',
   resetConfirm: 'Are you sure? Tap again to erase',
   close: 'Back',
 };

@@ -31,4 +31,5 @@ mkdirSync(join(here, 'dist'), { recursive: true });
 writeFileSync(join(here, 'dist', 'index.html'), html);
 // The admin dashboard is already a full page.
 copyFileSync(join(here, 'admin.html'), join(here, 'dist', 'admin.html'));
-console.log('Built landing/dist/index.html and admin.html');
+copyFileSync(join(here, 'privacy.html'), join(here, 'dist', 'privacy.html'));
+console.log('Built landing/dist: index.html, admin.html, privacy.html');
