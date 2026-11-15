@@ -130,6 +130,19 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
 .pill-dark { color: var(--sea); font-weight: 700; }
 @media (max-width: 560px) { .row3 { grid-template-columns: 1fr 1fr; } }
 
+/* Payment buttons (preview) */
+.preview-bar { background: var(--coral); color: #fff; text-align: center; font-weight: 800; font-size: .9rem; padding: 6px 12px; }
+.paybtns { display: flex; flex-direction: column; gap: 10px; }
+.apple-pay-btn { width: 100%; height: 54px; border: 0; border-radius: 12px; background: #000; color: #fff; font: 600 1.25rem -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; letter-spacing: .01em; display: flex; align-items: center; justify-content: center; }
+@supports (-webkit-appearance: -apple-pay-button) {
+  .apple-pay-btn.native { -webkit-appearance: -apple-pay-button; -apple-pay-button-type: buy; -apple-pay-button-style: black; }
+  .apple-pay-btn.native .ap-text { display: none; }
+}
+.knet-btn { width: 100%; height: 54px; border: 0; border-radius: 12px; background: #0B4EA2; color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+.preview-note { margin: 0; text-align: center; font-size: .85rem; color: var(--muted); }
+.preview-note.flash { color: var(--coral); font-weight: 700; animation: pop .35s ease; }
+@keyframes pop { 0% { transform: scale(.96); } 60% { transform: scale(1.03); } 100% { transform: none; } }
+
 @media (max-width: 960px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -142,6 +155,7 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
 <body>
 <div class="page" id="page" data-lang="ar">
 
+<div class="preview-bar" id="preview-bar" hidden><span lang="ar">وضع المعاينة: أزرار الدفع ظاهرة لك بس</span><span lang="en">Preview mode: payment buttons are visible to you only</span></div>
 <header class="top">
   <div class="wrap">
     <a class="logo" href="/"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="name"><span lang="ar">فز و العب</span><span lang="en">Fizz &amp; Play</span></span></a>
@@ -237,7 +251,13 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
         <div class="total"><span><span lang="ar">المجموع</span><span lang="en">Total</span></span><span id="co-total"></span></div>
       </div>
       <p class="err" id="co-err" role="alert"></p>
-      <button class="go big" type="submit"><span lang="ar">أرسل الطلب على الواتساب</span><span lang="en">Send order on WhatsApp</span></button>
+      <!-- Real payment buttons. Shown only in preview (?preview=1) until a payment gateway is connected. -->
+      <div class="paybtns" id="paybtns" hidden>
+        <button type="button" class="apple-pay-btn" id="ap-btn" aria-label="Apple Pay"><span class="ap-text">Apple Pay</span></button>
+        <button type="button" class="knet-btn" id="knet-btn"><span lang="ar">ادفع بـ KNET</span><span lang="en">Pay with KNET</span></button>
+        <p class="preview-note" id="preview-note"><span lang="ar">معاينة: هذا شكل الزر. يشتغل الدفع فعلياً بعد ربط بوابة الدفع (Tap أو MyFatoorah).</span><span lang="en">Preview: this is how the button looks. Payment works once a payment gateway (Tap or MyFatoorah) is connected.</span></p>
+      </div>
+      <button class="go big" id="wa-submit" type="submit"><span lang="ar">أرسل الطلب على الواتساب</span><span lang="en">Send order on WhatsApp</span></button>
       <p class="note" style="text-align:center"><span lang="ar">بنأكد معك الطلب وموعد التوصيل على الواتساب.</span><span lang="en">We'll confirm your order and delivery time on WhatsApp.</span></p>
     </form>
     <div class="co-card done" id="co-done" hidden>
@@ -525,6 +545,28 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
     var w = window.open(url, '_blank');
     if (!w) window.location.href = url;
   });
+
+  // --- Preview of the real payment buttons (owner only, via ?preview=1) ------
+  var PREVIEW = /[?&]preview=1/.test(location.search);
+  try { if (PREVIEW) sessionStorage.setItem('fp-preview', '1'); else PREVIEW = sessionStorage.getItem('fp-preview') === '1'; } catch (e) {}
+  if (PREVIEW) $('preview-bar').hidden = false;
+  if (window.CSS && CSS.supports && CSS.supports('-webkit-appearance', '-apple-pay-button')) $('ap-btn').classList.add('native');
+  function syncPayButtons() {
+    var pay = document.querySelector('input[name="pay"]:checked').value;
+    var showReal = PREVIEW && pay !== 'cash';
+    $('paybtns').hidden = !showReal;
+    $('ap-btn').hidden = pay !== 'applepay';
+    $('knet-btn').hidden = pay !== 'knet';
+    $('wa-submit').hidden = showReal;
+  }
+  document.querySelectorAll('input[name="pay"]').forEach(function (r) { r.addEventListener('change', syncPayButtons); });
+  [$('ap-btn'), $('knet-btn')].forEach(function (b) {
+    b.addEventListener('click', function () {
+      var note = $('preview-note');
+      note.classList.remove('flash'); void note.offsetWidth; note.classList.add('flash');
+    });
+  });
+  syncPayButtons();
 
   function setLang(l) {
     lang = l;

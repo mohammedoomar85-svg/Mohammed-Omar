@@ -82,6 +82,8 @@ header.top .wrap { display: flex; align-items: center; justify-content: space-be
 .hero h1 em { font-style: normal; color: var(--sun); }
 .hero .lead { font-size: 1.2rem; color: #D4EEF3; max-width: 32em; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 14px; }
+.shop-top { background: var(--sun); }
+.boxes-link { color: #D4EEF3; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; align-self: flex-start; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font-size: .92rem; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); }
 .floater { position: absolute; z-index: 0; opacity: .9; }
@@ -238,7 +240,8 @@ footer .logo .amp { color: var(--coral); }
   .promises { grid-template-columns: 1fr; }
   .passport { padding: 22px 18px; }
   .logo { font-size: 1.25rem; }
-  .head-actions .btn { display: none; }
+  .head-actions .play-top { display: none; }
+  .head-actions { gap: 8px; }
   .hero-cta .btn { flex: 1 1 100%; }
   .f1, .f3 { display: none; }
 }
@@ -262,8 +265,8 @@ footer .logo .amp { color: var(--coral); }
       </a>
       <div class="head-actions">
         <button class="lang-btn" id="lang-btn" type="button"><span lang="ar">English</span><span lang="en">العربية</span></button>
-        <a class="lang-btn" href="/shop/" style="text-decoration:none"><span lang="ar">المتجر</span><span lang="en">Shop</span></a>
-        <a class="btn small" href="/play/"><span lang="ar">جرّب مجاناً</span><span lang="en">Play free</span></a>
+        <a class="btn small shop-top" href="/shop/"><span aria-hidden="true">🛒</span><span lang="ar">المتجر</span><span lang="en">Shop</span></a>
+        <a class="btn small alt play-top" href="/play/"><span lang="ar">جرّب مجاناً</span><span lang="en">Play free</span></a>
       </div>
     </div>
   </header>
@@ -281,8 +284,9 @@ footer .logo .amp { color: var(--coral); }
       </p>
       <div class="hero-cta">
         <a class="btn" href="/play/"><span class="play-ico" aria-hidden="true"></span><span lang="ar">جرّب الألعاب مجاناً</span><span lang="en">Try the games free</span></a>
-        <a class="btn alt" href="#boxes"><span lang="ar">شوف الصناديق</span><span lang="en">See the boxes</span></a>
+        <a class="btn alt" href="/shop/"><span aria-hidden="true">🛒</span><span lang="ar">تسوّق الألعاب</span><span lang="en">Shop the toys</span></a>
       </div>
+      <a class="boxes-link" href="#boxes"><span lang="ar">أو شوف الصناديق الشهرية ←</span><span lang="en">or see the monthly boxes →</span></a>
       <div class="chips">
         <span class="chip"><span lang="ar">٣ إلى ٨ سنوات</span><span lang="en">Ages 3 to 8</span></span>
         <span class="chip"><span lang="ar">بدون إعلانات</span><span lang="en">No ads</span></span>
