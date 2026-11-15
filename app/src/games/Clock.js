@@ -3,7 +3,7 @@ import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Line, Text as SvgText } from 'react-native-svg';
 import { Finish, Pop, Progress, Screen, T, TopBar, shuffle, speak, starsFor, useApp, useDir, useShake } from '../ui';
 import { colors, fonts } from '../theme';
-import { num } from '../i18n';
+import { num, sayTime } from '../i18n';
 
 const ROUNDS = 6;
 const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -78,7 +78,7 @@ export default function Clock() {
       return;
     }
     setWrong(null);
-    speak(`${o.h}:${o.m === 0 ? '00' : '30'}`, lang, state.sound);
+    speak(sayTime(o.h, o.m, lang), lang, state.sound);
     if (i + 1 >= ROUNDS) {
       const s = starsFor(mistakes);
       recordGame('clock', s);

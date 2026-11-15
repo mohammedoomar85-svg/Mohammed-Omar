@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Finish, Progress, Screen, T, TopBar, shuffle, speak, starsFor, useApp, useDir, useShake } from '../ui';
 import { colors } from '../theme';
-import { num } from '../i18n';
+import { num, sayNumber } from '../i18n';
 
 const ROUNDS = 6;
 const ITEMS = ['🍎', '🍊', '🧸', '🐚', '🍓', '⚽'];
@@ -97,7 +97,7 @@ export default function Balance() {
     }
     setSolved(true);
     moveTo(side === 'left' ? -TILT : TILT);
-    speak(String(Math.max(r.left, r.right)), lang, state.sound);
+    speak(sayNumber(Math.max(r.left, r.right), lang), lang, state.sound);
     next();
   };
 
@@ -111,7 +111,7 @@ export default function Balance() {
     }
     setSolved(true);
     moveTo(0);
-    speak(String(n), lang, state.sound);
+    speak(sayNumber(n, lang), lang, state.sound);
     next();
   };
 

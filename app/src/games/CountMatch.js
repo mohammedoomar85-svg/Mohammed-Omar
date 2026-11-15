@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { Finish, Pop, Progress, Screen, T, TopBar, shuffle, speak, starsFor, useApp, useDir, useShake } from '../ui';
 import { colors } from '../theme';
-import { num } from '../i18n';
+import { num, sayNumber } from '../i18n';
 
 const ITEMS = ['🐚', '⭐', '🐟', '🍎', '🧱', '🦆'];
 const ROUNDS = 6;
@@ -58,7 +58,7 @@ export default function CountMatch() {
       return;
     }
     setWrong(null);
-    speak(String(n), lang, state.sound);
+    speak(sayNumber(n, lang), lang, state.sound);
     if (i + 1 >= ROUNDS) {
       const s = starsFor(mistakes);
       recordGame('count', s);

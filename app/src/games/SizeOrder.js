@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { Finish, Pop, Progress, Screen, T, TopBar, shuffle, speak, starsFor, useApp, useShake } from '../ui';
 import { colors } from '../theme';
-import { num } from '../i18n';
+import { num, sayNumber } from '../i18n';
 
 const ITEMS = ['🐘', '🌳', '🧸', '🐟', '🍎', '🚗', '🏠', '⭐'];
 const SIZES = [28, 42, 58, 76];
@@ -55,7 +55,7 @@ export default function SizeOrder() {
       if (p.rank !== placed.length) return miss(p.rank);
       const now = [...placed, p.rank];
       setPlaced(now);
-      speak(String(now.length), lang, state.sound);
+      speak(sayNumber(now.length, lang), lang, state.sound);
       if (now.length === r.pieces.length) setTimeout(advance, 600);
       return;
     }

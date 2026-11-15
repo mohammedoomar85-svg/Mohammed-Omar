@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import { Finish, Pop, Progress, Screen, T, TopBar, shuffle, speak, starsFor, useApp, useDir, useShake } from '../ui';
 import { colors } from '../theme';
-import { num } from '../i18n';
+import { num, sayNumber } from '../i18n';
 
 const ROUNDS = 6;
 const LEN = 5;
@@ -56,7 +56,7 @@ export default function MissingNumber() {
       return;
     }
     setWrong(null);
-    speak(r.seq.join(', '), lang, state.sound);
+    speak(r.seq.map((n) => sayNumber(n, lang)).join(lang === 'ar' ? '، ' : ', '), lang, state.sound);
     if (i + 1 >= ROUNDS) {
       const s = starsFor(mistakes);
       recordGame('missing', s);

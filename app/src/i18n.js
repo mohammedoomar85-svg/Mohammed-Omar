@@ -399,3 +399,28 @@ export function num(n, lang) {
   const s = String(n);
   return lang === 'ar' ? s.replace(/\d/g, (d) => AR_DIGITS[d]) : s;
 }
+
+// Numbers as spoken words, so the device voice says "خمسة" instead of reading "5" in English.
+const AR_ONES = ['صفر', 'واحد', 'اثنين', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة', 'عشرة',
+  'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+const AR_TENS = ['', '', 'عشرين', 'ثلاثين', 'أربعين', 'خمسين', 'ستين', 'سبعين', 'ثمانين', 'تسعين'];
+
+export function sayNumber(n, lang) {
+  if (lang !== 'ar') return String(n);
+  if (n < 0) return `سالب ${sayNumber(-n, lang)}`;
+  if (n < 20) return AR_ONES[n];
+  if (n < 100) {
+    const t = Math.floor(n / 10);
+    const o = n % 10;
+    return o ? `${AR_ONES[o]} و${AR_TENS[t]}` : AR_TENS[t];
+  }
+  if (n === 100) return 'مية';
+  return String(n);
+}
+
+// Clock times the way people say them in Kuwait: "الساعة ثلاث ونص".
+const AR_HOURS = ['', 'وحدة', 'ثنتين', 'ثلاث', 'أربع', 'خمس', 'ست', 'سبع', 'ثمان', 'تسع', 'عشر', 'إحدعش', 'اثنعش'];
+export function sayTime(h, m, lang) {
+  if (lang === 'ar') return `الساعة ${AR_HOURS[h]}${m === 30 ? ' ونص' : ''}`;
+  return m === 30 ? `half past ${h}` : `${h} o'clock`;
+}

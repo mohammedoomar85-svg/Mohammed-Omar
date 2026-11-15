@@ -108,7 +108,7 @@ export default function Colors() {
               {lang === 'ar' ? '؟' : '?'}
             </T>
           )}
-          <Pressable onPress={() => speak(big ? `${name(r.a)} + ${name(r.b)}` : name(r.answer), lang, state.sound)} style={styles.listen} accessibilityRole="button">
+          <Pressable onPress={() => speak(big ? `${name(r.a)} ${lang === 'ar' ? 'و' : 'and'} ${name(r.b)}` : name(r.answer), lang, state.sound)} style={styles.listen} accessibilityRole="button">
             <T bold style={{ fontSize: 14 }}>🔊 {t('listen')}</T>
           </Pressable>
         </Pop>

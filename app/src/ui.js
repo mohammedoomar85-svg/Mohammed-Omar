@@ -20,11 +20,66 @@ export function useDir() {
   };
 }
 
+// The device's voices. We pick an Arabic voice for Arabic text ourselves, because many
+// phones and browsers otherwise read everything with their default (English) voice.
+let voices = [];
+function loadVoices() {
+  Speech.getAvailableVoicesAsync()
+    .then((v) => {
+      if (v && v.length) voices = v;
+    })
+    .catch(() => {});
+}
+loadVoices();
+if (Platform.OS === 'web' && typeof window !== 'undefined' && window.speechSynthesis) {
+  // Browsers fill the voice list a moment after the page loads.
+  window.speechSynthesis.addEventListener?.('voiceschanged', loadVoices);
+}
+
+function pickVoice(lang) {
+  const want = lang === 'ar' ? 'ar' : 'en';
+  const list = voices.filter((v) => (v.language || '').toLowerCase().replace('_', '-').startsWith(want));
+  if (!list.length) return undefined;
+  const preferred = lang === 'ar' ? ['ar-sa', 'ar-kw', 'ar-ae', 'ar-001'] : ['en-us', 'en-gb'];
+  for (const code of preferred) {
+    const v = list.find((x) => (x.language || '').toLowerCase().replace('_', '-') === code);
+    if (v) return v.identifier;
+  }
+  return list[0].identifier;
+}
+
+// On the web we talk to the browser directly so we can hand it its own Arabic voice object.
+function speakWeb(text, lang) {
+  const ss = window.speechSynthesis;
+  const u = new window.SpeechSynthesisUtterance(String(text));
+  u.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
+  u.rate = 0.85;
+  const want = lang === 'ar' ? 'ar' : 'en';
+  const all = ss.getVoices() || [];
+  const list = all.filter((v) => (v.lang || '').toLowerCase().replace('_', '-').startsWith(want));
+  const voice = list.find((v) => /^ar-sa|^en-us/i.test(v.lang)) || list[0];
+  if (voice) {
+    try {
+      u.voice = voice;
+    } catch {
+      // Keep the language hint only.
+    }
+  }
+  ss.cancel();
+  ss.speak(u);
+}
+
 export function speak(text, lang, enabled = true) {
-  if (!enabled) return;
+  if (!enabled || !text) return;
   try {
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined' && window.speechSynthesis && window.SpeechSynthesisUtterance) speakWeb(text, lang);
+      return;
+    }
+    if (!voices.length) loadVoices();
     Speech.stop();
-    Speech.speak(text, { language: lang === 'ar' ? 'ar-SA' : 'en-US', rate: 0.85 });
+    const voice = pickVoice(lang);
+    Speech.speak(String(text), { language: lang === 'ar' ? 'ar-SA' : 'en-US', rate: 0.85, ...(voice ? { voice } : {}) });
   } catch {
     // Speech is optional; some browsers block it.
   }

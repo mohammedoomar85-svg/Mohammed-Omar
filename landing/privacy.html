@@ -212,8 +212,10 @@ a { color: var(--sea); }
 </div>
 <script>
 (function () {
-  // Contact details shown in section 10. Fill in before launch.
-  var CONTACT = { ar: 'نضيف وسيلة التواصل قريباً.', en: 'Contact details coming soon.' };
+  // Contact details shown in section 10.
+  var EMAIL = 'Fizwalaab@gmail.com';
+  var WHATSAPP = '96555803175';
+  var WHATSAPP_SHOWN = '+965 5580 3175';
   var page = document.getElementById('page');
   var lang = 'ar';
   function setLang(l) {
@@ -222,7 +224,16 @@ a { color: var(--sea); }
     document.documentElement.lang = l;
     document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
     document.title = l === 'ar' ? 'سياسة الخصوصية · فز و العب' : 'Privacy Policy · Fizz & Play';
-    document.querySelectorAll('.contact').forEach(function (el) { el.textContent = CONTACT[l]; });
+    document.querySelectorAll('.contact').forEach(function (el) {
+      el.textContent = '';
+      var mail = document.createElement('a'); mail.href = 'mailto:' + EMAIL; mail.textContent = EMAIL;
+      var wa = document.createElement('a'); wa.href = 'https://wa.me/' + WHATSAPP; wa.target = '_blank'; wa.rel = 'noopener';
+      wa.textContent = WHATSAPP_SHOWN; wa.dir = 'ltr';
+      el.appendChild(document.createTextNode(l === 'ar' ? 'الإيميل ' : 'email '));
+      el.appendChild(mail);
+      el.appendChild(document.createTextNode(l === 'ar' ? '، أو واتساب ' : ', or WhatsApp '));
+      el.appendChild(wa);
+    });
     try { localStorage.setItem('fp-lang', l); } catch (e) {}
   }
   var start = 'ar';
