@@ -23,6 +23,11 @@ import BuildIt from './src/games/BuildIt';
 import LetterTrace from './src/games/LetterTrace';
 import CountMatch from './src/games/CountMatch';
 import TreasureDive from './src/games/TreasureDive';
+import Memory from './src/games/Memory';
+import PatternPlay from './src/games/PatternPlay';
+import FirstLetter from './src/games/FirstLetter';
+import LetterHunt from './src/games/LetterHunt';
+import Balance from './src/games/Balance';
 
 // We lay out Arabic and English ourselves, so keep the native RTL flip off.
 if (Platform.OS !== 'web') {
@@ -40,6 +45,11 @@ const SCREENS = {
   letters: LetterTrace,
   count: CountMatch,
   words: TreasureDive,
+  memory: Memory,
+  pattern: PatternPlay,
+  firstletter: FirstLetter,
+  letterhunt: LetterHunt,
+  balance: Balance,
 };
 
 export default function App() {
@@ -81,7 +91,7 @@ export default function App() {
   const recordGame = useCallback(
     (id, stars) =>
       update((s) => {
-        const st = s.stats[id];
+        const st = s.stats[id] || { plays: 0, stars: 0, best: 0 };
         const stamps = stars === 3 && !s.stamps.includes(id) ? [...s.stamps, id] : s.stamps;
         return {
           ...s,

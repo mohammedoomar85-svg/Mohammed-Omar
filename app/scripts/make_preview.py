@@ -9,12 +9,12 @@ if out.exists():
     shutil.rmtree(out)
 shutil.copytree(dist, out)
 html = (out / "index.html").read_text()
-script = re.search(r'src="/(_expo/[^"]+\.js)"', html).group(1)
+script = re.search(r'src="/(?:play/)?(_expo/[^"]+\.js)"', html).group(1)
 # Paths starting with "_" are reserved by the artifact host, so move the bundle.
 shutil.move(str(out / "_expo"), str(out / "app"))
 script = "app/" + script[len("_expo/"):]
 js_path = out / script
-js_path.write_text(js_path.read_text().replace('"/assets/', '"assets/'))
+js_path.write_text(js_path.read_text().replace('"/play/assets/', '"assets/').replace('"/assets/', '"assets/'))
 (out / "index.html").write_text(f"""<title>Fizz & Play</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>

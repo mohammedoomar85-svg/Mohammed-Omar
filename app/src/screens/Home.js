@@ -1,6 +1,6 @@
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Screen, Stars, T, useApp, useDir } from '../ui';
-import { colors, games } from '../theme';
+import { colors, games, sections } from '../theme';
 import { num } from '../i18n';
 
 // On the website every game is open as a free trial.
@@ -10,8 +10,6 @@ const TRIAL = Platform.OS === 'web';
 function openSignup() {
   if (typeof window !== 'undefined' && window.location) window.location.href = '/#signup';
 }
-
-const ICONS = { shapes: '🔷', build: '🧱', letters: '✏️', count: '🔢', words: '🐚' };
 
 export default function Home() {
   const { state, t, go, lang } = useApp();
@@ -63,42 +61,53 @@ export default function Home() {
         )}
       </Pressable>
 
-      <View style={{ flexDirection: row, flexWrap: 'wrap', gap: 12 }}>
-        {games.map((g) => {
-          const open = g.free || unlocked || TRIAL;
-          const best = state.stats[g.id].best;
-          return (
-            <Pressable
-              key={g.id}
-              accessibilityRole="button"
-              accessibilityLabel={t(`g_${g.id}`)}
-              onPress={() => go(open ? g.id : 'code')}
-              style={({ pressed }) => [
-                styles.game,
-                { borderColor: g.color, opacity: open ? 1 : 0.6, transform: [{ scale: pressed ? 0.97 : 1 }] },
-              ]}
-            >
-              <View style={[styles.iconWrap, { backgroundColor: g.color }]}>
-                <T style={{ fontSize: 34 }}>{open ? ICONS[g.id] : '🔒'}</T>
+      {sections.map((sec) => {
+        const list = games.filter((g) => g.section === sec.id);
+        return (
+          <View key={sec.id} style={{ gap: 10 }}>
+            <View style={{ flexDirection: row, alignItems: 'center', gap: 8 }}>
+              <View style={[styles.secIcon, { backgroundColor: sec.color }]}>
+                <T style={{ fontSize: 18 }}>{sec.icon}</T>
               </View>
-              <T display center style={{ fontSize: 19 }}>{t(`g_${g.id}`)}</T>
-              <T center style={{ color: colors.muted, fontSize: 13 }} numberOfLines={2}>
-                {t(`g_${g.id}_d`)}
-              </T>
-              <View style={[styles.skill, { backgroundColor: g.color + '33' }]}>
-                <T bold center style={{ fontSize: 12 }}>{t(`s_${g.id}`)}</T>
-              </View>
-              {best > 0 && <Stars n={best} size={16} />}
-            </Pressable>
-          );
-        })}
-      </View>
+              <T display style={{ fontSize: 22, flex: 1 }}>{t(`sec_${sec.id}`)}</T>
+              <T style={{ color: colors.muted, fontSize: 14 }}>{num(list.length, lang)}</T>
+            </View>
+            <View style={{ flexDirection: row, flexWrap: 'wrap', gap: 10 }}>
+              {list.map((g) => {
+                const open = g.free || unlocked || TRIAL;
+                const best = state.stats[g.id]?.best || 0;
+                return (
+                  <Pressable
+                    key={g.id}
+                    accessibilityRole="button"
+                    accessibilityLabel={t(`g_${g.id}`)}
+                    onPress={() => go(open ? g.id : 'code')}
+                    style={({ pressed }) => [
+                      styles.game,
+                      { borderColor: g.color, opacity: open ? 1 : 0.6, transform: [{ scale: pressed ? 0.97 : 1 }] },
+                    ]}
+                  >
+                    <View style={[styles.iconWrap, { backgroundColor: g.color }]}>
+                      <T style={{ fontSize: 28 }}>{open ? g.icon : '🔒'}</T>
+                    </View>
+                    <T display center style={{ fontSize: 17 }} numberOfLines={1}>{t(`g_${g.id}`)}</T>
+                    <T center style={{ color: colors.muted, fontSize: 12 }} numberOfLines={2}>
+                      {t(`g_${g.id}_d`)}
+                    </T>
+                    {best > 0 && <Stars n={best} size={14} />}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        );
+      })}
 
       <Pressable accessibilityRole="button" onPress={() => go('passport')} style={[styles.passport, { flexDirection: row }]}>
         <T style={{ fontSize: 28 }}>📘</T>
         <T display style={{ fontSize: 20, flex: 1 }}>{t('passport')}</T>
         <T display style={{ fontSize: 20, color: colors.sea }}>
-          {num(state.stamps.length, lang)} {t('of')} {num(6, lang)}
+          {num(state.stamps.length, lang)} {t('of')} {num(games.length + 1, lang)}
         </T>
       </Pressable>
     </Screen>
@@ -133,12 +142,12 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     borderWidth: 2,
     borderBottomWidth: 5,
-    padding: 14,
+    padding: 12,
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
   },
-  iconWrap: { width: 64, height: 64, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  skill: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2 },
+  iconWrap: { width: 52, height: 52, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  secIcon: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   passport: {
     alignItems: 'center',
     gap: 12,

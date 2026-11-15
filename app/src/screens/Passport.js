@@ -1,14 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 import { Screen, T, TopBar, useApp, useDir } from '../ui';
-import { colors } from '../theme';
+import { colors, games } from '../theme';
 
+// Older games kept their original stamp names.
+const LABELS = { shapes: 'stampShapes', build: 'stampBuild', letters: 'stampLetters', count: 'stampCount', words: 'stampWords' };
 const STAMPS = [
   { id: 'box1', icon: '📦', label: 'stampBox1', color: colors.sun, hint: 'enterCode' },
-  { id: 'shapes', icon: '🔷', label: 'stampShapes', color: colors.sun },
-  { id: 'build', icon: '🧱', label: 'stampBuild', color: colors.sea },
-  { id: 'letters', icon: '✏️', label: 'stampLetters', color: colors.coral },
-  { id: 'count', icon: '🔢', label: 'stampCount', color: colors.leaf },
-  { id: 'words', icon: '🐚', label: 'stampWords', color: colors.plum },
+  ...games.map((g) => ({ id: g.id, icon: g.icon, label: LABELS[g.id] || `stamp_${g.id}`, color: g.color })),
 ];
 
 export default function Passport() {

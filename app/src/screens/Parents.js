@@ -50,7 +50,7 @@ export default function Parents() {
   const skills = useMemo(
     () =>
       games.map((g) => {
-        const s = state.stats[g.id];
+        const s = state.stats[g.id] || { plays: 0, stars: 0 };
         return { ...g, plays: s.plays, avg: s.plays ? s.stars / s.plays : 0 };
       }),
     [state.stats]

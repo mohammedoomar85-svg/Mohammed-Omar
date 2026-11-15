@@ -1,20 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { games } from './theme';
 
 const KEY = 'fizzplay:v1';
 
-export const emptyStats = () => ({
-  shapes: { plays: 0, stars: 0, best: 0 },
-  build: { plays: 0, stars: 0, best: 0 },
-  letters: { plays: 0, stars: 0, best: 0 },
-  count: { plays: 0, stars: 0, best: 0 },
-  words: { plays: 0, stars: 0, best: 0 },
-});
+export const emptyStats = () => Object.fromEntries(games.map((g) => [g.id, { plays: 0, stars: 0, best: 0 }]));
 
 export const initialState = () => ({
   lang: null, // 'ar' | 'en'
   child: null, // { name, age: 'small' | 'big' }
   boxUnlocked: false,
-  stamps: [], // ids: box1, shapes, build, letters, count, words
+  stamps: [], // 'box1' plus one id per game finished with 3 stars
   stats: emptyStats(),
   sound: true,
   updatedAt: 0,

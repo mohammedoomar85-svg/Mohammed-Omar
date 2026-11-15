@@ -22,11 +22,25 @@ export const fonts = {
   bodyBold: 'Tajawal_700Bold',
 };
 
-// Each game's colour and the skill it builds.
+// Home screen sections, in display order.
+export const sections = [
+  { id: 'numbers', icon: '🔢', color: colors.leaf },
+  { id: 'letters', icon: '✏️', color: colors.coral },
+  { id: 'shapes', icon: '🔷', color: colors.sea },
+  { id: 'science', icon: '🌿', color: colors.plum },
+];
+
+// Every game: its section, colour and icon. `free` games open on phones without a box code
+// (on the website every game is open as a free trial).
 export const games = [
-  { id: 'shapes', color: colors.sun, free: true },
-  { id: 'build', color: colors.sea, free: false },
-  { id: 'letters', color: colors.coral, free: false },
-  { id: 'count', color: colors.leaf, free: true },
-  { id: 'words', color: colors.plum, free: false },
+  { id: 'count', section: 'numbers', color: colors.leaf, icon: '🔢', free: true },
+  { id: 'balance', section: 'numbers', color: colors.leaf, icon: '⚖️', free: false },
+  { id: 'letters', section: 'letters', color: colors.coral, icon: '✏️', free: false },
+  { id: 'words', section: 'letters', color: colors.plum, icon: '🐚', free: false },
+  { id: 'firstletter', section: 'letters', color: colors.coral, icon: '🔤', free: true },
+  { id: 'letterhunt', section: 'letters', color: colors.sea, icon: '🎯', free: false },
+  { id: 'shapes', section: 'shapes', color: colors.sun, icon: '🔷', free: true },
+  { id: 'build', section: 'shapes', color: colors.sea, icon: '🧱', free: false },
+  { id: 'pattern', section: 'shapes', color: colors.sun, icon: '🧩', free: false },
+  { id: 'memory', section: 'science', color: colors.plum, icon: '🃏', free: true },
 ];
