@@ -48,4 +48,5 @@ export const games = [
   { id: 'memory', section: 'science', color: colors.plum, icon: '🃏', free: true },
   { id: 'lifecycle', section: 'science', color: colors.leaf, icon: '🌱', free: false },
   { id: 'homes', section: 'science', color: colors.sea, icon: '🏠', free: false },
+  { id: 'sounds', section: 'science', color: colors.plum, icon: '🔊', free: true },
 ];

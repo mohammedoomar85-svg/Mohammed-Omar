@@ -33,6 +33,7 @@ import SizeOrder from './src/games/SizeOrder';
 import Clock from './src/games/Clock';
 import LifeCycle from './src/games/LifeCycle';
 import AnimalHomes from './src/games/AnimalHomes';
+import AnimalSounds from './src/games/AnimalSounds';
 
 // We lay out Arabic and English ourselves, so keep the native RTL flip off.
 if (Platform.OS !== 'web') {
@@ -60,6 +61,7 @@ const SCREENS = {
   clock: Clock,
   lifecycle: LifeCycle,
   homes: AnimalHomes,
+  sounds: AnimalSounds,
 };
 
 export default function App() {
