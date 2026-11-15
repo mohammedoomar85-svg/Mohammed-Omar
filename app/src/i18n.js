@@ -1,6 +1,9 @@
 // All on-screen text in both languages. Add a key to both `ar` and `en`.
 const ar = {
   appName: 'فز و العب',
+  trialTitle: 'نسخة تجريبية مجانية',
+  trialSub: 'كل الألعاب مفتوحة. والصندوق فيه ألعاب حقيقية تكمّلها.',
+  trialCta: 'احجز الصندوق',
   chooseLang: 'اختار اللغة',
   langHint: 'Choose your language',
   setupTitle: 'خلّنا نتعرّف على طفلك',
@@ -102,6 +105,9 @@ const ar = {
 
 const en = {
   appName: 'Fizz & Play',
+  trialTitle: 'Free trial',
+  trialSub: 'All games are open. The box adds real toys that go with them.',
+  trialCta: 'Reserve a box',
   chooseLang: 'Choose your language',
   langHint: 'اختار اللغة',
   setupTitle: "Let's meet your child",

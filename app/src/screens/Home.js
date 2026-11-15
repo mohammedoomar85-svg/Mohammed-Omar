@@ -1,7 +1,15 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import { Screen, Stars, T, useApp, useDir } from '../ui';
 import { colors, games } from '../theme';
 import { num } from '../i18n';
+
+// On the website every game is open as a free trial.
+const TRIAL = Platform.OS === 'web';
+
+// The trial runs inside the website, so the sign-up form is on the same site.
+function openSignup() {
+  if (typeof window !== 'undefined' && window.location) window.location.href = '/#signup';
+}
 
 const ICONS = { shapes: '🔷', build: '🧱', letters: '✏️', count: '🔢', words: '🐚' };
 
@@ -24,6 +32,18 @@ export default function Home() {
         </Pressable>
       </View>
 
+      {TRIAL && !unlocked && (
+        <View style={[styles.trial, { flexDirection: row }]}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <T display style={{ fontSize: 18, color: '#fff' }}>{t('trialTitle')}</T>
+            <T style={{ color: '#E6F6F8', fontSize: 14 }}>{t('trialSub')}</T>
+          </View>
+          <Pressable accessibilityRole="link" onPress={openSignup} style={styles.trialBtn}>
+            <T display style={{ fontSize: 15 }}>{t('trialCta')}</T>
+          </Pressable>
+        </View>
+      )}
+
       <Pressable
         accessibilityRole="button"
         onPress={() => go(unlocked ? 'passport' : 'code')}
@@ -45,7 +65,7 @@ export default function Home() {
 
       <View style={{ flexDirection: row, flexWrap: 'wrap', gap: 12 }}>
         {games.map((g) => {
-          const open = g.free || unlocked;
+          const open = g.free || unlocked || TRIAL;
           const best = state.stats[g.id].best;
           return (
             <Pressable
@@ -86,6 +106,8 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  trial: { backgroundColor: colors.sea, borderRadius: 20, padding: 14, alignItems: 'center', gap: 12 },
+  trialBtn: { backgroundColor: colors.sun, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 },
   parentBtn: {
     paddingHorizontal: 14,
     paddingVertical: 8,

@@ -1,10 +1,11 @@
-// Cloudflare Workers config for the landing page (static files only).
-// `wrangler deploy` runs the build below, then uploads landing/dist.
+// Cloudflare Workers config for the website (static files only).
+// `wrangler deploy` runs the build below, then uploads landing/dist:
+//   /        landing page        /admin   dashboard        /play/   the games (Expo web build)
 {
   "name": "mohammed-omar",
   "compatibility_date": "2025-06-01",
   "build": {
-    "command": "node landing/build.mjs"
+    "command": "cd app && npm ci --no-audit --no-fund && EXPO_OFFLINE=1 npx expo export -p web --output-dir ../landing/dist/play && cd .. && node landing/build.mjs"
   },
   "assets": {
     "directory": "./landing/dist"
