@@ -24,6 +24,17 @@ export default function Home() {
             {t('hello')} {state.child.name} 👋
           </T>
           <T style={{ color: colors.muted }}>{t('homeSub')}</T>
+          {/* The age the parent picked sets every game's difficulty. Changing it goes through the parent lock. */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${t('level')}: ${t(state.child.age === 'big' ? 'ageBig' : 'ageSmall')}`}
+            onPress={() => go('parents')}
+            style={[styles.level, { alignSelf: row === 'row' ? 'flex-start' : 'flex-end' }]}
+          >
+            <T bold style={{ fontSize: 13, color: colors.sea }}>
+              {t('level')}: {t(state.child.age === 'big' ? 'ageBig' : 'ageSmall')}
+            </T>
+          </Pressable>
         </View>
         <Pressable accessibilityRole="button" onPress={() => go('parents')} style={styles.parentBtn}>
           <T bold style={{ fontSize: 14 }}>{t('parents')}</T>
@@ -115,6 +126,7 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  level: { marginTop: 6, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999, backgroundColor: colors.seaSoft },
   trial: { backgroundColor: colors.sea, borderRadius: 20, padding: 14, alignItems: 'center', gap: 12 },
   trialBtn: { backgroundColor: colors.sun, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 },
   parentBtn: {

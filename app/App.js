@@ -34,6 +34,10 @@ import Clock from './src/games/Clock';
 import LifeCycle from './src/games/LifeCycle';
 import AnimalHomes from './src/games/AnimalHomes';
 import AnimalSounds from './src/games/AnimalSounds';
+import MissingNumber from './src/games/MissingNumber';
+import ReadMatch from './src/games/ReadMatch';
+import Mirror from './src/games/Mirror';
+import FloatSink from './src/games/FloatSink';
 
 // We lay out Arabic and English ourselves, so keep the native RTL flip off.
 if (Platform.OS !== 'web') {
@@ -62,6 +66,10 @@ const SCREENS = {
   lifecycle: LifeCycle,
   homes: AnimalHomes,
   sounds: AnimalSounds,
+  missing: MissingNumber,
+  readmatch: ReadMatch,
+  mirror: Mirror,
+  float: FloatSink,
 };
 
 export default function App() {
