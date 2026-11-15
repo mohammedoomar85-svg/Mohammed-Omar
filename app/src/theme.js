@@ -35,6 +35,8 @@ export const sections = [
 export const games = [
   { id: 'count', section: 'numbers', color: colors.leaf, icon: '🔢', free: true },
   { id: 'balance', section: 'numbers', color: colors.leaf, icon: '⚖️', free: false },
+  { id: 'sizes', section: 'numbers', color: colors.sun, icon: '📏', free: false },
+  { id: 'clock', section: 'numbers', color: colors.sea, icon: '🕒', free: false },
   { id: 'letters', section: 'letters', color: colors.coral, icon: '✏️', free: false },
   { id: 'words', section: 'letters', color: colors.plum, icon: '🐚', free: false },
   { id: 'firstletter', section: 'letters', color: colors.coral, icon: '🔤', free: true },
@@ -42,5 +44,8 @@ export const games = [
   { id: 'shapes', section: 'shapes', color: colors.sun, icon: '🔷', free: true },
   { id: 'build', section: 'shapes', color: colors.sea, icon: '🧱', free: false },
   { id: 'pattern', section: 'shapes', color: colors.sun, icon: '🧩', free: false },
+  { id: 'colors', section: 'shapes', color: colors.coral, icon: '🎨', free: true },
   { id: 'memory', section: 'science', color: colors.plum, icon: '🃏', free: true },
+  { id: 'lifecycle', section: 'science', color: colors.leaf, icon: '🌱', free: false },
+  { id: 'homes', section: 'science', color: colors.sea, icon: '🏠', free: false },
 ];

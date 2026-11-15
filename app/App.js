@@ -28,6 +28,11 @@ import PatternPlay from './src/games/PatternPlay';
 import FirstLetter from './src/games/FirstLetter';
 import LetterHunt from './src/games/LetterHunt';
 import Balance from './src/games/Balance';
+import Colors from './src/games/Colors';
+import SizeOrder from './src/games/SizeOrder';
+import Clock from './src/games/Clock';
+import LifeCycle from './src/games/LifeCycle';
+import AnimalHomes from './src/games/AnimalHomes';
 
 // We lay out Arabic and English ourselves, so keep the native RTL flip off.
 if (Platform.OS !== 'web') {
@@ -50,6 +55,11 @@ const SCREENS = {
   firstletter: FirstLetter,
   letterhunt: LetterHunt,
   balance: Balance,
+  colors: Colors,
+  sizes: SizeOrder,
+  clock: Clock,
+  lifecycle: LifeCycle,
+  homes: AnimalHomes,
 };
 
 export default function App() {
