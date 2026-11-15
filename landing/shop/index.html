@@ -97,6 +97,39 @@ button { font: inherit; color: inherit; cursor: pointer; }
 footer { color: var(--muted); font-size: .9rem; padding-block: 10px 110px; }
 footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
 
+
+/* Cart sums and checkout */
+.sum { display: flex; justify-content: space-between; color: var(--muted); padding-block: 2px; }
+#sums { display: flex; flex-direction: column; gap: 2px; }
+.checkout { padding-block: 16px 60px; }
+.checkout .wrap { max-width: 640px; display: flex; flex-direction: column; gap: 14px; }
+.co-head { display: flex; align-items: center; gap: 12px; }
+.co-head h1 { font-size: 1.8rem; }
+.page[dir="ltr"] #co-back, .page[data-lang="en"] #co-back { transform: scaleX(-1); }
+#co-form { display: flex; flex-direction: column; gap: 14px; }
+.co-card { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.co-card h2 { font-size: 1.2rem; }
+.f { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.f label { font-weight: 700; font-size: .92rem; }
+.f input, .f select, .f textarea { font: inherit; color: var(--ink); background: var(--bg); border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; width: 100%; }
+.f input:focus, .f select:focus, .f textarea:focus { outline: none; border-color: var(--sea); }
+.row3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ph-in { display: flex; gap: 8px; direction: ltr; }
+.ph-in span { flex: none; display: grid; place-items: center; padding-inline: 10px; border-radius: 12px; border: 2px solid var(--line); background: var(--band); font-weight: 700; }
+.ph-in input { text-align: left; }
+.pay { display: flex; flex-direction: column; gap: 8px; }
+.pay-opt { display: flex; gap: 10px; align-items: flex-start; border: 2px solid var(--line); border-radius: 14px; padding: 12px; cursor: pointer; background: var(--bg); }
+.pay-opt:has(input:checked) { border-color: var(--sea); background: var(--sea-soft); }
+.pay-opt input { margin-top: 5px; accent-color: var(--sea); }
+.pay-opt b { display: block; }
+.pay-opt small { color: var(--muted); }
+.err { color: var(--coral); font-weight: 700; min-height: 1.2em; margin: 0; }
+.go.big { justify-content: center; font-size: 1.15rem; padding-block: 14px; }
+.done { align-items: center; text-align: center; }
+.done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--leaf); color: #fff; font-size: 2rem; display: grid; place-items: center; }
+.pill-dark { color: var(--sea); font-weight: 700; }
+@media (max-width: 560px) { .row3 { grid-template-columns: 1fr 1fr; } }
+
 @media (max-width: 960px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -123,7 +156,7 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
 <main class="wrap">
   <section class="intro">
     <h1><span lang="ar">متجر فز و العب</span><span lang="en">Fizz &amp; Play shop</span></h1>
-    <p><span lang="ar">ألعاب تعليمية أصلية من وكلاء معتمدين في الكويت. اختار اللي يعجبك، وأرسل طلبك على الواتساب، ونأكد معك التوصيل.</span><span lang="en">Genuine learning toys from authorised distributors in Kuwait. Pick what you like, send your order on WhatsApp, and we'll confirm delivery with you.</span></p>
+    <p><span lang="ar">ألعاب تعليمية أصلية من وكلاء معتمدين في الكويت. اختار اللي يعجبك وكمّل طلبك. <b>التوصيل ٢ دينار لكل مناطق الكويت.</b></span><span lang="en">Genuine learning toys from authorised distributors in Kuwait. Pick what you like and check out. <b>Delivery is 2 KWD anywhere in Kuwait.</b></span></p>
   </section>
   <nav class="chips" id="chips" aria-label="Categories"></nav>
   <div class="grid" id="grid"></div>
@@ -150,17 +183,82 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
       <button class="x" id="close-cart" type="button" aria-label="Close">✕</button>
     </div>
     <div id="lines"></div>
-    <div class="total" id="total-row"><span><span lang="ar">المجموع</span><span lang="en">Total</span></span><span id="total"></span></div>
-    <p class="note"><span lang="ar">التوصيل داخل الكويت. نأكد معك رسوم التوصيل والموعد على الواتساب قبل الدفع.</span><span lang="en">Delivery within Kuwait. We'll confirm the delivery fee and time on WhatsApp before you pay.</span></p>
-    <a class="go" id="send" href="#" target="_blank" rel="noopener" style="justify-content:center"><span lang="ar">أرسل الطلب على الواتساب</span><span lang="en">Send order on WhatsApp</span></a>
+    <div id="sums">
+      <div class="sum"><span><span lang="ar">المنتجات</span><span lang="en">Items</span></span><span id="subtotal"></span></div>
+      <div class="sum"><span><span lang="ar">التوصيل (كل مناطق الكويت)</span><span lang="en">Delivery (anywhere in Kuwait)</span></span><span id="delivery"></span></div>
+      <div class="total"><span><span lang="ar">المجموع</span><span lang="en">Total</span></span><span id="total"></span></div>
+    </div>
+    <button class="go" id="to-checkout" type="button" style="justify-content:center"><span lang="ar">إتمام الطلب</span><span lang="en">Checkout</span></button>
   </div>
 </div>
+
+<section class="checkout" id="checkout" hidden aria-labelledby="co-title">
+  <div class="wrap">
+    <div class="co-head">
+      <button class="x" id="co-back" type="button" aria-label="Back">→</button>
+      <h1 id="co-title"><span lang="ar">إتمام الطلب</span><span lang="en">Checkout</span></h1>
+    </div>
+    <form id="co-form" novalidate>
+      <div class="co-card">
+        <h2><span lang="ar">بياناتك</span><span lang="en">Your details</span></h2>
+        <div class="f"><label for="co-name"><span lang="ar">الاسم</span><span lang="en">Name</span></label><input id="co-name" autocomplete="name"></div>
+        <div class="f"><label for="co-phone"><span lang="ar">رقم الواتساب</span><span lang="en">WhatsApp number</span></label>
+          <div class="ph-in"><span>+965</span><input id="co-phone" inputmode="numeric" maxlength="8" placeholder="5XXXXXXX" autocomplete="tel-national"></div></div>
+      </div>
+      <div class="co-card">
+        <h2><span lang="ar">عنوان التوصيل</span><span lang="en">Delivery address</span></h2>
+        <div class="f"><label for="co-gov"><span lang="ar">المحافظة</span><span lang="en">Governorate</span></label><select id="co-gov"></select></div>
+        <div class="f"><label for="co-area"><span lang="ar">المنطقة</span><span lang="en">Area</span></label><input id="co-area" list="areas"><datalist id="areas"></datalist></div>
+        <div class="row3">
+          <div class="f"><label for="co-block"><span lang="ar">القطعة</span><span lang="en">Block</span></label><input id="co-block" inputmode="numeric"></div>
+          <div class="f"><label for="co-street"><span lang="ar">الشارع</span><span lang="en">Street</span></label><input id="co-street"></div>
+          <div class="f"><label for="co-avenue"><span lang="ar">الجادة (اختياري)</span><span lang="en">Avenue (optional)</span></label><input id="co-avenue"></div>
+        </div>
+        <div class="row3">
+          <div class="f"><label for="co-house"><span lang="ar">المنزل / المبنى</span><span lang="en">House / building</span></label><input id="co-house"></div>
+          <div class="f"><label for="co-flat"><span lang="ar">الدور والشقة (اختياري)</span><span lang="en">Floor & flat (optional)</span></label><input id="co-flat"></div>
+        </div>
+        <div class="f"><label for="co-map"><span lang="ar">رابط الموقع من الخرائط (اختياري)</span><span lang="en">Map link (optional)</span></label><input id="co-map" inputmode="url" dir="ltr"></div>
+        <div class="f"><label for="co-notes"><span lang="ar">ملاحظات للمندوب (اختياري)</span><span lang="en">Notes for the driver (optional)</span></label><textarea id="co-notes" rows="2"></textarea></div>
+      </div>
+      <div class="co-card">
+        <h2><span lang="ar">طريقة الدفع</span><span lang="en">Payment</span></h2>
+        <div class="pay" role="radiogroup">
+          <label class="pay-opt"><input type="radio" name="pay" value="cash" checked><span><b><span lang="ar">كاش عند الاستلام</span><span lang="en">Cash on delivery</span></b><small><span lang="ar">تدفع للمندوب لما يوصلك الطلب</span><span lang="en">Pay the driver when your order arrives</span></small></span></label>
+          <label class="pay-opt"><input type="radio" name="pay" value="knet"><span><b>KNET</b><small><span lang="ar">نرسل لك رابط دفع على الواتساب</span><span lang="en">We'll send you a payment link on WhatsApp</span></small></span></label>
+          <label class="pay-opt"><input type="radio" name="pay" value="applepay"><span><b>Apple Pay</b><small><span lang="ar">نرسل لك رابط دفع على الواتساب، وتدفع منه بـ Apple Pay</span><span lang="en">We'll send a payment link on WhatsApp that you can pay with Apple Pay</span></small></span></label>
+        </div>
+      </div>
+      <div class="co-card">
+        <h2><span lang="ar">ملخص الطلب</span><span lang="en">Order summary</span></h2>
+        <div id="co-lines"></div>
+        <div class="sum"><span><span lang="ar">المنتجات</span><span lang="en">Items</span></span><span id="co-sub"></span></div>
+        <div class="sum"><span><span lang="ar">التوصيل</span><span lang="en">Delivery</span></span><span id="co-del"></span></div>
+        <div class="total"><span><span lang="ar">المجموع</span><span lang="en">Total</span></span><span id="co-total"></span></div>
+      </div>
+      <p class="err" id="co-err" role="alert"></p>
+      <button class="go big" type="submit"><span lang="ar">أرسل الطلب على الواتساب</span><span lang="en">Send order on WhatsApp</span></button>
+      <p class="note" style="text-align:center"><span lang="ar">بنأكد معك الطلب وموعد التوصيل على الواتساب.</span><span lang="en">We'll confirm your order and delivery time on WhatsApp.</span></p>
+    </form>
+    <div class="co-card done" id="co-done" hidden>
+      <div class="tick">✓</div>
+      <h2><span lang="ar">وصلنا طلبك!</span><span lang="en">Order sent!</span></h2>
+      <p><span lang="ar">رقم الطلب</span><span lang="en">Order number</span>: <b id="co-no" dir="ltr"></b></p>
+      <p class="note"><span lang="ar">إذا ما انفتح الواتساب، اضغط الزر تحت.</span><span lang="en">If WhatsApp didn't open, tap the button below.</span></p>
+      <a class="go" id="co-resend" href="#" target="_blank" rel="noopener" style="justify-content:center"><span lang="ar">افتح الواتساب</span><span lang="en">Open WhatsApp</span></a>
+      <a class="pill-dark" href="/shop/"><span lang="ar">رجوع للمتجر</span><span lang="en">Back to the shop</span></a>
+    </div>
+  </div>
+</section>
 
 </div>
 <script>
 (function () {
   var WHATSAPP = '96555803175';
-  // Prices are what the customer pays (the supplier's retail price). Our cost is never shown here.
+  // `price` below is the supplier's suggested retail price. We sell 10% below it.
+  // Our own cost (30% below retail) is never put on this page.
+  var DISCOUNT = 0.10;
+  var DELIVERY = 2;
   var CATS = [
     { id: 'all', ar: 'الكل', en: 'All' },
     { id: 'build', ar: 'المهندس الصغير', en: 'Little engineer' },
@@ -202,13 +300,15 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
     { id: 'nabawi', cat: 'islamic', price: 39.95, age: '6+', ar: 'مجسم بناء المسجد النبوي', en: "Prophet's Mosque building set", sar: 'البناء والقصص', sen: 'Building & stories' },
     { id: 'dome', cat: 'islamic', price: 39.95, age: '6+', ar: 'مجسم بناء قبة الصخرة', en: 'Dome of the Rock building set', sar: 'البناء والقصص', sen: 'Building & stories' }
   ];
+  P.forEach(function (p) { p.price = Math.round(p.price * (1 - DISCOUNT) * 1000) / 1000; });
   var byId = {}; P.forEach(function (p) { byId[p.id] = p; });
 
   var page = document.getElementById('page');
   var lang = 'ar', cat = 'all', cart = {};
   var AR = '٠١٢٣٤٥٦٧٨٩';
   function digits(s) { return lang === 'ar' ? String(s).replace(/\d/g, function (d) { return AR[d]; }).replace('.', '٫') : String(s); }
-  function money(n) { var s = n.toFixed(n % 1 ? (Math.round(n * 100) % 10 ? 2 : 1) : 0); return lang === 'ar' ? digits(s) + ' د.ك' : s + ' KWD'; }
+  // Kuwaiti dinar prices always show 3 decimals (fils).
+  function money(n) { var s = (Math.round(n * 1000) / 1000).toFixed(3); return lang === 'ar' ? digits(s) + ' د.ك' : s + ' KWD'; }
   function save() { try { localStorage.setItem('fp-cart', JSON.stringify(cart)); } catch (e) {} }
   try { cart = JSON.parse(localStorage.getItem('fp-cart')) || {}; } catch (e) { cart = {}; }
   Object.keys(cart).forEach(function (k) { if (!byId[k]) delete cart[k]; });
@@ -269,38 +369,35 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
   function totals() {
     var items = 0, sum = 0;
     Object.keys(cart).forEach(function (k) { items += cart[k]; sum += cart[k] * byId[k].price; });
-    return { items: items, sum: Math.round(sum * 100) / 100 };
+    sum = Math.round(sum * 1000) / 1000;
+    var delivery = items ? DELIVERY : 0;
+    return { items: items, sum: sum, delivery: delivery, total: Math.round((sum + delivery) * 1000) / 1000 };
   }
 
-  function orderText() {
-    var lines = Object.keys(cart).map(function (k) {
-      var p = byId[k];
-      return '• ' + p[lang] + ' × ' + cart[k] + ' = ' + (Math.round(p.price * cart[k] * 100) / 100) + (lang === 'ar' ? ' د.ك' : ' KWD');
-    });
-    var t = totals();
-    return (lang === 'ar' ? 'هلا فز و العب، أبي أطلب:\n' : 'Hi Fizz & Play, I would like to order:\n') + lines.join('\n') +
-      (lang === 'ar' ? '\nالمجموع: ' + t.sum + ' د.ك\nالاسم:\nالمنطقة:' : '\nTotal: ' + t.sum + ' KWD\nName:\nArea:');
+  function lineEl(p, editable) {
+    var line = el('div', 'line');
+    var img = el('img'); img.src = '/shop/img/' + p.id + '.jpg'; img.alt = '';
+    var info = el('div'); info.appendChild(el('div', 'n', p[lang])); info.appendChild(el('div', 'p', money(p.price)));
+    line.appendChild(img); line.appendChild(info);
+    line.appendChild(editable ? qtyControl(p) : el('b', null, '× ' + digits(cart[p.id])));
+    return line;
   }
 
   function renderCart() {
     var t = totals();
     document.getElementById('count').textContent = digits(t.items);
-    document.getElementById('bar').hidden = !t.items;
-    document.getElementById('bar-total').textContent = money(t.sum);
+    document.getElementById('bar').hidden = !t.items || !document.getElementById('checkout').hidden;
+    document.getElementById('bar-total').textContent = money(t.total);
     var lines = document.getElementById('lines'); lines.textContent = '';
     if (!t.items) lines.appendChild(el('p', 'empty', lang === 'ar' ? 'سلتك فاضية. أضف لعبة من المتجر.' : 'Your cart is empty. Add a toy from the shop.'));
-    Object.keys(cart).forEach(function (k) {
-      var p = byId[k]; var line = el('div', 'line');
-      var img = el('img'); img.src = '/shop/img/' + p.id + '.jpg'; img.alt = '';
-      var info = el('div'); info.appendChild(el('div', 'n', p[lang])); info.appendChild(el('div', 'p', money(p.price)));
-      line.appendChild(img); line.appendChild(info); line.appendChild(qtyControl(p));
-      lines.appendChild(line);
-    });
-    document.getElementById('total').textContent = money(t.sum);
-    document.getElementById('total-row').hidden = !t.items;
-    var send = document.getElementById('send');
-    send.hidden = !t.items;
-    send.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(orderText());
+    Object.keys(cart).forEach(function (k) { lines.appendChild(lineEl(byId[k], true)); });
+    document.getElementById('sums').hidden = !t.items;
+    document.getElementById('to-checkout').hidden = !t.items;
+    ['subtotal', 'co-sub'].forEach(function (id) { document.getElementById(id).textContent = money(t.sum); });
+    ['delivery', 'co-del'].forEach(function (id) { document.getElementById(id).textContent = money(t.delivery); });
+    ['total', 'co-total'].forEach(function (id) { document.getElementById(id).textContent = money(t.total); });
+    var co = document.getElementById('co-lines'); co.textContent = '';
+    Object.keys(cart).forEach(function (k) { co.appendChild(lineEl(byId[k], false)); });
   }
 
   function change(id, d) {
@@ -320,6 +417,115 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
   document.getElementById('sheet-bg').addEventListener('click', function () { openCart(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') openCart(false); });
 
+
+  // --- Checkout --------------------------------------------------------------
+  var GOVS = [
+    { id: 'capital', ar: 'العاصمة', en: 'Capital', areas: ['مدينة الكويت', 'الشرق', 'المرقاب', 'الدسمة', 'الدعية', 'الشامية', 'الشويخ', 'الفيحاء', 'القادسية', 'كيفان', 'المنصورية', 'النزهة', 'الروضة', 'العديلية', 'الخالدية', 'اليرموك', 'قرطبة', 'السرة', 'الدوحة', 'غرناطة', 'الصليبيخات', 'بنيد القار'] },
+    { id: 'hawalli', ar: 'حولي', en: 'Hawalli', areas: ['حولي', 'السالمية', 'الجابرية', 'الرميثية', 'بيان', 'مشرف', 'سلوى', 'الشعب', 'الشهداء', 'حطين', 'الزهراء', 'السلام', 'الصديق', 'البدع', 'ميدان حولي'] },
+    { id: 'farwaniya', ar: 'الفروانية', en: 'Farwaniya', areas: ['الفروانية', 'خيطان', 'جليب الشيوخ', 'العمرية', 'الرابية', 'الرحاب', 'الأندلس', 'الرقعي', 'العارضية', 'إشبيلية', 'صباح الناصر', 'الفردوس', 'عبدالله المبارك', 'الضجيج'] },
+    { id: 'mubarak', ar: 'مبارك الكبير', en: 'Mubarak Al-Kabeer', areas: ['مبارك الكبير', 'القرين', 'القصور', 'العدان', 'صباح السالم', 'المسيلة', 'أبو فطيرة', 'أبو الحصانية', 'الفنيطيس', 'المسايل'] },
+    { id: 'ahmadi', ar: 'الأحمدي', en: 'Ahmadi', areas: ['الأحمدي', 'الفحيحيل', 'المنقف', 'أبو حليفة', 'الفنطاس', 'المهبولة', 'الصباحية', 'الرقة', 'هدية', 'العقيلة', 'الظهر', 'صباح الأحمد', 'الخيران', 'جابر العلي', 'فهد الأحمد', 'علي صباح السالم', 'الوفرة'] },
+    { id: 'jahra', ar: 'الجهراء', en: 'Jahra', areas: ['الجهراء', 'الواحة', 'القصر', 'النسيم', 'العيون', 'تيماء', 'سعد العبدالله', 'الصليبية', 'النعيم', 'جابر الأحمد', 'العبدلي'] }
+  ];
+  var PAY = {
+    cash: { ar: 'كاش عند الاستلام', en: 'Cash on delivery' },
+    knet: { ar: 'KNET (أرسلوا لي رابط دفع)', en: 'KNET (please send a payment link)' },
+    applepay: { ar: 'Apple Pay (أرسلوا لي رابط دفع)', en: 'Apple Pay (please send a payment link)' }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var FIELDS = ['co-name', 'co-phone', 'co-gov', 'co-area', 'co-block', 'co-street', 'co-avenue', 'co-house', 'co-flat', 'co-map', 'co-notes'];
+
+  function fillGovs() {
+    var sel = $('co-gov'), keep = sel.value;
+    sel.textContent = '';
+    var first = el('option', null, lang === 'ar' ? 'اختار المحافظة' : 'Choose governorate'); first.value = ''; sel.appendChild(first);
+    GOVS.forEach(function (g) { var o = el('option', null, g[lang]); o.value = g.id; sel.appendChild(o); });
+    sel.value = keep;
+    fillAreas();
+  }
+  function fillAreas() {
+    var g = GOVS.find(function (x) { return x.id === $('co-gov').value; });
+    var list = $('areas'); list.textContent = '';
+    (g ? g.areas : []).forEach(function (a) { var o = el('option'); o.value = a; list.appendChild(o); });
+  }
+  $('co-gov').addEventListener('change', fillAreas);
+  // Clear the error as soon as the customer starts fixing the form.
+  $('co-form').addEventListener('input', function () { $('co-err').textContent = ''; });
+
+  // Remember the address on this device for next time.
+  try {
+    var savedAddr = JSON.parse(localStorage.getItem('fp-addr')) || {};
+    FIELDS.forEach(function (id) { if (savedAddr[id]) $(id).value = savedAddr[id]; });
+  } catch (e) {}
+
+  function showCheckout(on) {
+    $('checkout').hidden = !on;
+    document.querySelector('main').hidden = on;
+    openCart(false);
+    renderCart();
+    window.scrollTo(0, 0);
+    if (on) { $('co-form').hidden = false; $('co-done').hidden = true; $('co-name').focus(); }
+  }
+  $('to-checkout').addEventListener('click', function () { showCheckout(true); });
+  $('co-back').addEventListener('click', function () { showCheckout(false); });
+
+  function normalizeDigits(v) { return v.replace(/[٠-٩]/g, function (d) { return AR.indexOf(d); }); }
+
+  $('co-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = totals();
+    var v = {}; FIELDS.forEach(function (id) { v[id] = $(id).value.trim(); });
+    var phone = normalizeDigits(v['co-phone']).replace(/\D/g, '');
+    var err = '';
+    if (!t.items) err = lang === 'ar' ? 'سلتك فاضية.' : 'Your cart is empty.';
+    else if (v['co-name'].length < 2) err = lang === 'ar' ? 'اكتب اسمك.' : 'Please enter your name.';
+    else if (!/^[569]\d{7}$/.test(phone)) err = lang === 'ar' ? 'رقم الواتساب لازم يكون ٨ أرقام ويبدأ بـ ٥ أو ٦ أو ٩.' : 'The WhatsApp number should be 8 digits starting with 5, 6 or 9.';
+    else if (!v['co-gov']) err = lang === 'ar' ? 'اختار المحافظة.' : 'Please choose a governorate.';
+    else if (!v['co-area'] || !v['co-block'] || !v['co-street'] || !v['co-house']) err = lang === 'ar' ? 'كمّل العنوان: المنطقة والقطعة والشارع والمنزل.' : 'Please complete the address: area, block, street and house.';
+    $('co-err').textContent = err;
+    if (err) return;
+    try { localStorage.setItem('fp-addr', JSON.stringify(v)); } catch (e2) {}
+
+    var pay = document.querySelector('input[name="pay"]:checked').value;
+    var gov = GOVS.find(function (g) { return g.id === v['co-gov']; });
+    var no = 'FZ-' + Date.now().toString(36).slice(-5).toUpperCase();
+    var A = lang === 'ar';
+    var fmt = function (n) { return (Math.round(n * 1000) / 1000).toFixed(3) + (A ? ' د.ك' : ' KWD'); };
+    var lines = Object.keys(cart).map(function (k) { var p = byId[k]; return '• ' + p[lang] + ' × ' + cart[k] + ' = ' + fmt(p.price * cart[k]); });
+    var addr = [
+      (A ? 'المحافظة: ' : 'Governorate: ') + gov[lang],
+      (A ? 'المنطقة: ' : 'Area: ') + v['co-area'],
+      (A ? 'قطعة ' : 'Block ') + v['co-block'] + (A ? '، شارع ' : ', Street ') + v['co-street'] + (v['co-avenue'] ? (A ? '، جادة ' : ', Avenue ') + v['co-avenue'] : ''),
+      (A ? 'منزل/مبنى: ' : 'House/building: ') + v['co-house'] + (v['co-flat'] ? (A ? '، ' : ', ') + v['co-flat'] : '')
+    ];
+    if (v['co-map']) addr.push((A ? 'الخريطة: ' : 'Map: ') + v['co-map']);
+    if (v['co-notes']) addr.push((A ? 'ملاحظات: ' : 'Notes: ') + v['co-notes']);
+    var msg = [
+      A ? 'طلب جديد من متجر فز و العب' : 'New order from the Fizz & Play shop',
+      (A ? 'رقم الطلب: ' : 'Order no.: ') + no,
+      '',
+      lines.join('\n'),
+      (A ? 'المنتجات: ' : 'Items: ') + fmt(t.sum),
+      (A ? 'التوصيل: ' : 'Delivery: ') + fmt(t.delivery),
+      (A ? 'المجموع: ' : 'Total: ') + fmt(t.total),
+      '',
+      (A ? 'الاسم: ' : 'Name: ') + v['co-name'],
+      (A ? 'الواتساب: ' : 'WhatsApp: ') + '+965' + phone,
+      addr.join('\n'),
+      '',
+      (A ? 'الدفع: ' : 'Payment: ') + PAY[pay][lang]
+    ].join('\n');
+    var url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+    $('co-resend').href = url;
+    $('co-no').textContent = no;
+    $('co-form').hidden = true;
+    $('co-done').hidden = false;
+    window.scrollTo(0, 0);
+    cart = {}; save(); renderGrid(); renderCart();
+    var w = window.open(url, '_blank');
+    if (!w) window.location.href = url;
+  });
+
   function setLang(l) {
     lang = l;
     page.setAttribute('data-lang', l);
@@ -327,7 +533,7 @@ footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
     document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
     document.title = l === 'ar' ? 'متجر فز و العب' : 'Fizz & Play shop';
     try { localStorage.setItem('fp-lang', l); } catch (e) {}
-    renderChips(); renderGrid(); renderCart();
+    renderChips(); renderGrid(); renderCart(); fillGovs();
   }
   var start = 'ar';
   try { start = localStorage.getItem('fp-lang') || ((navigator.language || 'ar').slice(0, 2) === 'ar' ? 'ar' : 'en'); } catch (e) {}
