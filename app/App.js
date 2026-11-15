@@ -3,10 +3,6 @@ import { ActivityIndicator, I18nManager, Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { BalooBhaijaan2_700Bold } from '@expo-google-fonts/baloo-bhaijaan-2/700Bold';
-import { BalooBhaijaan2_800ExtraBold } from '@expo-google-fonts/baloo-bhaijaan-2/800ExtraBold';
-import { Tajawal_500Medium } from '@expo-google-fonts/tajawal/500Medium';
-import { Tajawal_700Bold } from '@expo-google-fonts/tajawal/700Bold';
 
 import { AppContext } from './src/ui';
 import { makeT } from './src/i18n';
@@ -73,11 +69,12 @@ const SCREENS = {
 };
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    BalooBhaijaan2_700Bold,
-    BalooBhaijaan2_800ExtraBold,
-    Tajawal_500Medium,
-    Tajawal_700Bold,
+  // Fonts live in assets/fonts (not node_modules) so every host serves them.
+  const [fontsLoaded, fontError] = useFonts({
+    BalooBhaijaan2_700Bold: require('./assets/fonts/BalooBhaijaan2_700Bold.ttf'),
+    BalooBhaijaan2_800ExtraBold: require('./assets/fonts/BalooBhaijaan2_800ExtraBold.ttf'),
+    Tajawal_500Medium: require('./assets/fonts/Tajawal_500Medium.ttf'),
+    Tajawal_700Bold: require('./assets/fonts/Tajawal_700Bold.ttf'),
   });
   const [state, setState] = useState(null);
   const [screen, setScreen] = useState('home');
@@ -136,7 +133,8 @@ export default function App() {
     [state, update, recordGame, reset, lang]
   );
 
-  if (!fontsLoaded || !state) {
+  // If fonts fail to load, carry on with the system font rather than hang.
+  if ((!fontsLoaded && !fontError) || !state) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg }}>
         <ActivityIndicator color={colors.sea} size="large" />
