@@ -195,6 +195,11 @@ form .btn { align-self: stretch; }
 .done .stamp-big { border: 3px dashed var(--leaf); color: var(--leaf); rotate: -8deg; padding: 8px 18px; border-radius: 14px; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
 .done p { color: var(--muted); }
 
+.shop-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.shop-tile { background: var(--surface); border: 3px solid var(--block); border-radius: 20px; box-shadow: 0 5px 0 var(--block); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; font-weight: 700; text-align: center; min-width: 0; }
+.shop-tile img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; border-radius: 12px; }
+@media (max-width: 560px) { .shop-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* FAQ */
 .faq { display: flex; flex-direction: column; gap: 10px; max-width: 780px; }
 details { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 14px 20px; }
@@ -257,6 +262,7 @@ footer .logo .amp { color: var(--coral); }
       </a>
       <div class="head-actions">
         <button class="lang-btn" id="lang-btn" type="button"><span lang="ar">English</span><span lang="en">العربية</span></button>
+        <a class="lang-btn" href="/shop/" style="text-decoration:none"><span lang="ar">المتجر</span><span lang="en">Shop</span></a>
         <a class="btn small" href="/play/"><span lang="ar">جرّب مجاناً</span><span lang="en">Play free</span></a>
       </div>
     </div>
@@ -420,6 +426,23 @@ footer .logo .amp { color: var(--coral); }
         </div>
       </div>
       <p class="foot-note"><span lang="ar">التوصيل داخل الكويت مشمول. المربع المتقطّع = من تصميم فز و العب.</span><span lang="en">Delivery within Kuwait is included. Dashed square = made by Fizz &amp; Play.</span></p>
+    </div>
+  </section>
+
+  <section class="block" id="shop">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="kicker"><span lang="ar">المتجر</span><span lang="en">The shop</span></span>
+        <h2><span lang="ar">ألعاب تعليمية أصلية، توصلك للبيت</span><span lang="en">Genuine learning toys, delivered</span></h2>
+        <p><span lang="ar">أكثر من ٣٠ لعبة من وكلاء معتمدين: مكعبات مغناطيسية، وتجارب علمية، وبازلات أرقام وحروف، ومجسمات إسلامية. اطلبها على الواتساب.</span><span lang="en">30+ toys from authorised distributors: magnetic tiles, science kits, number and letter puzzles, and Islamic building sets. Order on WhatsApp.</span></p>
+      </div>
+      <div class="shop-strip">
+        <a href="/shop/" class="shop-tile"><img src="/shop/img/mt24.jpg" alt="" loading="lazy"><span lang="ar">مكعبات مغناطيسية</span><span lang="en">Magnetic tiles</span></a>
+        <a href="/shop/" class="shop-tile"><img src="/shop/img/micro.jpg" alt="" loading="lazy"><span lang="ar">ميكروسكوب</span><span lang="en">Microscope</span></a>
+        <a href="/shop/" class="shop-tile"><img src="/shop/img/monster.jpg" alt="" loading="lazy"><span lang="ar">ميزان الحساب</span><span lang="en">Maths scale</span></a>
+        <a href="/shop/" class="shop-tile"><img src="/shop/img/kaaba.jpg" alt="" loading="lazy"><span lang="ar">مجسم الكعبة</span><span lang="en">Kaaba set</span></a>
+      </div>
+      <a class="btn" href="/shop/" style="margin-top:22px"><span lang="ar">تصفّح المتجر</span><span lang="en">Browse the shop</span></a>
     </div>
   </section>
 

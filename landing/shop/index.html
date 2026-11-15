@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>متجر فز و العب</title>
+<meta name="description" content="متجر فز و العب | Fizz & Play shop: ألعاب تعليمية أصلية للأطفال في الكويت، تطلبها عبر الواتساب.">
+<meta name="theme-color" content="#FFC23D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout: a toy-shop shelf — category chips, a grid of product cards on chunky block shadows, and a cart sheet that sends the order on WhatsApp. */
+:root {
+  --bg: #FFFBF2; --surface: #FFFFFF; --band: #FFF1D6; --ink: #1B2A4A; --muted: #55607A; --line: #E9DFC9;
+  --sea: #0A7F96; --sea-deep: #075E70; --sea-soft: #D6F0F4; --sun: #FFC23D; --coral: #F2604F; --leaf: #2E9E62; --plum: #7B5CC9;
+  --wa: #1FA855; --block: #1B2A4A;
+  --font-display: "Baloo Bhaijaan 2", "Tajawal", system-ui, sans-serif;
+  --font-body: "Tajawal", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #101828; --surface: #172238; --band: #1A2741; --ink: #F4EFE4; --muted: #A9B3C8; --line: #2C3A58;
+    --sea: #3FB6CC; --sea-deep: #0B3F4D; --sea-soft: #15384A; --block: #050A14; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+[hidden] { display: none !important; }
+.page[data-lang="ar"] [lang="en"], .page[data-lang="en"] [lang="ar"] { display: none !important; }
+.wrap { max-width: 1100px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.25; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; border-radius: 10px; }
+
+/* Header */
+.top { background: var(--sea-deep); color: #fff; padding-top: env(safe-area-inset-top); position: sticky; top: 0; z-index: 5; }
+.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 12px; }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; text-decoration: none; display: flex; align-items: center; gap: 8px; color: #fff; }
+.mark { display: inline-grid; grid-template-columns: repeat(2, 10px); gap: 3px; }
+.mark i { width: 10px; height: 10px; border-radius: 3px; display: block; }
+.mark i:nth-child(1) { background: #F2604F; } .mark i:nth-child(2) { background: #FFC23D; border-radius: 50%; } .mark i:nth-child(3) { background: #5FD0E3; } .mark i:nth-child(4) { background: #6BD79A; }
+.actions { display: flex; align-items: center; gap: 8px; }
+.pill { border: 2px solid rgba(255,255,255,.5); background: transparent; color: #fff; border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: .9rem; text-decoration: none; }
+.cart-btn { background: var(--sun); color: #1B2A4A; border: 2px solid var(--block); box-shadow: 0 3px 0 var(--block); border-radius: 14px; padding: 6px 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
+.count { background: var(--coral); color: #fff; border-radius: 999px; min-width: 22px; height: 22px; display: inline-grid; place-items: center; font-size: .8rem; padding-inline: 5px; }
+
+/* Intro + filters */
+.intro { padding-block: 26px 10px; display: flex; flex-direction: column; gap: 8px; }
+.intro h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
+.intro p { color: var(--muted); margin: 0; max-width: 40em; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-block: 12px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: none; border: 2px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: .92rem; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Product grid */
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; padding-block: 10px 120px; }
+.card { background: var(--surface); border: 3px solid var(--block); border-radius: 22px; box-shadow: 0 5px 0 var(--block); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.card .ph { aspect-ratio: 1; background: #fff; display: grid; place-items: center; position: relative; }
+.card .ph img { width: 88%; height: 88%; object-fit: contain; }
+.badge { position: absolute; top: 8px; inset-inline-start: 8px; font-size: .75rem; font-weight: 800; padding: 2px 9px; border-radius: 999px; }
+.badge.box { background: var(--sun); color: #1B2A4A; }
+.badge.low { background: var(--coral); color: #fff; }
+.card .body { padding: 12px 12px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; border-top: 2px solid var(--line); }
+.card h3 { font-size: 1.02rem; font-weight: 700; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--sea-soft); color: var(--sea); }
+.tag.skill { background: var(--band); color: var(--ink); }
+.price-row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 6px; }
+.price { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--sea); }
+.price small { font-family: var(--font-body); font-size: .8rem; color: var(--muted); font-weight: 500; }
+.add { background: var(--sun); color: #1B2A4A; border: 2px solid var(--block); box-shadow: 0 3px 0 var(--block); border-radius: 12px; padding: 5px 12px; font-weight: 800; font-size: .92rem; }
+.add:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--block); }
+.qty { display: inline-flex; align-items: center; gap: 4px; border: 2px solid var(--block); border-radius: 12px; overflow: hidden; }
+.qty button { border: 0; background: var(--sun); color: #1B2A4A; width: 30px; height: 30px; font-weight: 800; font-size: 1.1rem; }
+.qty span { min-width: 22px; text-align: center; font-weight: 800; }
+
+/* Cart sheet */
+.bar { position: fixed; inset: auto 0 0 0; z-index: 6; padding: 10px max(16px, env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); background: var(--surface); border-top: 3px solid var(--block); }
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0; }
+.bar b { font-family: var(--font-display); font-size: 1.2rem; }
+.go { background: var(--wa); color: #fff; border: 0; border-radius: 14px; padding: 12px 18px; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(16,24,40,.5); z-index: 7; }
+.sheet { position: fixed; inset: auto 0 0 0; z-index: 8; background: var(--bg); border-radius: 26px 26px 0 0; max-height: 85vh; overflow: auto; padding: 18px max(16px, env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+.sheet .wrap { padding: 0; display: flex; flex-direction: column; gap: 12px; max-width: 560px; }
+.line { display: grid; grid-template-columns: 56px 1fr auto; gap: 10px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 8px; }
+.line img { width: 56px; height: 56px; object-fit: contain; background: #fff; border-radius: 10px; }
+.line .n { font-weight: 700; font-size: .95rem; }
+.line .p { color: var(--muted); font-size: .85rem; }
+.total { display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; padding-top: 6px; border-top: 2px dashed var(--line); }
+.note { color: var(--muted); font-size: .9rem; }
+.x { border: 2px solid var(--line); background: var(--surface); border-radius: 999px; width: 40px; height: 40px; font-weight: 800; }
+.empty { text-align: center; color: var(--muted); padding: 30px 0; }
+
+footer { color: var(--muted); font-size: .9rem; padding-block: 10px 110px; }
+footer a { color: var(--sea); font-weight: 700; text-decoration: none; }
+
+@media (max-width: 960px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .card h3 { font-size: .95rem; }
+  .price { font-size: 1.1rem; }
+  .logo span.name { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="page" id="page" data-lang="ar">
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="name"><span lang="ar">فز و العب</span><span lang="en">Fizz &amp; Play</span></span></a>
+    <div class="actions">
+      <button class="pill" id="lang-btn" type="button"><span lang="ar">English</span><span lang="en">العربية</span></button>
+      <a class="pill" href="/play/"><span lang="ar">الألعاب</span><span lang="en">Games</span></a>
+      <button class="cart-btn" id="open-cart" type="button"><span aria-hidden="true">🛒</span><span lang="ar">السلة</span><span lang="en">Cart</span><span class="count" id="count">0</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1><span lang="ar">متجر فز و العب</span><span lang="en">Fizz &amp; Play shop</span></h1>
+    <p><span lang="ar">ألعاب تعليمية أصلية من وكلاء معتمدين في الكويت. اختار اللي يعجبك، وأرسل طلبك على الواتساب، ونأكد معك التوصيل.</span><span lang="en">Genuine learning toys from authorised distributors in Kuwait. Pick what you like, send your order on WhatsApp, and we'll confirm delivery with you.</span></p>
+  </section>
+  <nav class="chips" id="chips" aria-label="Categories"></nav>
+  <div class="grid" id="grid"></div>
+  <footer>
+    <span lang="ar">أسئلة؟ كلّمنا على</span><span lang="en">Questions? Message us on</span>
+    <a href="https://wa.me/96555803175" target="_blank" rel="noopener"><span lang="ar">الواتساب</span><span lang="en">WhatsApp</span></a> ·
+    <a href="mailto:Fizwalaab@gmail.com">Fizwalaab@gmail.com</a> ·
+    <a href="/privacy"><span lang="ar">سياسة الخصوصية</span><span lang="en">Privacy policy</span></a>
+  </footer>
+</main>
+
+<div class="bar" id="bar" hidden>
+  <div class="wrap">
+    <div><span lang="ar">المجموع</span><span lang="en">Total</span>: <b id="bar-total"></b></div>
+    <button class="go" id="bar-open" type="button"><span lang="ar">راجع السلة</span><span lang="en">Review cart</span></button>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheet-bg" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 id="sheet-title"><span lang="ar">سلتك</span><span lang="en">Your cart</span></h2>
+      <button class="x" id="close-cart" type="button" aria-label="Close">✕</button>
+    </div>
+    <div id="lines"></div>
+    <div class="total" id="total-row"><span><span lang="ar">المجموع</span><span lang="en">Total</span></span><span id="total"></span></div>
+    <p class="note"><span lang="ar">التوصيل داخل الكويت. نأكد معك رسوم التوصيل والموعد على الواتساب قبل الدفع.</span><span lang="en">Delivery within Kuwait. We'll confirm the delivery fee and time on WhatsApp before you pay.</span></p>
+    <a class="go" id="send" href="#" target="_blank" rel="noopener" style="justify-content:center"><span lang="ar">أرسل الطلب على الواتساب</span><span lang="en">Send order on WhatsApp</span></a>
+  </div>
+</div>
+
+</div>
+<script>
+(function () {
+  var WHATSAPP = '96555803175';
+  // Prices are what the customer pays (the supplier's retail price). Our cost is never shown here.
+  var CATS = [
+    { id: 'all', ar: 'الكل', en: 'All' },
+    { id: 'build', ar: 'المهندس الصغير', en: 'Little engineer' },
+    { id: 'science', ar: 'العالِم الصغير', en: 'Little scientist' },
+    { id: 'numbers', ar: 'الأرقام والأشكال', en: 'Numbers & shapes' },
+    { id: 'letters', ar: 'الحروف', en: 'Letters' },
+    { id: 'islamic', ar: 'مجسمات إسلامية', en: 'Islamic sets' }
+  ];
+  var P = [
+    { id: 'mt24', cat: 'build', price: 4.95, age: '3+', box: true, ar: 'مكعبات مغناطيسية ٢٤ قطعة', en: 'Magnetic tiles, 24 pieces', sar: 'البناء', sen: 'Building' },
+    { id: 'mtsq', cat: 'build', price: 4.95, age: '3+', ar: 'مربعات مغناطيسية ٢٤ قطعة', en: 'Square magnetic tiles, 24 pieces', sar: 'البناء', sen: 'Building' },
+    { id: 'mttri', cat: 'build', price: 3.95, age: '3+', ar: 'مثلثات مغناطيسية ٢٤ قطعة', en: 'Triangle magnetic tiles, 24 pieces', sar: 'البناء', sen: 'Building' },
+    { id: 'dmt', cat: 'build', price: 12.95, ar: 'طقم المكعبات المغناطيسية من Discovery', en: 'Discovery magnetic tile set', sar: 'البناء', sen: 'Building' },
+    { id: 'eng', cat: 'build', price: 15.95, ar: 'مجموعة المهندس الصغير ٨٨ قطعة', en: 'Early engineers set, 88 pieces', sar: 'الهندسة', sen: 'Engineering' },
+    { id: 'zoom', cat: 'build', price: 9.95, age: '6+', ar: 'مسار الكرات بالتروس ٨٠ قطعة', en: 'Gears marble run, 80+ pieces', sar: 'الهندسة', sen: 'Engineering' },
+    { id: 'train', cat: 'build', price: 9.95, ar: 'قطار التروس ٦٠ قطعة', en: 'Gears crazy train, 60+ pieces', sar: 'الهندسة', sen: 'Engineering' },
+    { id: 'marble', cat: 'build', price: 19.95, ar: 'مسار سباق الكرات الخشبي', en: 'Wooden marble run race track', sar: 'الهندسة', sen: 'Engineering' },
+    { id: 'dino', cat: 'build', price: 14.95, ar: 'ركّب الديناصور بالمفك ٩٠ قطعة', en: 'Dinosaur construction set, 90 pieces', sar: 'التركيب', sen: 'Construction' },
+    { id: 'solar', cat: 'build', price: 14.95, ar: 'سيارة الطاقة الشمسية ١٩٧ قطعة', en: 'Solar vehicle kit, 197 pieces', sar: 'العلوم', sen: 'Science' },
+    { id: 'treasure', cat: 'science', price: 5.95, age: '6+', box: true, ar: 'حفرية الكنز', en: 'Treasure dig kit', sar: 'الاستكشاف', sen: 'Exploring' },
+    { id: 'fossil', cat: 'science', price: 6.5, low: true, ar: 'حفرية المتحجرات', en: 'Fossil dig kit', sar: 'الاستكشاف', sen: 'Exploring' },
+    { id: 'robot', cat: 'science', price: 9.95, ar: 'تجربة الدوائر الكهربائية: الروبوت', en: 'Circuit experiment: robot', sar: 'الكهرباء', sen: 'Circuits' },
+    { id: 'anatomy', cat: 'science', price: 11.95, ar: 'مجسم جسم الإنسان', en: 'Human anatomy kit', sar: 'الجسم', sen: 'Human body' },
+    { id: 'engine', cat: 'science', price: 19.95, ar: 'محرك للتركيب', en: 'Build-your-own engine kit', sar: 'الميكانيكا', sen: 'Mechanics' },
+    { id: 'steam', cat: 'science', price: 19.95, ar: 'قطار بخاري للتركيب', en: 'DIY steam engine', sar: 'الميكانيكا', sen: 'Mechanics' },
+    { id: 'micro', cat: 'science', price: 24.95, ar: 'مجموعة الميكروسكوب ٤١ قطعة', en: 'Microscope set, 41 pieces', sar: 'الاستكشاف', sen: 'Exploring' },
+    { id: 'sand', cat: 'science', price: 10.95, ar: 'رمل كينتك: المزرعة', en: 'Kinetic Sand farm set', sar: 'الإبداع', sen: 'Creativity' },
+    { id: 'geo', cat: 'numbers', price: 3.95, age: '18m+', box: true, ar: 'بازل الأشكال الخشبي', en: 'Wooden shape puzzle', sar: 'الأشكال', sen: 'Shapes' },
+    { id: 'cupcakes', cat: 'numbers', price: 4.95, age: '2-5', ar: 'بازل عد الكب كيك', en: 'Counting cupcakes puzzle', sar: 'العد', sen: 'Counting' },
+    { id: 'stacker', cat: 'numbers', price: 4.95, ar: 'عمود العد الخشبي', en: 'Wooden counting stacker', sar: 'العد', sen: 'Counting' },
+    { id: 'chunky', cat: 'numbers', price: 7.95, age: '3+', ar: 'بازل الأرقام الخشبي', en: 'Chunky number puzzle', sar: 'الأرقام', sen: 'Numbers' },
+    { id: 'monster', cat: 'numbers', price: 12.95, age: '3+', ar: 'ميزان الحساب', en: 'Monster maths scale', sar: 'الجمع والمقارنة', sen: 'Adding & comparing' },
+    { id: 'clockpz', cat: 'numbers', price: 7.95, ar: 'بازل الساعة الخشبي', en: 'Chunky clock puzzle', sar: 'الوقت', sen: 'Time' },
+    { id: 'telly', cat: 'numbers', price: 12.95, low: true, ar: 'ساعة تعليم الوقت', en: 'Teaching time clock', sar: 'الوقت', sen: 'Time' },
+    { id: 'maglet', cat: 'letters', price: 4.95, age: '3-6', ar: 'حروف وأرقام مغناطيسية (إنجليزي)', en: 'Magnetic letters & numbers', sar: 'الحروف', sen: 'Letters' },
+    { id: 'abc', cat: 'letters', price: 4.95, age: '3-6', ar: 'بازل الحروف الإنجليزية ABC', en: 'Lift & learn ABC puzzle', sar: 'الحروف', sen: 'Letters' },
+    { id: 'words4', cat: 'letters', price: 4.95, age: '4-7', ar: 'بازل الكلمات الإنجليزية', en: '4-letter words puzzle', sar: 'القراءة', sen: 'Reading' },
+    { id: 'kaaba', cat: 'islamic', price: 39.95, age: '6+', ar: 'مجسم بناء الكعبة', en: 'Kaaba building set', sar: 'البناء والقصص', sen: 'Building & stories' },
+    { id: 'nabawi', cat: 'islamic', price: 39.95, age: '6+', ar: 'مجسم بناء المسجد النبوي', en: "Prophet's Mosque building set", sar: 'البناء والقصص', sen: 'Building & stories' },
+    { id: 'dome', cat: 'islamic', price: 39.95, age: '6+', ar: 'مجسم بناء قبة الصخرة', en: 'Dome of the Rock building set', sar: 'البناء والقصص', sen: 'Building & stories' }
+  ];
+  var byId = {}; P.forEach(function (p) { byId[p.id] = p; });
+
+  var page = document.getElementById('page');
+  var lang = 'ar', cat = 'all', cart = {};
+  var AR = '٠١٢٣٤٥٦٧٨٩';
+  function digits(s) { return lang === 'ar' ? String(s).replace(/\d/g, function (d) { return AR[d]; }).replace('.', '٫') : String(s); }
+  function money(n) { var s = n.toFixed(n % 1 ? (Math.round(n * 100) % 10 ? 2 : 1) : 0); return lang === 'ar' ? digits(s) + ' د.ك' : s + ' KWD'; }
+  function save() { try { localStorage.setItem('fp-cart', JSON.stringify(cart)); } catch (e) {} }
+  try { cart = JSON.parse(localStorage.getItem('fp-cart')) || {}; } catch (e) { cart = {}; }
+  Object.keys(cart).forEach(function (k) { if (!byId[k]) delete cart[k]; });
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function renderChips() {
+    var box = document.getElementById('chips'); box.textContent = '';
+    CATS.forEach(function (c) {
+      var b = el('button', 'chip', c[lang]); b.type = 'button'; b.setAttribute('aria-pressed', c.id === cat ? 'true' : 'false');
+      b.addEventListener('click', function () { cat = c.id; renderChips(); renderGrid(); });
+      box.appendChild(b);
+    });
+  }
+
+  function qtyControl(p) {
+    var n = cart[p.id] || 0;
+    if (!n) {
+      var add = el('button', 'add', lang === 'ar' ? 'أضف' : 'Add'); add.type = 'button';
+      add.setAttribute('aria-label', (lang === 'ar' ? 'أضف ' : 'Add ') + p[lang]);
+      add.addEventListener('click', function () { change(p.id, 1); });
+      return add;
+    }
+    var q = el('span', 'qty');
+    var minus = el('button', null, '−'); minus.type = 'button'; minus.setAttribute('aria-label', '−');
+    var plus = el('button', null, '+'); plus.type = 'button'; plus.setAttribute('aria-label', '+');
+    minus.addEventListener('click', function () { change(p.id, -1); });
+    plus.addEventListener('click', function () { change(p.id, 1); });
+    q.appendChild(minus); q.appendChild(el('span', null, digits(n))); q.appendChild(plus);
+    return q;
+  }
+
+  function renderGrid() {
+    var grid = document.getElementById('grid'); grid.textContent = '';
+    P.filter(function (p) { return cat === 'all' || p.cat === cat; }).forEach(function (p) {
+      var card = el('article', 'card');
+      var ph = el('div', 'ph');
+      var img = el('img'); img.src = '/shop/img/' + p.id + '.jpg'; img.alt = p[lang]; img.loading = 'lazy';
+      ph.appendChild(img);
+      if (p.box) ph.appendChild(el('span', 'badge box', lang === 'ar' ? 'في صندوق الشهر' : 'In the monthly box'));
+      else if (p.low) ph.appendChild(el('span', 'badge low', lang === 'ar' ? 'كمية محدودة' : 'Limited stock'));
+      card.appendChild(ph);
+      var body = el('div', 'body');
+      body.appendChild(el('h3', null, p[lang]));
+      var meta = el('div', 'meta');
+      if (p.age) meta.appendChild(el('span', 'tag', (lang === 'ar' ? 'العمر ' : 'Age ') + digits(p.age.replace('m', lang === 'ar' ? ' شهر' : 'm'))));
+      meta.appendChild(el('span', 'tag skill', lang === 'ar' ? p.sar : p.sen));
+      body.appendChild(meta);
+      var row = el('div', 'price-row');
+      row.appendChild(el('span', 'price', money(p.price)));
+      row.appendChild(qtyControl(p));
+      body.appendChild(row);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+  }
+
+  function totals() {
+    var items = 0, sum = 0;
+    Object.keys(cart).forEach(function (k) { items += cart[k]; sum += cart[k] * byId[k].price; });
+    return { items: items, sum: Math.round(sum * 100) / 100 };
+  }
+
+  function orderText() {
+    var lines = Object.keys(cart).map(function (k) {
+      var p = byId[k];
+      return '• ' + p[lang] + ' × ' + cart[k] + ' = ' + (Math.round(p.price * cart[k] * 100) / 100) + (lang === 'ar' ? ' د.ك' : ' KWD');
+    });
+    var t = totals();
+    return (lang === 'ar' ? 'هلا فز و العب، أبي أطلب:\n' : 'Hi Fizz & Play, I would like to order:\n') + lines.join('\n') +
+      (lang === 'ar' ? '\nالمجموع: ' + t.sum + ' د.ك\nالاسم:\nالمنطقة:' : '\nTotal: ' + t.sum + ' KWD\nName:\nArea:');
+  }
+
+  function renderCart() {
+    var t = totals();
+    document.getElementById('count').textContent = digits(t.items);
+    document.getElementById('bar').hidden = !t.items;
+    document.getElementById('bar-total').textContent = money(t.sum);
+    var lines = document.getElementById('lines'); lines.textContent = '';
+    if (!t.items) lines.appendChild(el('p', 'empty', lang === 'ar' ? 'سلتك فاضية. أضف لعبة من المتجر.' : 'Your cart is empty. Add a toy from the shop.'));
+    Object.keys(cart).forEach(function (k) {
+      var p = byId[k]; var line = el('div', 'line');
+      var img = el('img'); img.src = '/shop/img/' + p.id + '.jpg'; img.alt = '';
+      var info = el('div'); info.appendChild(el('div', 'n', p[lang])); info.appendChild(el('div', 'p', money(p.price)));
+      line.appendChild(img); line.appendChild(info); line.appendChild(qtyControl(p));
+      lines.appendChild(line);
+    });
+    document.getElementById('total').textContent = money(t.sum);
+    document.getElementById('total-row').hidden = !t.items;
+    var send = document.getElementById('send');
+    send.hidden = !t.items;
+    send.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(orderText());
+  }
+
+  function change(id, d) {
+    cart[id] = (cart[id] || 0) + d;
+    if (cart[id] <= 0) delete cart[id];
+    save(); renderGrid(); renderCart();
+  }
+
+  function openCart(open) {
+    document.getElementById('sheet').hidden = !open;
+    document.getElementById('sheet-bg').hidden = !open;
+    if (open) document.getElementById('close-cart').focus();
+  }
+  document.getElementById('open-cart').addEventListener('click', function () { openCart(true); });
+  document.getElementById('bar-open').addEventListener('click', function () { openCart(true); });
+  document.getElementById('close-cart').addEventListener('click', function () { openCart(false); });
+  document.getElementById('sheet-bg').addEventListener('click', function () { openCart(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') openCart(false); });
+
+  function setLang(l) {
+    lang = l;
+    page.setAttribute('data-lang', l);
+    document.documentElement.lang = l;
+    document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+    document.title = l === 'ar' ? 'متجر فز و العب' : 'Fizz & Play shop';
+    try { localStorage.setItem('fp-lang', l); } catch (e) {}
+    renderChips(); renderGrid(); renderCart();
+  }
+  var start = 'ar';
+  try { start = localStorage.getItem('fp-lang') || ((navigator.language || 'ar').slice(0, 2) === 'ar' ? 'ar' : 'en'); } catch (e) {}
+  document.getElementById('lang-btn').addEventListener('click', function () { setLang(lang === 'ar' ? 'en' : 'ar'); });
+  setLang(start === 'en' ? 'en' : 'ar');
+})();
+</script>
+</body>
+</html>
