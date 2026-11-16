@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef } from 'react';
-import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import { colors, fonts } from './theme';
@@ -140,25 +140,17 @@ export function Btn({ label, onPress, color = colors.sun, textColor = colors.ink
   );
 }
 
+const LOGO = require('../assets/logo.png'); // stacked logo (Arabic + FIZZ & PLAY)
+const WORDMARK = require('../assets/wordmark.png'); // Arabic wordmark only
+
 export function Logo({ big }) {
   const { t } = useApp();
-  const s = big ? 22 : 14;
+  const img = big ? LOGO : WORDMARK;
+  const ratio = big ? 402 / 900 : 184 / 600; // height / width of the PNGs
+  const w = big ? 280 : 150;
   return (
-    <View style={{ alignItems: 'center', gap: big ? 10 : 6 }}>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', width: s * 2 + 4, gap: 4 }}>
-        <View style={{ width: s, height: s, borderRadius: 4, backgroundColor: colors.coral }} />
-        <View style={{ width: s, height: s, borderRadius: s, backgroundColor: colors.sun }} />
-        <View style={{ width: s, height: s, borderRadius: 4, backgroundColor: colors.sea }} />
-        <View style={{ width: s, height: s, borderRadius: 4, backgroundColor: colors.leaf }} />
-      </View>
-      <T display center style={{ fontSize: big ? 40 : 24 }}>
-        {big ? 'فز و العب' : t('appName')}
-      </T>
-      {big && (
-        <T display center style={{ fontSize: 22, color: colors.muted, marginTop: -8 }}>
-          Fizz & Play
-        </T>
-      )}
+    <View style={{ alignItems: 'center' }}>
+      <Image source={img} accessibilityLabel={t('appName')} style={{ width: w, height: w * ratio }} resizeMode="contain" />
     </View>
   );
 }

@@ -32,5 +32,6 @@ writeFileSync(join(here, 'dist', 'index.html'), html);
 // The admin dashboard is already a full page.
 copyFileSync(join(here, 'admin.html'), join(here, 'dist', 'admin.html'));
 copyFileSync(join(here, 'privacy.html'), join(here, 'dist', 'privacy.html'));
+for (const f of ['favicon.svg', 'apple-touch-icon.png']) copyFileSync(join(here, f), join(here, 'dist', f));
 cpSync(join(here, 'shop'), join(here, 'dist', 'shop'), { recursive: true });
 console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos)');
