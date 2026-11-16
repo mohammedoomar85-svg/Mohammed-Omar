@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Baloo;src:url(../app/assets/fonts/BalooBhaijaan2_800ExtraBold.ttf)}
+@font-face{font-family:Taj;src:url(../app/assets/fonts/Tajawal_700Bold.ttf)}
+body{margin:0;background:#EFE8D8;font-family:Taj;color:#1B2A4A;padding:30px;width:1160px}
+.col{display:flex;flex-direction:column;gap:16px;flex:1}
+.row{display:flex;gap:22px}
+.card{background:#FFFBF2;border-radius:28px;height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;position:relative}
+.card.dark{background:#1B2A4A}
+.tag{font:700 24px Taj;background:#1B2A4A;color:#fff;border-radius:99px;padding:5px 20px;align-self:center}
+.ar{font:800 64px/1 Baloo;color:#1B2A4A;direction:rtl;white-space:nowrap}
+.en{font:800 26px/1 Baloo;color:#55607A;letter-spacing:2px}
+.dark .ar{color:#FFFBF2}.dark .en{color:#FFC23D}
+.icons{display:flex;gap:18px;justify-content:center;background:#FFFBF2;border-radius:28px;padding:22px}
+.ic{width:120px;height:120px;border-radius:28px;overflow:hidden}
+.w{position:relative;display:inline-block;transform-origin:center}
+.w .ar{font-size:120px;line-height:1.6}
+.w svg{position:absolute;left:0;top:0;overflow:visible}
+</style></head><body>
+<template id="mark-a"><svg width="130" height="130" viewBox="0 0 100 100">
+   <rect x="4" y="4" width="42" height="42" rx="10" fill="#F2604F"/>
+   <circle cx="75" cy="25" r="21" fill="#FFC23D"/>
+   <path d="M25 58 L44 92 L6 92 Z" fill="#0A7F96" stroke="#0A7F96" stroke-width="8" stroke-linejoin="round"/>
+   <rect x="54" y="54" width="42" height="42" rx="10" fill="#2E9E62"/>
+   <circle cx="67" cy="71" r="3.6" fill="#fff"/><circle cx="83" cy="71" r="3.6" fill="#fff"/>
+   <path d="M65 81 Q75 90 85 81" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></svg></template>
+<template id="word-b"><div class="w" style="transform:scale(.6);margin:-40px -100px"><span class="ar">ڡر و العٮ</span>
+<svg width="485" height="192"><circle cx="455" cy="26" r="16" fill="#FFC23D"/>
+<rect x="373" y="43" width="28" height="28" rx="6" fill="#F2604F" transform="rotate(12 387 57)"/>
+<path d="M68 144 L86 173 L50 173 Z" fill="#0A7F96" stroke="#0A7F96" stroke-width="6" stroke-linejoin="round"/></svg></div></template>
+<template id="mark-c"><svg width="150" height="150" viewBox="0 0 100 100">
+   <circle cx="50" cy="50" r="47" fill="#FFC23D"/><circle cx="50" cy="50" r="39" fill="#FFFBF2"/>
+   <rect x="27" y="29" width="21" height="21" rx="5" fill="#F2604F" transform="rotate(-10 37 39)"/>
+   <path d="M63 28 L75 49 L51 49 Z" fill="#0A7F96" stroke="#0A7F96" stroke-width="4" stroke-linejoin="round"/>
+   <circle cx="38" cy="64" r="10.5" fill="#2E9E62"/>
+   <path d="M63 53 l3.2 7 7.4 .9 -5.5 5.1 1.5 7.4 -6.6-3.7 -6.6 3.7 1.5-7.4 -5.5-5.1 7.4-.9z" fill="#FFC23D" stroke="#D99A12" stroke-width="1.6" stroke-linejoin="round"/></svg></template>
+<div class="row">
+ <div class="col"><span class="tag">أ · المكعبات</span>
+  <div class="card"><slot data-t="mark-a"></slot><div class="ar">فز و العب</div><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="card dark"><slot data-t="mark-a"></slot><div class="ar">فز و العب</div><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="icons">
+   <div class="ic" style="background:#FFFBF2;border:3px solid #E9DFC9;display:flex;align-items:center;justify-content:center"><div style="transform:scale(.7)"><slot data-t="mark-a"></slot></div></div>
+   <div class="ic" style="background:#1B2A4A;display:flex;align-items:center;justify-content:center"><div style="transform:scale(.7)"><slot data-t="mark-a"></slot></div></div></div>
+ </div>
+ <div class="col"><span class="tag">ب · نقاط الحروف</span>
+  <div class="card"><slot data-t="word-b"></slot><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="card dark"><slot data-t="word-b"></slot><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="icons">
+   <div class="ic" style="background:#1B2A4A"><svg width="120" height="120" viewBox="0 0 120 120"><text x="60" y="92" text-anchor="middle" font-family="Baloo" font-size="100" fill="#FFFBF2">ڡ</text><circle cx="66" cy="30" r="12" fill="#FFC23D"/></svg></div>
+   <div class="ic" style="background:#0A7F96"><svg width="120" height="120" viewBox="0 0 120 120"><text x="60" y="92" text-anchor="middle" font-family="Baloo" font-size="100" fill="#FFFBF2">ڡ</text><circle cx="66" cy="30" r="12" fill="#FFC23D"/></svg></div></div>
+ </div>
+ <div class="col"><span class="tag">ج · الختم</span>
+  <div class="card"><slot data-t="mark-c"></slot><div class="ar">فز و العب</div><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="card dark"><slot data-t="mark-c"></slot><div class="ar">فز و العب</div><div class="en">FIZZ &amp; PLAY</div></div>
+  <div class="icons">
+   <div class="ic" style="background:#FFFBF2;border:3px solid #E9DFC9;display:flex;align-items:center;justify-content:center"><div style="transform:scale(.72)"><slot data-t="mark-c"></slot></div></div>
+   <div class="ic" style="background:#0A7F96;display:flex;align-items:center;justify-content:center"><div style="transform:scale(.72)"><slot data-t="mark-c"></slot></div></div></div>
+ </div>
+</div>
+<script>document.querySelectorAll('slot').forEach(s=>s.replaceWith(document.getElementById(s.dataset.t).content.cloneNode(true)))</script>
+</body></html>
