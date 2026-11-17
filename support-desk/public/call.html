@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>محاكي المكالمة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --brand: #0f766e; --bg: #f4f4f2; --panel: #fff; --ink: #1c1c1a; --muted: #6b6b66; --line: #e4e4df; --bubble: #f0f0ec; --red: #dc2626; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; --bubble: #2a2a27; } }
+  :root[data-theme="dark"] { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; --bubble: #2a2a27; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans Arabic", system-ui, sans-serif; display: flex; justify-content: center; }
+  .phone { width: 100%; max-width: 420px; height: 100%; display: flex; flex-direction: column; background: var(--panel); border-inline: 1px solid var(--line); }
+  .top { text-align: center; padding: 28px 16px 16px; }
+  .avatar { width: 84px; height: 84px; margin: 0 auto 10px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-size: 34px; font-weight: 600; transition: box-shadow .2s; }
+  .avatar.talking { box-shadow: 0 0 0 10px color-mix(in srgb, var(--brand) 25%, transparent); }
+  .avatar.listening { box-shadow: 0 0 0 10px color-mix(in srgb, var(--red) 22%, transparent); }
+  h1 { margin: 0; font-size: 18px; }
+  #state { color: var(--muted); font-size: 13.5px; min-height: 22px; }
+  #timer { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; }
+  #log { flex: 1; overflow-y: auto; padding: 8px 16px; display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--line); }
+  .l { max-width: 85%; padding: 7px 12px; border-radius: 14px; font-size: 14px; }
+  .bot, .agent { align-self: flex-start; background: var(--bubble); }
+  .customer { align-self: flex-end; background: var(--brand); color: #fff; }
+  .note { align-self: center; color: var(--muted); font-size: 12.5px; }
+  .controls { display: flex; justify-content: center; gap: 18px; padding: 18px 16px 26px; border-top: 1px solid var(--line); }
+  .round { width: 64px; height: 64px; border-radius: 50%; border: 0; color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  #call { background: #16a34a; } #hang { background: var(--red); } #mic { background: var(--brand); }
+  .round:disabled { opacity: .4; cursor: default; }
+  form { display: flex; gap: 8px; padding: 0 16px 12px; }
+  form input { flex: 1; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 18px; padding: 8px 12px; font: inherit; }
+  form button { border: 0; border-radius: 18px; padding: 0 14px; background: var(--brand); color: #fff; font: inherit; }
+  .hint { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 8px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top">
+    <div class="avatar" id="av">☎</div>
+    <h1 id="name">…</h1>
+    <div id="state">اضغط اتصال لبدء المكالمة</div>
+    <div id="timer"></div>
+  </div>
+  <div id="log" aria-live="polite"></div>
+  <p class="hint" id="hint">محاكاة لمكالمة هاتفية: تكلم بالمايك وراح يرد عليك المساعد بالصوت. (يفضّل متصفح Chrome)</p>
+  <form id="typed" hidden><input id="ti" placeholder="ما في مايك؟ اكتب كلامك هنا" aria-label="كلامك"><button>إرسال</button></form>
+  <div class="controls">
+    <button class="round" id="call">اتصال</button>
+    <button class="round" id="mic" disabled>تكلّم</button>
+    <button class="round" id="hang" disabled>إنهاء</button>
+  </div>
+</div>
+<script>
+const businessId = new URLSearchParams(location.search).get("b") || "restaurant";
+const $ = (id) => document.getElementById(id);
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let convo = null, inCall = false, rec = null, started = 0, tick = null, arVoice = null, business = null;
+
+function line(role, text) { const d = document.createElement("div"); d.className = "l " + role; d.textContent = text; $("log").append(d); $("log").scrollTop = 1e9; }
+function state(t, mode) { $("state").textContent = t; $("av").className = "avatar " + (mode || ""); }
+const clean = (s) => s.replace(/[\p{Extended_Pictographic}\u{FE0F}•*#]/gu, "").replace(/\s+/g, " ").trim();
+
+function pickVoice() {
+  const vs = speechSynthesis.getVoices();
+  arVoice = vs.find((v) => /^ar[-_](KW|SA|AE)/i.test(v.lang)) || vs.find((v) => /^ar/i.test(v.lang)) || null;
+}
+if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+
+function speak(text) {
+  return new Promise((resolve) => {
+    if (!("speechSynthesis" in window)) return resolve();
+    const u = new SpeechSynthesisUtterance(clean(text));
+    u.lang = arVoice?.lang || "ar-SA"; if (arVoice) u.voice = arVoice; u.rate = 1.02;
+    u.onend = u.onerror = () => resolve();
+    state("يتكلم…", "talking"); speechSynthesis.speak(u);
+  });
+}
+
+function listen() {
+  if (!inCall) return;
+  if (!SR) { state("اكتب كلامك بالأسفل"); return; }
+  rec = new SR(); rec.lang = "ar-KW"; rec.interimResults = false; rec.maxAlternatives = 1;
+  let heard = false;
+  rec.onresult = (e) => { heard = true; send(e.results[0][0].transcript); };
+  rec.onerror = (e) => { if (e.error === "not-allowed") { state("اسمح للمتصفح باستخدام المايك"); $("typed").hidden = false; } };
+  rec.onend = () => { rec = null; if (inCall && !heard) { state("ما سمعتك — اضغط تكلّم"); $("mic").disabled = false; } };
+  state("أسمعك… تكلّم", "listening"); $("mic").disabled = true;
+  try { rec.start(); } catch {}
+}
+
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j;
+}
+
+async function send(text) {
+  if (!inCall || !text.trim()) return;
+  state("يفكّر…");
+  try {
+    const r = await api(`/api/conversations/${convo}/messages`, { text });
+    for (const l of r.lines) line(l.role, l.text);
+    const say = r.lines.filter((l) => l.role !== "customer").map((l) => l.text).join(" ");
+    if (say) await speak(say);
+    if (r.status === "human") { line("note", "— في المكالمة الحقيقية تتحول الآن لموظف أو يُسجّل طلب معاودة اتصال —"); return end(); }
+    if (r.ended || r.status === "closed") return end();
+    listen();
+  } catch (e) { line("note", "خطأ: " + e.message); listen(); }
+}
+
+async function start() {
+  inCall = true; $("call").disabled = true; $("hang").disabled = false; $("log").replaceChildren();
+  started = Date.now(); tick = setInterval(() => { const s = Math.floor((Date.now() - started) / 1000); $("timer").textContent = `${String(s / 60 | 0).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 500);
+  if (!SR) $("typed").hidden = false;
+  state("يتصل…");
+  const r = await api("/api/conversations", { businessId, channel: "voice" });
+  convo = r.id;
+  for (const l of r.lines) line(l.role, l.text);
+  await speak(r.lines.map((l) => l.text).join(" "));
+  listen();
+}
+function end() {
+  inCall = false; try { rec?.abort(); } catch {} speechSynthesis?.cancel();
+  clearInterval(tick); $("call").disabled = false; $("hang").disabled = true; $("mic").disabled = true;
+  state("انتهت المكالمة");
+}
+
+$("call").onclick = () => start().catch((e) => { line("note", "تعذّر الاتصال: " + e.message); end(); });
+$("hang").onclick = end;
+$("mic").onclick = listen;
+$("typed").onsubmit = (e) => { e.preventDefault(); const v = $("ti").value; $("ti").value = ""; send(v); };
+
+api("/api/businesses").then((list) => {
+  business = list.find((b) => b.id === businessId);
+  if (!business) return state("الجهة غير موجودة");
+  document.documentElement.style.setProperty("--brand", business.color);
+  $("name").textContent = business.name; $("av").textContent = business.assistantName.trim()[0];
+  document.title = "اتصال — " + business.name;
+});
+</script>
+</body>
+</html>

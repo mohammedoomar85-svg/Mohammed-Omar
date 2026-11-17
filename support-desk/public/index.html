@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مكتب خدمة العملاء</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #f4f4f2; --panel: #fff; --ink: #1c1c1a; --muted: #6b6b66; --line: #e4e4df; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; } }
+  :root[data-theme="dark"] { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.7 "IBM Plex Sans Arabic", system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 16px; }
+  h1 { font-size: 26px; margin: 0 0 4px; } p.lead { color: var(--muted); margin: 0 0 28px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+  a.card { display: block; text-decoration: none; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; border-top: 4px solid var(--c); }
+  a.card:hover { border-color: var(--c); }
+  .card b { display: block; font-size: 16px; } .card span { color: var(--muted); font-size: 13px; }
+  code { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; direction: ltr; text-align: left; font-size: 13px; overflow-x: auto; }
+  h2 { font-size: 18px; margin: 36px 0 10px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>مساعد خدمة العملاء الصوتي</h1>
+  <p class="lead">العميل يتصل على رقمكم، والمساعد الذكي يرد بالعربي، يفهم طلبه، يساعده، أو يحوله لموظف. اضغط على أي جهة لتجربة مكالمة من المتصفح بالمايك. لوحة الموظفين على <a href="/admin">/admin</a>.</p>
+  <div class="grid" id="g"></div>
+  <h2>ربط رقم الهاتف (Twilio)</h2>
+  <code id="voiceurl"></code>
+  <h2>إضافي: شات مكتوب في موقعك</h2>
+  <code id="snippet"></code>
+</main>
+<script>
+const label = { restaurant: "مطعم", cafe: "كافيه", company: "شركة", bank: "بنك" };
+fetch("/api/businesses").then((r) => r.json()).then((list) => {
+  const g = document.getElementById("g");
+  for (const b of list) {
+    const a = document.createElement("a");
+    a.className = "card"; a.href = "/call?b=" + encodeURIComponent(b.id); a.style.setProperty("--c", b.color);
+    const name = document.createElement("b"); name.textContent = b.name;
+    const sub = document.createElement("span"); sub.textContent = (label[b.sector] || b.sector) + " · " + b.assistantName;
+    const chat = document.createElement("small"); chat.innerHTML = '<br>📞 جرّب مكالمة';
+    a.append(name, sub, chat); g.append(a);
+  }
+  document.getElementById("voiceurl").textContent = list.map((b) => `${b.name}:  POST ${location.origin}/voice/incoming?b=${b.id}`).join("\n") + `\nStatus callback:  POST ${location.origin}/voice/status`;
+  document.getElementById("voiceurl").style.whiteSpace = "pre";
+  document.getElementById("snippet").textContent =
+    `<script src="${location.origin}/widget.js" data-business="${list[0]?.id || "restaurant"}" data-color="${list[0]?.color || "#0f766e"}" defer><\/script>`;
+});
+</script>
+</body>
+</html>

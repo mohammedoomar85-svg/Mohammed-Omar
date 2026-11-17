@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>خدمة العملاء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --brand: #0f766e; --bg: #f4f4f2; --panel: #fff; --ink: #1c1c1a; --muted: #6b6b66; --line: #e4e4df; --bubble: #f0f0ec; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; --bubble: #2a2a27; } }
+  :root[data-theme="dark"] { --bg: #141413; --panel: #1d1d1b; --ink: #ececea; --muted: #9a9a94; --line: #2e2e2b; --bubble: #2a2a27; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 15px/1.6 "IBM Plex Sans Arabic", system-ui, sans-serif; display: flex; justify-content: center; }
+  .app { width: 100%; max-width: 560px; height: 100%; display: flex; flex-direction: column; background: var(--panel); border-inline: 1px solid var(--line); }
+  header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--brand); color: #fff; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.2); display: grid; place-items: center; font-weight: 600; flex: none; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header p { margin: 0; font-size: 12.5px; opacity: .85; }
+  #log { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .msg { max-width: 82%; padding: 9px 13px; border-radius: 16px; white-space: pre-wrap; word-wrap: break-word; }
+  .bot, .agent { align-self: flex-start; background: var(--bubble); border-start-start-radius: 4px; }
+  .agent { border: 1px solid var(--brand); }
+  .agent small { display: block; color: var(--brand); font-weight: 600; font-size: 12px; }
+  .customer { align-self: flex-end; background: var(--brand); color: #fff; border-start-end-radius: 4px; }
+  .typing { align-self: flex-start; color: var(--muted); font-size: 13px; padding: 4px 6px; }
+  .banner { text-align: center; font-size: 12.5px; color: var(--muted); padding: 6px 16px; border-top: 1px solid var(--line); }
+  form { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+  textarea { flex: 1; resize: none; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 20px; padding: 10px 14px; font: inherit; max-height: 120px; }
+  textarea:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+  button { border: 0; background: var(--brand); color: #fff; border-radius: 20px; padding: 0 18px; font: inherit; font-weight: 600; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .err { color: #b91c1c; text-align: center; padding: 40px 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="avatar" id="av">؟</div><div><h1 id="title">خدمة العملاء</h1><p id="sub">متصل الآن</p></div></header>
+  <div id="log" aria-live="polite"></div>
+  <div class="banner" id="banner" hidden></div>
+  <form id="f"><textarea id="t" rows="1" placeholder="اكتب رسالتك…" maxlength="1000" aria-label="رسالتك"></textarea><button id="send">إرسال</button></form>
+</div>
+<script>
+const params = new URLSearchParams(location.search);
+const businessId = params.get("b") || "restaurant";
+const KEY = "sd-convo-" + businessId;
+const log = document.getElementById("log"), t = document.getElementById("t"), f = document.getElementById("f"), btn = document.getElementById("send"), banner = document.getElementById("banner");
+let convo = null, total = 0, busy = false, business = null;
+
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+function add(line) {
+  const d = document.createElement("div");
+  d.className = "msg " + line.role;
+  if (line.role === "agent") { const s = document.createElement("small"); s.textContent = "موظف خدمة العملاء"; d.append(s); }
+  d.append(document.createTextNode(line.text));
+  log.append(d); log.scrollTop = log.scrollHeight;
+}
+function setStatus(s) {
+  banner.hidden = s === "bot";
+  banner.textContent = s === "human" ? "تتحدث الآن مع موظف خدمة العملاء" : s === "closed" ? "انتهت المحادثة — اكتب لنا إذا احتجت شيء ثاني" : "";
+}
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.status);
+  return j;
+}
+function applyBusiness(b) {
+  business = b;
+  document.documentElement.style.setProperty("--brand", b.color);
+  document.getElementById("title").textContent = b.assistantName + " · " + b.name;
+  document.getElementById("av").textContent = b.assistantName.trim()[0];
+  document.title = b.name + " — خدمة العملاء";
+}
+async function start() {
+  const list = await api("/api/businesses");
+  const b = list.find((x) => x.id === businessId);
+  if (!b) { log.innerHTML = '<p class="err">الجهة غير موجودة</p>'; return; }
+  applyBusiness(b);
+  const saved = store.get(KEY);
+  if (saved) {
+    try { const r = await api(`/api/conversations/${saved}`); convo = saved; total = r.total; r.lines.forEach(add); setStatus(r.status); return; } catch {}
+  }
+  const r = await api("/api/conversations", { businessId });
+  convo = r.id; store.set(KEY, convo); total = r.lines.length; r.lines.forEach(add);
+}
+f.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = t.value.trim();
+  if (!text || busy || !convo) return;
+  busy = true; btn.disabled = true; t.value = "";
+  const typing = document.createElement("div"); typing.className = "typing"; typing.textContent = "يكتب…";
+  add({ role: "customer", text }); log.append(typing); log.scrollTop = log.scrollHeight;
+  try {
+    const r = await api(`/api/conversations/${convo}/messages`, { text });
+    // the server echoes the (possibly masked) customer line first; replace ours with it
+    log.lastElementChild.previousElementSibling.remove();
+    total = r.total; r.lines.forEach(add); setStatus(r.status);
+  } catch (err) {
+    add({ role: "bot", text: "تعذّر الإرسال: " + err.message });
+  } finally { typing.remove(); busy = false; btn.disabled = false; t.focus(); }
+});
+t.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
+// pick up replies from human agents
+setInterval(async () => {
+  if (!convo || busy || document.hidden) return;
+  try { const r = await api(`/api/conversations/${convo}?since=${total}`); if (r.total > total) { total = r.total; r.lines.forEach(add); } setStatus(r.status); } catch {}
+}, 4000);
+start().catch((e) => { log.innerHTML = '<p class="err">تعذّر الاتصال بالخادم</p>'; });
+</script>
+</body>
+</html>
