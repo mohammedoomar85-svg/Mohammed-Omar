@@ -421,6 +421,7 @@
     movies: ['أفلام كلاسيكية', 'collection:feature_films AND mediatype:movies'],
     tv: ['مسلسلات كلاسيكية', 'collection:classic_tv AND mediatype:movies'],
     cartoons: ['رسوم متحركة', 'collection:classic_cartoons AND mediatype:movies'],
+    docs: ['وثائقي', 'collection:prelinger AND mediatype:movies'],
     arabic: ['عربي', 'mediatype:movies AND language:(Arabic OR ara) AND licenseurl:(*creativecommons* OR *publicdomain*)'],
     mine: ['ملفاتي'],
   };
