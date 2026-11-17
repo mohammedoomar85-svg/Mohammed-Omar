@@ -146,7 +146,9 @@
   function row(title, items, link) {
     if (!items.length) return '';
     return `<section class="section"><div class="section-head"><h2>${esc(title)}</h2>${link ? `<a href="#${link}">عرض الكل ←</a>` : ''}</div>
-      <div class="row-scroll">${items.map(card).join('')}</div></section>`;
+      <div class="row-wrap"><button class="arrow prev" data-scroll="-1" aria-label="السابق">‹</button>
+      <div class="row-scroll">${items.map(card).join('')}</div>
+      <button class="arrow next" data-scroll="1" aria-label="التالي">›</button></div></section>`;
   }
 
   function hero(it) {
@@ -156,7 +158,8 @@
         <div class="meta"><span>${type === 'tv' ? 'مسلسل' : 'فيلم'}</span><span>${year(d)}</span>${it.vote_average ? `<span class="star">★ ${it.vote_average.toFixed(1)}</span>` : ''}${isNew(d) ? '<span class="badge" style="position:static">جديد</span>' : ''}</div>
         <h1>${esc(titleOf(it))}</h1>
         <p>${esc(it.overview || '')}</p>
-        <div class="btns"><button class="btn primary" data-open="${it.id}" data-type="${type}">▶ التفاصيل والإعلان</button>
+        <div class="btns"><button class="btn primary" data-open="${it.id}" data-type="${type}" data-trailer="1">▶ الإعلان</button>
+        <button class="btn" data-open="${it.id}" data-type="${type}">ⓘ مزيد من المعلومات</button>
         <button class="btn" data-add="${it.id}" data-type="${type}">${inList(it.id, type) ? '✓ في قائمتي' : '+ قائمتي'}</button></div>
       </div></section>`;
   }
@@ -287,7 +290,7 @@
 
   // ---------- صفحة التفاصيل ----------
   const dlg = $('#detail'), body = $('#detailBody');
-  async function openDetail(id, type) {
+  async function openDetail(id, type, autoTrailer = false) {
     body.innerHTML = '<div class="d-hero"></div><div class="d-body" style="margin-top:0;padding-top:24px"><p class="empty">جاري التحميل…</p></div>';
     if (!dlg.open) dlg.showModal();
     let d;
@@ -352,6 +355,7 @@
       h.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailer.key)}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="الإعلان"></iframe>`;
       h.scrollIntoView({ behavior: 'smooth' });
     };
+    if (autoTrailer && trailer) $('#playTrailer').click();
     $('#addList').onclick = (e) => { e.target.textContent = toggleList(d, type) ? '✓ في قائمتي' : '+ قائمتي'; };
 
     // أزرار التشغيل: ملف مربوط من ملفاتي، أو نسخة مجانية من الأرشيف، أو المنصة الرسمية
@@ -579,6 +583,8 @@
   }
 
   document.addEventListener('click', (e) => {
+    const ar = e.target.closest('[data-scroll]');
+    if (ar) { const sc = ar.parentElement.querySelector('.row-scroll'); return sc.scrollBy({ left: -(+ar.dataset.scroll) * sc.clientWidth * 0.9 }); }
     const ia = e.target.closest('[data-ia]');
     if (ia) return openIa(ia.dataset.ia);
     const fl = e.target.closest('[data-file]');
@@ -586,7 +592,7 @@
     const c = e.target.closest('.card[data-id]');
     if (c) return openDetail(c.dataset.id, c.dataset.type);
     const o = e.target.closest('[data-open]');
-    if (o) return openDetail(o.dataset.open, o.dataset.type);
+    if (o) return openDetail(o.dataset.open, o.dataset.type, !!o.dataset.trailer);
     const a = e.target.closest('[data-add]');
     if (a) {
       tmdb(`/${a.dataset.type}/${a.dataset.add}`).then((d) => { a.textContent = toggleList(d, a.dataset.type) ? '✓ في قائمتي' : '+ قائمتي'; });
@@ -601,6 +607,8 @@
     const [tab, sort, genre] = h.split('/');
     document.querySelectorAll('#tabs a').forEach((a) => a.classList.toggle('active', a.dataset.tab === tab));
     window.scrollTo(0, 0);
+    document.body.classList.toggle('home', tab === 'home');
+    headerState();
     if (h.startsWith('search=')) return showSearch(h.slice(7));
     if (SECTIONS[tab]) return showSection(tab, sort || Object.keys(SECTIONS[tab].sorts)[0], genre || '');
     if (tab === 'mylist') return showMyList();
@@ -608,6 +616,14 @@
     return showHome();
   }
   window.addEventListener('hashchange', route);
+  // الشريط العلوي شفاف فوق الصورة الكبيرة، ويصير أسود لما تنزل
+  const top = $('.top');
+  function headerState() {
+    document.documentElement.style.setProperty('--top-h', top.offsetHeight + 'px');
+    top.classList.toggle('solid', window.scrollY > 40 || !document.body.classList.contains('home'));
+  }
+  window.addEventListener('scroll', headerState, { passive: true });
+  window.addEventListener('resize', headerState);
 
   // ---------- الإعداد ----------
   const setup = $('#setup');
