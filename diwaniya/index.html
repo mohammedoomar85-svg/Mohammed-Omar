@@ -665,15 +665,17 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 
 /* ---------- referee (phone) link through the live room ---------- */
 const DEFAULT_BASE = location.origin + location.pathname, BASE_KEY = "mashrabiya-base";
-const IS_REF = location.hash.indexOf("#ref") === 0;
+const STANDALONE = !window.claude; // served as a plain web page, not inside Claude
+const REF_PARAM = (/[?&]ref=([a-z0-9-]*)/.exec(location.search)||[])[1];
+const IS_REF = location.hash.indexOf("#ref") === 0 || REF_PARAM !== undefined;
 // "#ref-geo12-hist3-..." carries the round's question numbers, so the referee page works without any account or connection
-const REF_IDS = location.hash.indexOf("#ref-") === 0 ? location.hash.slice(5).split("-").filter(Boolean) : [];
+const REF_IDS = (location.hash.indexOf("#ref-") === 0 ? location.hash.slice(5) : (REF_PARAM||"")).split("-").filter(Boolean);
 let refTab = 0;
 function baseUrl(){ try{ const v=localStorage.getItem(BASE_KEY); if(v&&/^https:\/\/\S+$/.test(v)) return v.split("#")[0]; }catch(e){} return DEFAULT_BASE; }
 function refHash(){
   return "ref-"+S.cats.map(k=>{ const it=S.round[k]; const i=it?BANK[k].q.findIndex(x=>x.q===it.q):-1; return k+(i>=0?i:"x"); }).join("-");
 }
-function refUrl(){ return baseUrl()+"#"+(S.phase==="play"?refHash():"ref"); }
+function refUrl(){ const ids=S.phase==="play"?refHash().slice(4):""; return STANDALONE ? baseUrl().split("?")[0]+"?ref="+ids : baseUrl()+"#"+(ids?"ref-"+ids:"ref"); }
 function renderStaticRef(){
   const v=$("view");
   const items=REF_IDS.map(id=>{ const m=/^([a-z]+)(\d+|x)$/.exec(id); if(!m||!BANK[m[1]]) return null; const k=m[1]; return {k, it: m[2]==="x"?null:BANK[k].q[+m[2]]||null}; }).filter(Boolean);
@@ -736,7 +738,7 @@ function renderRef(){
   const liveHost = roomState==="on" && refPeers.find(p=>p.presence&&p.presence.role==="host"&&!p.sameTab&&p.presence.st);
   if(!liveHost && REF_IDS.length) return renderStaticRef();
   if(roomState!=="on"){
-    v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2><p class="note">${roomState==="connecting"?"نتصل بشاشة اللعبة…":"ما قدرنا نتصل بشاشة اللعبة. افتح الرابط من حساب Claude مسجّل دخول وله صلاحية على اللعبة، ومن متصفح أو تطبيق Claude."}</p></section>`;
+    v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2><p class="note">${roomState==="connecting"&&!STANDALONE?"نتصل بشاشة اللعبة…":"هذا الباركود ما فيه أسئلة الجولة لأنه انفتح قبل بداية اللعب. ابدأ الجولة على الشاشة الكبيرة، بعدها اضغط «QR الحكم» وامسح الباركود من جديد."}</p></section>`;
     return;
   }
   const host=refPeers.find(p=>p.presence&&p.presence.role==="host"&&!p.sameTab);
@@ -780,6 +782,7 @@ function openQR(){
   const url=refUrl(), box=$("qrBox");
   $("qrLink").value=url; $("qrBase").value=baseUrl();
   box.innerHTML="";
+  if(S.phase!=="play"){ box.textContent="ابدأ الجولة أول، وبعدها يطلع الباركود هنا."; $("qrNote").textContent=""; return; }
   try{ new QRCode(box,{text:url,width:240,height:240,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.L}); }
   catch(e){ box.textContent="ما قدرنا نرسم الباركود. انسخ الرابط تحت وأرسله للحكم."; }
   $("qrNote").textContent = S.phase!=="play"
