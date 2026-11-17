@@ -746,11 +746,12 @@
   // v = عنصر الفيديو (أو null ليوتيوب/الأرشيف المضمّن)، area = مكان الأزرار، subKey = مفتاح حفظ الترجمة، loadRemote = يجيب ترجمة المصدر إن وجدت
   function mountPlayer(v, area, subKey, loadRemote) {
     area.innerHTML = `<div class="player-bar">
-      ${fsSupported(v) ? '<button class="btn primary" id="fsBtn">⛶ ملء الشاشة</button>' : ''}
       ${v ? `<span class="sub-state" id="subState">بدون ترجمة</span>
         <button class="btn" id="subTr" hidden>ترجم للعربي</button>
         <button class="btn" id="subToggle" hidden>إخفاء الترجمة</button>
-        <label class="btn">+ ملف ترجمة<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
+        <label class="btn">+ ملف ترجمة<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>` : ''}
+      ${fsSupported(v) ? '<button class="btn" id="fsBtn">⛶ ملء الشاشة</button>' : ''}
+      ${v ? `
         <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1" aria-label="تصغير الترجمة">أ-</button><button class="btn" data-cue="1" aria-label="تكبير الترجمة">أ+</button></span>
         <label class="auto-ar"><input type="checkbox" id="autoAr" ${LS.get('autoAr', true) ? 'checked' : ''}> ترجم أي ترجمة غير عربية للعربي تلقائياً</label>` : ''}
     </div>`;
