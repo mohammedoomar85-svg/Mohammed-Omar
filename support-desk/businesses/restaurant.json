@@ -2,7 +2,9 @@
   "id": "restaurant",
   "sector": "restaurant",
   "name": "مطعم بيت الشواء",
+  "nameEn": "Bait Al Shuwa Restaurant",
   "assistantName": "سارة",
+  "assistantNameEn": "Sara",
   "color": "#c2410c",
   "welcome": "هلا والله! معك سارة، المساعدة الذكية لمطعم بيت الشواء 🍢 أقدر أساعدك بالمنيو، الأوقات، التوصيل، أو أحجز لك طاولة.",
   "currency": "د.ك",
@@ -101,7 +103,14 @@
     "greeting": "تقدر تسألني عن المنيو أو التوصيل، أو أحجز لك طاولة.",
     "language": "ar-KW",
     "ttsVoice": "Polly.Hala-Neural",
-    "transferTo": ""
+    "transferTo": "",
+    "enabledLanguages": [
+      "ar",
+      "en",
+      "hi",
+      "fil",
+      "ur"
+    ]
   },
   "dialect": "kuwaiti"
 }

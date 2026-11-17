@@ -2,7 +2,9 @@
   "id": "company",
   "sector": "company",
   "name": "شركة نَقْلة للشحن",
+  "nameEn": "Naqla Shipping",
   "assistantName": "خالد",
+  "assistantNameEn": "Khalid",
   "color": "#0f766e",
   "welcome": "مرحباً بك في نَقْلة للشحن 📦 معك خالد، المساعد الذكي للشركة. أقدر أساعدك بالأسعار، المرتجعات، متابعة الشحنات، أو تسجيل شكوى.",
   "currency": "د.ك",
@@ -68,7 +70,14 @@
     "greeting": "شلون أقدر أساعدك؟",
     "language": "ar-KW",
     "ttsVoice": "Polly.Hala-Neural",
-    "transferTo": ""
+    "transferTo": "",
+    "enabledLanguages": [
+      "ar",
+      "en",
+      "hi",
+      "fil",
+      "ur"
+    ]
   },
   "dialect": "kuwaiti"
 }

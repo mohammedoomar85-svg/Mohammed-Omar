@@ -2,7 +2,9 @@
   "id": "cafe",
   "sector": "cafe",
   "name": "كافيه حبة بن",
+  "nameEn": "Habbat Bun Cafe",
   "assistantName": "نوف",
+  "assistantNameEn": "Nouf",
   "color": "#7c4a2d",
   "welcome": "أهلاً فيك في حبة بن ☕ معك نوف، المساعدة الذكية للكافيه. أقدر أساعدك بالمنيو، الأوقات، برنامج الولاء، أو حجز طاولة.",
   "currency": "د.ك",
@@ -87,7 +89,14 @@
     "greeting": "شنو تحب أساعدك فيه اليوم؟",
     "language": "ar-KW",
     "ttsVoice": "Polly.Hala-Neural",
-    "transferTo": ""
+    "transferTo": "",
+    "enabledLanguages": [
+      "ar",
+      "en",
+      "hi",
+      "fil",
+      "ur"
+    ]
   },
   "dialect": "kuwaiti"
 }

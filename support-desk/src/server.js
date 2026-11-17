@@ -9,6 +9,7 @@ import { loadBusinesses, publicProfile, voiceGreeting } from "./businesses.js";
 import { createAssistant, MODEL } from "./assistant.js";
 import { redact } from "./safety.js";
 import { createVoice } from "./voice.js";
+import { LANG_CODES } from "./languages.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MAX_MESSAGE = 1000;
@@ -92,15 +93,16 @@ export function createApp({
       return send(res, 200, Object.values(businesses).map(publicProfile));
     }
     if (req.method === "POST" && p === "/api/conversations") {
-      const { businessId, channel } = await readJson(req);
+      const { businessId, channel, lang } = await readJson(req);
       const b = businesses[businessId];
       if (!b) return send(res, 404, { error: "unknown business" });
       if (limited(ip)) return send(res, 429, { error: "rate limited" });
       // channel "voice" here is the in-browser call simulator
       const c = store.createConversation(b.id, { channel: channel === "voice" ? "voice" : "chat" });
-      store.addLine(c, "bot", c.channel === "voice" ? voiceGreeting(b) : b.welcome);
+      if (c.channel === "voice") c.lang = LANG_CODES.includes(lang) ? lang : "ar";
+      store.addLine(c, "bot", c.channel === "voice" ? voiceGreeting(b, c.lang) : b.welcome);
       c.unread = false;
-      return send(res, 201, { id: c.id, status: c.status, lines: lines(c), business: publicProfile(b) });
+      return send(res, 201, { id: c.id, status: c.status, lang: c.lang || null, lines: lines(c), business: publicProfile(b) });
     }
     let m = p.match(/^\/api\/conversations\/([\w-]+)(\/messages)?$/);
     if (m) {
@@ -126,7 +128,7 @@ export function createApp({
           if (reply) store.addLine(c, "bot", reply);
           store.touch(c);
         });
-        return send(res, 200, { status: c.status, ended: Boolean(c.endCall), total: c.transcript.length, lines: lines(c, before) });
+        return send(res, 200, { status: c.status, lang: c.lang || null, ended: Boolean(c.endCall), total: c.transcript.length, lines: lines(c, before) });
       }
     }
 
@@ -140,7 +142,7 @@ export function createApp({
           aiEnabled: assistant.aiEnabled, model: assistant.aiEnabled ? MODEL : null,
           businesses: Object.values(businesses).map(publicProfile),
           conversations: convos.map((c) => ({
-            id: c.id, businessId: c.businessId, channel: c.channel || "chat", caller: c.caller || null, status: c.status, unread: c.unread, handoff: c.handoff || null,
+            id: c.id, businessId: c.businessId, channel: c.channel || "chat", caller: c.caller || null, lang: c.lang || null, status: c.status, unread: c.unread, handoff: c.handoff || null,
             updatedAt: c.updatedAt, count: c.transcript.length, last: c.transcript.at(-1)?.text?.slice(0, 120) || "",
           })),
           tickets: store.listTickets(bid),

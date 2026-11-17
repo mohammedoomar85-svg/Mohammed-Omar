@@ -33,6 +33,8 @@
   form { display: flex; gap: 8px; padding: 0 16px 12px; }
   form input { flex: 1; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 18px; padding: 8px 12px; font: inherit; }
   form button { border: 0; border-radius: 18px; padding: 0 14px; background: var(--brand); color: #fff; font: inherit; }
+  .langpick { display: inline-flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .langpick select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; }
   .hint { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 8px; }
 </style>
 </head>
@@ -43,6 +45,12 @@
     <h1 id="name">…</h1>
     <div id="state">اضغط اتصال لبدء المكالمة</div>
     <div id="timer"></div>
+    <label class="langpick">لغة المتصل
+      <select id="lang">
+        <option value="ar">العربية (كويتي)</option><option value="en">English</option>
+        <option value="hi">हिंदी</option><option value="fil">Filipino</option><option value="ur">اردو</option>
+      </select>
+    </label>
   </div>
   <div id="log" aria-live="polite"></div>
   <p class="hint" id="hint">محاكاة لمكالمة هاتفية: تكلم بالمايك وراح يرد عليك المساعد بالصوت. (يفضّل متصفح Chrome)</p>
@@ -57,7 +65,9 @@
 const businessId = new URLSearchParams(location.search).get("b") || "restaurant";
 const $ = (id) => document.getElementById(id);
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let convo = null, inCall = false, rec = null, started = 0, tick = null, arVoice = null, business = null;
+let convo = null, inCall = false, rec = null, started = 0, tick = null, business = null, lang = "ar";
+const SR_LANG = { ar: "ar-KW", en: "en-US", hi: "hi-IN", fil: "fil-PH", ur: "ur-PK" };
+const VOICE_RE = { ar: /^ar/i, en: /^en/i, hi: /^hi/i, fil: /^(fil|tl)/i, ur: /^ur/i };
 
 function line(role, text) { const d = document.createElement("div"); d.className = "l " + role; d.textContent = text; $("log").append(d); $("log").scrollTop = 1e9; }
 function state(t, mode) { $("state").textContent = t; $("av").className = "avatar " + (mode || ""); }
@@ -65,15 +75,15 @@ const clean = (s) => s.replace(/[\p{Extended_Pictographic}\u{FE0F}•*#]/gu, "")
 
 function pickVoice() {
   const vs = speechSynthesis.getVoices();
-  arVoice = vs.find((v) => /^ar[-_](KW|SA|AE)/i.test(v.lang)) || vs.find((v) => /^ar/i.test(v.lang)) || null;
+  return vs.find((v) => v.lang.replace("_", "-") === SR_LANG[lang]) || vs.find((v) => VOICE_RE[lang].test(v.lang)) || null;
 }
-if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
 
+if ("speechSynthesis" in window) speechSynthesis.getVoices(); // Chrome loads voices lazily
 function speak(text) {
   return new Promise((resolve) => {
     if (!("speechSynthesis" in window)) return resolve();
     const u = new SpeechSynthesisUtterance(clean(text));
-    u.lang = arVoice?.lang || "ar-SA"; if (arVoice) u.voice = arVoice; u.rate = 1.02;
+    const v = pickVoice(); u.lang = v?.lang || SR_LANG[lang]; if (v) u.voice = v; u.rate = 1.02;
     u.onend = u.onerror = () => resolve();
     state("يتكلم…", "talking"); speechSynthesis.speak(u);
   });
@@ -82,7 +92,7 @@ function speak(text) {
 function listen() {
   if (!inCall) return;
   if (!SR) { state("اكتب كلامك بالأسفل"); return; }
-  rec = new SR(); rec.lang = "ar-KW"; rec.interimResults = false; rec.maxAlternatives = 1;
+  rec = new SR(); rec.lang = SR_LANG[lang]; rec.interimResults = false; rec.maxAlternatives = 1;
   let heard = false;
   rec.onresult = (e) => { heard = true; send(e.results[0][0].transcript); };
   rec.onerror = (e) => { if (e.error === "not-allowed") { state("اسمح للمتصفح باستخدام المايك"); $("typed").hidden = false; } };
@@ -102,6 +112,7 @@ async function send(text) {
   try {
     const r = await api(`/api/conversations/${convo}/messages`, { text });
     for (const l of r.lines) line(l.role, l.text);
+    if (r.lang && r.lang !== lang) { lang = r.lang; $("lang").value = lang; line("note", "— تغيرت اللغة —"); }
     const say = r.lines.filter((l) => l.role !== "customer").map((l) => l.text).join(" ");
     if (say) await speak(say);
     if (r.status === "human") { line("note", "— في المكالمة الحقيقية تتحول الآن لموظف أو يُسجّل طلب معاودة اتصال —"); return end(); }
@@ -115,7 +126,8 @@ async function start() {
   started = Date.now(); tick = setInterval(() => { const s = Math.floor((Date.now() - started) / 1000); $("timer").textContent = `${String(s / 60 | 0).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; }, 500);
   if (!SR) $("typed").hidden = false;
   state("يتصل…");
-  const r = await api("/api/conversations", { businessId, channel: "voice" });
+  lang = $("lang").value; $("lang").disabled = true;
+  const r = await api("/api/conversations", { businessId, channel: "voice", lang });
   convo = r.id;
   for (const l of r.lines) line(l.role, l.text);
   await speak(r.lines.map((l) => l.text).join(" "));
@@ -123,7 +135,7 @@ async function start() {
 }
 function end() {
   inCall = false; try { rec?.abort(); } catch {} speechSynthesis?.cancel();
-  clearInterval(tick); $("call").disabled = false; $("hang").disabled = true; $("mic").disabled = true;
+  clearInterval(tick); $("lang").disabled = false; $("call").disabled = false; $("hang").disabled = true; $("mic").disabled = true;
   state("انتهت المكالمة");
 }
 

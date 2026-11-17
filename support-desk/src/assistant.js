@@ -4,6 +4,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { buildSystemPrompt } from "./businesses.js";
 import { faqReply } from "./faq.js";
+import { LANG_CODES, langFor } from "./languages.js";
 
 export const MODEL = process.env.CLAUDE_MODEL || "claude-opus-5-5";
 const MAX_TOOL_ROUNDS = 5;
@@ -47,6 +48,18 @@ const TOOL_DEFS = {
       required: ["customer_name", "phone", "date", "time", "party_size", "notes"],
     },
   },
+  set_language: {
+    name: "set_language",
+    description:
+      "Switch the phone call to another supported language (ar = Kuwaiti Arabic, en = English, hi = Hindi, fil = Filipino/Tagalog, ur = Urdu). Use when the caller asks for one of these languages or is clearly speaking it. Speech recognition and the voice change from your next sentence, so write that sentence in the new language.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: { language: { type: "string", enum: LANG_CODES } },
+      required: ["language"],
+    },
+  },
   end_call: {
     name: "end_call",
     description: "Hang up the phone call. Use only after the caller has said goodbye or confirmed they need nothing else, and after your short goodbye sentence.",
@@ -73,8 +86,18 @@ const TOOL_DEFS = {
 export function toolsFor(business, channel = "chat") {
   const tools = [TOOL_DEFS.create_ticket, TOOL_DEFS.handoff_to_human];
   if ((business.features || []).includes("reservations")) tools.splice(1, 0, TOOL_DEFS.create_reservation);
-  if (channel === "voice") tools.push(TOOL_DEFS.end_call);
+  if (channel === "voice") tools.push(TOOL_DEFS.set_language, TOOL_DEFS.end_call);
   return tools;
+}
+
+// Offline answer for non-Arabic callers: only hand-off, never invented content.
+function offlineReply(business, lang, text) {
+  const L = langFor(business, lang);
+  const t = text.toLowerCase();
+  // "Are you a bot?" is answered honestly first, so words like "person" don't trigger a transfer.
+  if (L.botWords.some((w) => t.includes(w.toLowerCase()))) return { text: L.botAnswer };
+  if (L.agentWords.some((w) => t.includes(w.toLowerCase()))) return { text: L.transfer, handoff: true };
+  return { text: L.unknown };
 }
 
 export function createAssistant({ store, client, log = console }) {
@@ -94,6 +117,13 @@ export function createAssistant({ store, client, log = console }) {
     if (name === "create_reservation" && (business.features || []).includes("reservations")) {
       const r = store.addReservation({ businessId: business.id, conversationId: convo.id, ...input });
       return { ok: true, reservation_reference: r.id, status: "pending_confirmation" };
+    }
+    if (name === "set_language") {
+      if (!LANG_CODES.includes(input.language)) return { ok: false, error: "unsupported language" };
+      convo.lang = input.language;
+      convo.langNoted = input.language; // the model already knows
+      store.addLine(convo, "system", `تغيرت لغة المكالمة إلى ${langFor(business, input.language).label}`);
+      return { ok: true, language: input.language };
     }
     if (name === "end_call") {
       convo.endCall = true;
@@ -157,9 +187,15 @@ export function createAssistant({ store, client, log = console }) {
   // Handle one customer message; returns the bot reply text, or null when a
   // human agent owns the conversation.
   async function handleCustomerMessage(business, convo, text) {
-    // On calls, tell the model the caller's number once, in the first message.
-    const first = convo.apiMessages.length === 0 && convo.channel === "voice" && convo.caller;
-    convo.apiMessages.push({ role: "user", content: first ? `[مكالمة واردة من الرقم ${convo.caller}]\n${text}` : text });
+    // Notes for the model, added to the message itself (keeps history append-only):
+    // the caller's number once, and the call language whenever it changes.
+    const notes = [];
+    if (convo.apiMessages.length === 0 && convo.channel === "voice" && convo.caller) notes.push(`مكالمة واردة من الرقم ${convo.caller}`);
+    if (convo.channel === "voice" && convo.lang && convo.langNoted !== convo.lang) {
+      notes.push(`لغة المكالمة: ${langFor(business, convo.lang).label}`);
+      convo.langNoted = convo.lang;
+    }
+    convo.apiMessages.push({ role: "user", content: notes.map((n) => `[${n}]`).join(" ") + (notes.length ? "\n" : "") + text });
     if (convo.status !== "bot") return null;
 
     let reply;
@@ -174,7 +210,7 @@ export function createAssistant({ store, client, log = console }) {
       }
     }
     if (!reply) {
-      const fb = faqReply(business, text);
+      const fb = !convo.lang || convo.lang === "ar" ? faqReply(business, text) : offlineReply(business, convo.lang, text);
       if (fb.handoff) runTool("handoff_to_human", { reason: "طلب العميل التحدث مع موظف", priority: "normal" }, business, convo);
       reply = fb.text;
       convo.apiMessages.push({ role: "assistant", content: reply });
