@@ -242,3 +242,14 @@ body.imdb .logo b { background: #f5c518; color: #000; border-radius: 4px; paddin
 .imdb-rate { background: #f5c518; color: #000; border-radius: 4px; padding: 0 8px; font-weight: 600; }
 .imdb-rate b { font-family: Impact, "Arial Black", sans-serif; font-weight: 400; margin-inline-end: 4px; }
 .imdb-rate small { font-weight: 400; }
+
+/* مشغّل الأرشيف */
+.loading-spin { position: absolute; inset: 0; margin: auto; width: 44px; height: 44px; border-radius: 50%; border: 4px solid rgba(255,255,255,.2); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loading-spin { animation-duration: 2.4s; } }
+.sub-size .btn.on { background: #fff; color: #000; }
+.eps { display: grid; gap: 6px; max-height: 320px; overflow-y: auto; }
+.ep { display: flex; gap: 10px; align-items: center; text-align: start; background: var(--bg2); border: 1px solid var(--line); color: var(--text); border-radius: 4px; padding: 8px 12px; }
+.ep b { color: var(--muted); min-width: 2ch; }
+.ep.on { border-color: var(--accent); }
+.ep.on b { color: var(--accent); }

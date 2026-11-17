@@ -3,6 +3,8 @@
   const CFG = Object.assign({ TMDB_KEY: '', REGION: 'SA', REFRESH_MINUTES: 30, NEW_DAYS: 21, IMDB: false, OMDB_KEY: '' }, window.CINEMA_CONFIG || {});
   const API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
+  const SMALL = window.matchMedia('(max-width: 760px)').matches; // صور أصغر على الجوال = تحميل أسرع
+  const PSZ = SMALL ? 'w185' : 'w342', BSZ = SMALL ? 'w780' : 'w1280';
   const LS = {
     get(k, d) { try { const v = localStorage.getItem('cinema.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
     set(k, v) { try { localStorage.setItem('cinema.' + k, JSON.stringify(v)); } catch {} },
@@ -142,7 +144,7 @@
 
   function card(it) {
     const t = titleOf(it), d = dateOf(it), type = typeOf(it);
-    const poster = it.poster_path ? `<img loading="lazy" src="${IMG}w342${it.poster_path}" alt="">` : `<div class="noimg">${esc(t)}</div>`;
+    const poster = it.poster_path ? `<img loading="lazy" src="${IMG}${PSZ}${it.poster_path}" decoding="async" alt="">` : `<div class="noimg">${esc(t)}</div>`;
     const badges = (it._badge ? `<span class="badge">${esc(it._badge)}</span>` : isNew(d) ? '<span class="badge">جديد</span>' : '')
       + (it.vote_average ? `<span class="badge rate">★ ${it.vote_average.toFixed(1)}</span>` : '');
     return `<button class="card" data-id="${it.id}" data-type="${type}">
@@ -163,7 +165,7 @@
 
   function hero(it) {
     const type = typeOf(it), d = dateOf(it);
-    return `<section class="hero" style="background-image:url('${IMG}w1280${it.backdrop_path}')">
+    return `<section class="hero" style="background-image:url('${IMG}${BSZ}${it.backdrop_path}')">
       <div class="hero-in">
         <div class="meta"><span>${type === 'tv' ? 'مسلسل' : 'فيلم'}</span><span>${year(d)}</span>${it.vote_average ? `<span class="star">★ ${it.vote_average.toFixed(1)}</span>` : ''}${isNew(d) ? '<span class="badge" style="position:static">جديد</span>' : ''}</div>
         <h1>${esc(titleOf(it))}</h1>
@@ -334,7 +336,7 @@
     const added = inList(id, type);
 
     body.innerHTML = `
-      <div class="d-hero" id="dHero" style="background-image:url('${d.backdrop_path ? IMG + 'w1280' + d.backdrop_path : ''}')"></div>
+      <div class="d-hero" id="dHero" style="background-image:url('${d.backdrop_path ? IMG + BSZ + d.backdrop_path : ''}')"></div>
       <button class="d-close" data-close aria-label="إغلاق">✕</button>
       <div class="d-body">
         <h2>${esc(titleOf(d))}</h2>
@@ -462,7 +464,7 @@
 
   function iaCard(x) {
     return `<button class="card" data-ia="${esc(x.identifier)}">
-      <div class="poster"><img loading="lazy" src="${IA}/services/img/${encodeURIComponent(x.identifier)}" alt=""><span class="badge">▶ مجاني</span></div>
+      <div class="poster"><img loading="lazy" decoding="async" src="${IA}/services/img/${encodeURIComponent(x.identifier)}" alt=""><span class="badge">▶ مجاني</span></div>
       <div class="t" title="${esc(x.title)}" dir="auto">${esc(x.title)}</div>
       <div class="s"><span>${esc(x.year || '')}</span><span>${x.downloads ? fmtNum(x.downloads) + ' مشاهدة' : ''}</span></div>
     </button>`;
@@ -546,7 +548,7 @@
       </form>
       <p class="d-side">أضف روابط لفيديوهات تملكها أو عندك حق تشغيلها: ملف MP4 أو WebM على تخزينك السحابي، أو رابط يوتيوب. يحفظ لك وين وقفت. تقدر بعد تربط الرابط بفيلم من صفحته («+ رابط تشغيل»).</p>
       <div class="grid">${files.map((f) => `<div class="card file-card">
-        <button class="poster" data-file="${esc(f.id)}">${f.poster ? `<img loading="lazy" src="${IMG}w342${f.poster}" alt="">` : `<div class="noimg">▶<br>${esc(f.title)}</div>`}${progressBar(f.url)}</button>
+        <button class="poster" data-file="${esc(f.id)}">${f.poster ? `<img loading="lazy" src="${IMG}${PSZ}${f.poster}" alt="">` : `<div class="noimg">▶<br>${esc(f.title)}</div>`}${progressBar(f.url)}</button>
         <div class="t" title="${esc(f.title)}">${esc(f.title)}</div>
         <div class="s">${getSubs()[f.id] ? '<span>مترجم</span>' : ''}<button class="link" data-delfile="${esc(f.id)}">حذف</button></div></div>`).join('')}</div>`;
     $('#fileForm').onsubmit = async (e) => {
@@ -589,20 +591,109 @@
       last = Date.now();
       const all = progress(); all[url] = { t: v.currentTime, d: v.duration }; LS.set('progress', all);
     });
-    v.addEventListener('error', () => { v.outerHTML = '<p class="empty">ما قدرنا نشغّل الملف. تأكد إن الرابط مباشر لملف MP4 أو WebM.</p>'; });
+    v.addEventListener('error', () => { v.outerHTML = `<p class="empty">ما قدرنا نشغّل الفيديو. ${url.startsWith('ia:') ? 'جرّب جودة ثانية أو حاول بعد شوي.' : 'تأكد إن الرابط مباشر لملف MP4 أو WebM.'}</p>`; });
   }
 
-  function openIa(id) {
+  // تشغيل أعمال الأرشيف بمشغّل الجهاز نفسه: أسرع بكثير من مشغّل الأرشيف المضمّن، ويكمل من وين وقفت
+  const QUALITY = {
+    light: ['512Kb MPEG4', 'h.264', 'MPEG4', 'h.264 IA', 'h.264 HD'],
+    normal: ['h.264', 'h.264 IA', '512Kb MPEG4', 'MPEG4', 'h.264 HD'],
+    high: ['h.264 HD', 'h.264', 'h.264 IA', 'MPEG4', '512Kb MPEG4'],
+  };
+  const QUALITY_AR = { light: 'خفيفة (أسرع)', normal: 'عادية', high: 'عالية' };
+  const iaMeta = new Map();
+  function iaMetadata(id) {
+    if (!iaMeta.has(id)) {
+      const pr = fetch(`${IA}/metadata/${encodeURIComponent(id)}`).then((r) => { if (!r.ok) throw new Error('IA'); return r.json(); });
+      pr.catch(() => iaMeta.delete(id));
+      iaMeta.set(id, pr);
+    }
+    return iaMeta.get(id);
+  }
+  // يرتب ملفات الفيديو كحلقات، ولكل حلقة نسخها بالجودات المختلفة
+  function iaEpisodes(meta) {
+    const fmts = new Set([...QUALITY.normal]);
+    const groups = new Map();
+    for (const f of meta.files || []) {
+      if (!fmts.has(f.format)) continue;
+      const key = f.source === 'derivative' && f.original ? f.original : f.name;
+      if (!groups.has(key)) groups.set(key, { key, title: '', files: {} });
+      const g = groups.get(key);
+      g.files[f.format] = f.name;
+      if (f.title && !g.title) g.title = f.title;
+    }
+    const subs = (meta.files || []).filter((f) => /\.(srt|vtt)$/i.test(f.name));
+    return [...groups.values()].sort((a, b) => a.key.localeCompare(b.key, undefined, { numeric: true })).map((g) => {
+      const stem = g.key.replace(/\.[^.]+$/, '');
+      const own = subs.filter((f) => f.name.startsWith(stem));
+      const ar = own.find((f) => /(ara|arabic|\bar\b|_ar\.)/i.test(f.name)) || subs.find((f) => /(ara|arabic|\bar\b|_ar\.)/i.test(f.name));
+      return { ...g, title: g.title || stem.replace(/[_-]+/g, ' '), sub: (ar || own[0] || (subs.length === 1 ? subs[0] : null))?.name, subAr: !!ar };
+    });
+  }
+  const iaFileUrl = (id, name) => `${IA}/download/${encodeURIComponent(id)}/${name.split('/').map(encodeURIComponent).join('/')}`;
+
+  async function openIa(id, epIndex) {
     const x = iaItems.get(id) || { identifier: id, title: id };
-    body.innerHTML = `<div class="d-hero playing">${playerHtml({ ia: id })}</div>
+    const info = `<h2 dir="auto">${esc(x.title)}</h2>
+        <div class="meta"><span>${esc(x.year || '')}</span>${x.downloads ? `<span>${fmtNum(x.downloads)} مشاهدة</span>` : ''}<span class="badge" style="position:static">مسموح تشغيله</span></div>`;
+    if (epIndex === undefined) {
+      body.innerHTML = `<div class="d-hero playing"><div class="loading-spin"></div></div>
+        <button class="d-close" data-close aria-label="إغلاق">✕</button>
+        <div class="d-body" style="margin-top:0;padding-top:16px">${info}</div>`;
+      if (!dlg.open) dlg.showModal();
+    }
+    let eps = [];
+    try { eps = iaEpisodes(await iaMetadata(id)); } catch {}
+    if (!dlg.open) return;
+    if (!eps.length) { // احتياط: مشغّل الأرشيف الأصلي
+      body.innerHTML = `<div class="d-hero playing">${playerHtml({ ia: id })}</div><button class="d-close" data-close aria-label="إغلاق">✕</button>
+        <div class="d-body" style="margin-top:0;padding-top:16px">${info}</div>`;
+      return;
+    }
+    const lastEp = LS.get('iaEp', {});
+    const i = Math.min(eps.length - 1, Math.max(0, epIndex ?? lastEp[id] ?? 0));
+    lastEp[id] = i; LS.set('iaEp', lastEp);
+    const ep = eps[i];
+    const q = LS.get('quality', 'normal');
+    const file = QUALITY[q].map((f) => ep.files[f]).find(Boolean);
+    const url = iaFileUrl(id, file);
+    body.innerHTML = `<div class="d-hero playing"><video id="vid" controls autoplay playsinline preload="auto" src="${esc(url)}"></video></div>
       <button class="d-close" data-close aria-label="إغلاق">✕</button>
       <div class="d-body" style="margin-top:0;padding-top:16px">
-        <h2 dir="auto">${esc(x.title)}</h2>
-        <div class="meta"><span>${esc(x.year || '')}</span>${x.downloads ? `<span>${fmtNum(x.downloads)} مشاهدة</span>` : ''}<span class="badge" style="position:static">مسموح تشغيله</span></div>
+        ${info}
+        <div class="btns">
+          <span class="sub-size">الجودة ${Object.keys(QUALITY).map((k) => `<button class="btn ${k === q ? 'on' : ''}" data-q="${k}">${QUALITY_AR[k]}</button>`).join('')}</span>
+          ${ep.sub ? `<span class="sub-size">${ep.subAr ? 'ترجمة عربية' : 'ترجمة'} ✓</span>` : ''}
+          <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1">أ-</button><button class="btn" data-cue="1">أ+</button></span>
+          <label class="btn">+ ترجمة من جهازك<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
+        </div>
+        ${eps.length > 1 ? `<h3>الحلقات (${eps.length})</h3><div class="eps">${eps.map((e, k) => `<button class="ep ${k === i ? 'on' : ''}" data-ep="${k}"><b>${k + 1}</b> <span dir="auto">${esc(e.title)}</span></button>`).join('')}</div>` : ''}
         <p dir="auto">${esc(stripHtml(x.description).slice(0, 900))}</p>
-        <p class="d-side">المصدر: <a href="${IA}/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">أرشيف الإنترنت</a>. إذا العمل فيه أكثر من حلقة، اختارها من قائمة التشغيل داخل المشغّل.</p>
+        <p class="d-side">المصدر: <a href="${IA}/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">أرشيف الإنترنت</a>.</p>
       </div>`;
-    if (!dlg.open) dlg.showModal();
+    const v = $('#vid');
+    const addTrack = (vtt) => {
+      v.querySelectorAll('track').forEach((t) => t.remove());
+      const t = document.createElement('track');
+      Object.assign(t, { kind: 'subtitles', srclang: 'ar', label: 'الترجمة', default: true, src: URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' })) });
+      v.appendChild(t);
+      t.track.mode = 'showing';
+    };
+    const ownSub = getSubs()['ia:' + id + ':' + i];
+    if (ownSub) addTrack(ownSub);
+    else if (ep.sub) fetch(iaFileUrl(id, ep.sub)).then((r) => r.text()).then((t) => addTrack(toVtt(t))).catch(() => {});
+    wireVideo(`ia:${id}:${i}`);
+    v.addEventListener('ended', () => { if (i < eps.length - 1) openIa(id, i + 1); });
+    body.querySelectorAll('[data-ep]').forEach((b) => (b.onclick = () => openIa(id, +b.dataset.ep)));
+    body.querySelectorAll('[data-q]').forEach((b) => (b.onclick = () => {
+      const all = progress(); all[`ia:${id}:${i}`] = { t: v.currentTime, d: v.duration }; LS.set('progress', all);
+      LS.set('quality', b.dataset.q); openIa(id, i);
+    }));
+    body.querySelectorAll('[data-cue]').forEach((b) => (b.onclick = () => {
+      const c = Math.max(0, Math.min(4, LS.get('cue', 1) + +b.dataset.cue)); LS.set('cue', c); applyCue();
+    }));
+    const sf = $('#subFile');
+    sf.onchange = async () => { if (sf.files[0]) { const vtt = await readSubFile(sf.files[0]); saveSub('ia:' + id + ':' + i, vtt); addTrack(vtt); } };
   }
   function openFile(id) {
     const f = getFiles().find((x) => x.id === id);
