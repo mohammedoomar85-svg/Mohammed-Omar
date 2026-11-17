@@ -34,4 +34,7 @@ copyFileSync(join(here, 'admin.html'), join(here, 'dist', 'admin.html'));
 copyFileSync(join(here, 'privacy.html'), join(here, 'dist', 'privacy.html'));
 for (const f of ['favicon.svg', 'apple-touch-icon.png']) copyFileSync(join(here, f), join(here, 'dist', f));
 cpSync(join(here, 'shop'), join(here, 'dist', 'shop'), { recursive: true });
-console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos)');
+// The Diwaniya party game is a standalone page served at /diwaniya/.
+mkdirSync(join(here, 'dist', 'diwaniya'), { recursive: true });
+copyFileSync(join(here, '..', 'diwaniya', 'index.html'), join(here, 'dist', 'diwaniya', 'index.html'));
+console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos), diwaniya/ (party game)');
