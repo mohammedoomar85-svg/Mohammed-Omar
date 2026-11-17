@@ -131,3 +131,13 @@ h3 { font-size: 16px; margin: 22px 0 10px; }
   .d-body h2 { font-size: 22px; }
   .foot { padding: 16px; }
 }
+
+/* شاهد الآن */
+.chip .cnt { opacity: .7; font-size: 12px; }
+.d-hero video { position: absolute; inset: 0; width: 100%; height: 100%; background: #000; }
+.file-form { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.file-form input { flex: 1; min-width: 180px; background: var(--bg2); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 9px 12px; font: inherit; }
+.file-card .poster { border: 0; padding: 0; width: 100%; color: inherit; }
+.link { background: none; border: 0; color: var(--muted); padding: 0; font-size: 12px; text-decoration: underline; }
+.prog { position: absolute; bottom: 0; inset-inline: 0; height: 4px; background: rgba(255,255,255,.2); }
+.prog i { display: block; height: 100%; background: var(--accent); }

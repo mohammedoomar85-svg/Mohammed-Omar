@@ -167,7 +167,7 @@
     const tok = ++renderToken;
     main.innerHTML = `<section class="hero"></section>${['', '', ''].map(() => `<section class="section"><div class="row-scroll">${skeleton()}</div></section>`).join('')}`;
     const safe = (p) => p.catch(() => ({ results: [] }));
-    const [trend, mf, ma, tf, ta, soon, mi, mt, an] = await Promise.all([
+    const [trend, mf, ma, tf, ta, soon, mi, mt, an, free] = await Promise.all([
       safe(tmdb('/trending/all/day')),
       safe(discover('movies-foreign', 'latest')),
       safe(discover('movies-arabic', 'latest')),
@@ -177,11 +177,14 @@
       safe(discover('movies-indian', 'latest')),
       safe(discover('movies-turkish', 'latest')),
       safe(discover('anime', 'airing')),
+      iaSearch(FREE.movies[1], 'downloads desc', 1, 20).catch(() => ({ docs: [] })),
     ]);
     if (tok !== renderToken) return;
     const trending = trend.results.filter((r) => r.media_type === 'movie' || r.media_type === 'tv');
     const pick = trending.find((r) => r.backdrop_path && r.overview) || trending.find((r) => r.backdrop_path);
     main.innerHTML = (pick ? hero(pick) : '')
+      + (free.docs.length ? `<section class="section"><div class="section-head"><h2>▶ شاهد مجاناً داخل الموقع</h2><a href="#watch">عرض الكل ←</a></div>
+          <div class="row-scroll">${free.docs.map(iaCard).join('')}</div></section>` : '')
       + row('الرائج اليوم', trending)
       + row('أحدث الأفلام الأجنبية', mf.results, 'movies-foreign')
       + row('أحدث الأفلام العربية', ma.results, 'movies-arabic')
@@ -350,9 +353,219 @@
       h.scrollIntoView({ behavior: 'smooth' });
     };
     $('#addList').onclick = (e) => { e.target.textContent = toggleList(d, type) ? '✓ في قائمتي' : '+ قائمتي'; };
+
+    // أزرار التشغيل: ملف مربوط من ملفاتي، أو نسخة مجانية من الأرشيف، أو المنصة الرسمية
+    const btns = $('.d-body .btns', body);
+    const linked = getFiles().find((f) => f.tmdb && f.tmdb.id === +id && f.tmdb.type === type);
+    if (linked) btns.insertAdjacentHTML('afterbegin', `<button class="btn primary" data-file="${esc(linked.id)}">▶ شغّل</button>`);
+    if (prov?.link && (prov.flatrate || prov.free || prov.ads)) btns.insertAdjacentHTML('beforeend', `<a class="btn" href="${esc(prov.link)}" target="_blank" rel="noopener">شاهد على المنصة ↗</a>`);
+    const addLink = document.createElement('button');
+    addLink.className = 'btn'; addLink.textContent = linked ? 'تغيير رابط التشغيل' : '+ رابط تشغيل';
+    addLink.onclick = () => {
+      const url = prompt('حط رابط فيديو تملكه أو عندك حق تشغيله (MP4 / WebM أو يوتيوب):', linked ? linked.url : '');
+      if (!url) return;
+      const files = getFiles().filter((f) => !(f.tmdb && f.tmdb.id === +id && f.tmdb.type === type));
+      setFiles([{ id: Date.now().toString(36), title: titleOf(d), url: url.trim(), poster: d.poster_path, tmdb: { id: +id, type } }, ...files]);
+      openDetail(id, type);
+    };
+    btns.appendChild(addLink);
+    findFreeCopy(d, type).then((x) => {
+      if (x && dlg.open && $('#addList', body)) btns.insertAdjacentHTML('afterbegin', `<button class="btn primary" data-ia="${esc(x.identifier)}">▶ شاهد مجاناً</button>`);
+    });
   }
   dlg.addEventListener('close', () => { body.innerHTML = ''; if (location.hash.startsWith('#mylist')) showMyList(); });
   dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('[data-close]')) dlg.close(); });
+
+  // ---------- شاهد الآن: محتوى مسموح تشغيله ----------
+  // ١) أرشيف الإنترنت (archive.org): أفلام ومسلسلات ورسوم حقوقها منتهية (ملكية عامة) أو برخصة مفتوحة.
+  // ٢) ملفاتي: روابط فيديو تضيفها أنت لأشياء تملكها أو عندك حق تشغيلها.
+  const IA = 'https://archive.org';
+  const FREE = {
+    movies: ['أفلام كلاسيكية', 'collection:feature_films AND mediatype:movies'],
+    tv: ['مسلسلات كلاسيكية', 'collection:classic_tv AND mediatype:movies'],
+    cartoons: ['رسوم متحركة', 'collection:classic_cartoons AND mediatype:movies'],
+    arabic: ['عربي', 'mediatype:movies AND language:(Arabic OR ara) AND licenseurl:(*creativecommons* OR *publicdomain*)'],
+    mine: ['ملفاتي'],
+  };
+  const FREE_SORTS = { popular: ['الأكثر مشاهدة', 'downloads desc'], new: ['المضاف حديثاً', 'addeddate desc'], year: ['الأحدث إنتاجاً', 'year desc'] };
+  const iaItems = new Map();
+
+  function jsonp(url) {
+    return new Promise((res, rej) => {
+      const cb = 'ia' + Math.random().toString(36).slice(2);
+      const s = document.createElement('script');
+      const done = () => { delete window[cb]; s.remove(); };
+      window[cb] = (d) => { done(); res(d); };
+      s.onerror = () => { done(); rej(new Error('IA')); };
+      s.src = url + '&callback=' + cb;
+      document.head.appendChild(s);
+    });
+  }
+  const iaCache = new Map();
+  function iaSearch(q, sort = 'downloads desc', page = 1, rows = 48) {
+    const p = new URLSearchParams({ q, rows, page, output: 'json' });
+    ['identifier', 'title', 'year', 'description', 'downloads'].forEach((f) => p.append('fl[]', f));
+    p.append('sort[]', sort);
+    const url = `${IA}/advancedsearch.php?${p}`;
+    const hit = iaCache.get(url);
+    if (hit && Date.now() - hit.t < CFG.REFRESH_MINUTES * 6e4) return hit.p;
+    const pr = fetch(url).then((r) => { if (!r.ok) throw new Error('IA'); return r.json(); }).catch(() => jsonp(url))
+      .then((d) => {
+        const docs = d.response.docs.map((x) => ({ ...x, title: [].concat(x.title)[0], description: [].concat(x.description || '')[0] }));
+        docs.forEach((x) => iaItems.set(x.identifier, x));
+        return { docs, total: d.response.numFound };
+      });
+    iaCache.set(url, { t: Date.now(), p: pr });
+    pr.catch(() => iaCache.delete(url));
+    return pr;
+  }
+  const stripHtml = (s) => String(s || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+  const fmtNum = (n) => Number(n || 0).toLocaleString('ar');
+
+  function iaCard(x) {
+    return `<button class="card" data-ia="${esc(x.identifier)}">
+      <div class="poster"><img loading="lazy" src="${IA}/services/img/${encodeURIComponent(x.identifier)}" alt=""><span class="badge">▶ مجاني</span></div>
+      <div class="t" title="${esc(x.title)}" dir="auto">${esc(x.title)}</div>
+      <div class="s"><span>${esc(x.year || '')}</span><span>${x.downloads ? fmtNum(x.downloads) + ' مشاهدة' : ''}</span></div>
+    </button>`;
+  }
+
+  async function showWatch(cat = 'movies', sort = 'popular', q = '') {
+    if (!FREE[cat]) cat = 'movies';
+    if (!FREE_SORTS[sort]) sort = 'popular';
+    const tok = ++renderToken;
+    main.innerHTML = `<section class="section">
+      <div class="section-head"><h2>شاهد الآن</h2><span class="d-side" id="freeTotal"></span></div>
+      <p class="d-side" style="margin-top:-6px">كل اللي هنا مسموح تشغيله: أعمال حقوقها منتهية أو منشورة برخصة مفتوحة من أرشيف الإنترنت، وملفاتك الخاصة.</p>
+      <div class="filters">${Object.entries(FREE).map(([k, [label]]) => `<button class="chip ${k === cat ? 'on' : ''}" data-cat="${k}">${label}<span class="cnt" data-count="${k}"></span></button>`).join('')}</div>
+      ${cat === 'mine' ? '' : `<div class="filters">${Object.entries(FREE_SORTS).map(([k, [label]]) => `<button class="chip ${k === sort ? 'on' : ''}" data-fsort="${k}">${label}</button>`).join('')}
+        <form id="freeSearch" style="flex:1;min-width:160px;display:flex"><input class="chip" style="flex:1" type="search" placeholder="ابحث هنا (بالإنجليزي)…" value="${esc(q)}"></form></div>`}
+      <div id="watchBody"><div class="grid">${skeleton(12)}</div></div>
+      <button class="btn more" id="more" hidden>عرض المزيد</button>
+    </section>`;
+    main.querySelectorAll('[data-cat]').forEach((b) => (b.onclick = () => (location.hash = `watch/${b.dataset.cat}/${sort}`)));
+    main.querySelectorAll('[data-fsort]').forEach((b) => (b.onclick = () => (location.hash = `watch/${cat}/${b.dataset.fsort}${q ? '/' + encodeURIComponent(q) : ''}`)));
+    const fs = $('#freeSearch');
+    if (fs) fs.onsubmit = (e) => { e.preventDefault(); const v = $('input', fs).value.trim(); location.hash = `watch/${cat}/${sort}${v ? '/' + encodeURIComponent(v) : ''}`; };
+
+    // عدد كل قسم، مباشرة من الأرشيف
+    for (const [k, [, query]] of Object.entries(FREE)) {
+      const el = main.querySelector(`[data-count="${k}"]`);
+      if (k === 'mine') { el.textContent = ` (${fmtNum(getFiles().length)})`; continue; }
+      iaSearch(query, 'downloads desc', 1, 0).then((r) => { el.textContent = ` (${fmtNum(r.total)})`; }).catch(() => {});
+    }
+
+    const wb = $('#watchBody'), more = $('#more');
+    if (cat === 'mine') return showMyFiles(wb);
+    const query = FREE[cat][1] + (q ? ` AND (title:(${q.replace(/[():"]/g, ' ')}))` : '');
+    let page = 1, first = true;
+    const load = async () => {
+      more.disabled = true;
+      try {
+        const { docs, total } = await iaSearch(query, FREE_SORTS[sort][1], page);
+        if (tok !== renderToken) return;
+        if (first) { wb.innerHTML = '<div class="grid" id="grid"></div>'; $('#freeTotal').textContent = `${fmtNum(total)} عمل`; }
+        first = false;
+        $('#grid').insertAdjacentHTML('beforeend', docs.map(iaCard).join(''));
+        if (!total) wb.innerHTML = '<p class="empty">ما في نتائج.</p>';
+        more.hidden = page * 48 >= total;
+        page++;
+      } catch { wb.innerHTML = '<p class="empty">ما قدرنا نوصل لأرشيف الإنترنت. حاول بعد شوي.</p>'; }
+      more.disabled = false;
+    };
+    more.onclick = load;
+    await load();
+    stamp();
+  }
+
+  // ملفاتي
+  const getFiles = () => LS.get('files', []);
+  const setFiles = (f) => LS.set('files', f);
+  const ytId = (u) => (u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/) || [])[1];
+  function showMyFiles(wb) {
+    const files = getFiles();
+    wb.innerHTML = `<form id="fileForm" class="file-form">
+        <input id="fTitle" required placeholder="اسم الفيلم أو الحلقة">
+        <input id="fUrl" required dir="ltr" type="url" placeholder="https://…/movie.mp4 أو رابط يوتيوب">
+        <button class="btn primary">إضافة</button>
+      </form>
+      <p class="d-side">أضف روابط لفيديوهات تملكها أو عندك حق تشغيلها: ملف MP4 أو WebM على تخزينك السحابي، أو رابط يوتيوب. يحفظ لك وين وقفت. تقدر بعد تربط الرابط بفيلم من صفحته («+ رابط تشغيل»).</p>
+      <div class="grid">${files.map((f) => `<div class="card file-card">
+        <button class="poster" data-file="${esc(f.id)}">${f.poster ? `<img loading="lazy" src="${IMG}w342${f.poster}" alt="">` : `<div class="noimg">▶<br>${esc(f.title)}</div>`}${progressBar(f.url)}</button>
+        <div class="t" title="${esc(f.title)}">${esc(f.title)}</div>
+        <div class="s"><button class="link" data-delfile="${esc(f.id)}">حذف</button></div></div>`).join('')}</div>`;
+    $('#fileForm').onsubmit = (e) => {
+      e.preventDefault();
+      setFiles([{ id: Date.now().toString(36), title: $('#fTitle').value.trim(), url: $('#fUrl').value.trim() }, ...getFiles()]);
+      showMyFiles(wb);
+      const c = main.querySelector('[data-count="mine"]'); if (c) c.textContent = ` (${fmtNum(getFiles().length)})`;
+    };
+    wb.querySelectorAll('[data-delfile]').forEach((b) => (b.onclick = () => {
+      if (!confirm('تحذف هالرابط؟')) return;
+      setFiles(getFiles().filter((f) => f.id !== b.dataset.delfile)); showMyFiles(wb);
+    }));
+  }
+  const progress = () => LS.get('progress', {});
+  function progressBar(url) {
+    const p = progress()[url];
+    return p && p.d ? `<span class="prog"><i style="width:${Math.min(100, (p.t / p.d) * 100)}%"></i></span>` : '';
+  }
+
+  // المشغّل
+  function playerHtml(src) {
+    if (src.ia) return `<iframe src="${IA}/embed/${encodeURIComponent(src.ia)}?playlist=1" allow="autoplay; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
+    const y = ytId(src.url);
+    if (y) return `<iframe src="https://www.youtube-nocookie.com/embed/${y}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
+    return `<video id="vid" controls autoplay playsinline src="${esc(src.url)}"></video>`;
+  }
+  function wireVideo(url) {
+    const v = $('#vid');
+    if (!v) return;
+    const saved = progress()[url];
+    v.addEventListener('loadedmetadata', () => { if (saved && saved.t < v.duration - 30) v.currentTime = saved.t; }, { once: true });
+    let last = 0;
+    v.addEventListener('timeupdate', () => {
+      if (Date.now() - last < 5000) return;
+      last = Date.now();
+      const all = progress(); all[url] = { t: v.currentTime, d: v.duration }; LS.set('progress', all);
+    });
+    v.addEventListener('error', () => { v.outerHTML = '<p class="empty">ما قدرنا نشغّل الملف. تأكد إن الرابط مباشر لملف MP4 أو WebM.</p>'; });
+  }
+
+  function openIa(id) {
+    const x = iaItems.get(id) || { identifier: id, title: id };
+    body.innerHTML = `<div class="d-hero playing">${playerHtml({ ia: id })}</div>
+      <button class="d-close" data-close aria-label="إغلاق">✕</button>
+      <div class="d-body" style="margin-top:0;padding-top:16px">
+        <h2 dir="auto">${esc(x.title)}</h2>
+        <div class="meta"><span>${esc(x.year || '')}</span>${x.downloads ? `<span>${fmtNum(x.downloads)} مشاهدة</span>` : ''}<span class="badge" style="position:static">مسموح تشغيله</span></div>
+        <p dir="auto">${esc(stripHtml(x.description).slice(0, 900))}</p>
+        <p class="d-side">المصدر: <a href="${IA}/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">أرشيف الإنترنت</a>. إذا العمل فيه أكثر من حلقة، اختارها من قائمة التشغيل داخل المشغّل.</p>
+      </div>`;
+    if (!dlg.open) dlg.showModal();
+  }
+  function openFile(id) {
+    const f = getFiles().find((x) => x.id === id);
+    if (!f) return;
+    body.innerHTML = `<div class="d-hero playing">${playerHtml(f)}</div>
+      <button class="d-close" data-close aria-label="إغلاق">✕</button>
+      <div class="d-body" style="margin-top:0;padding-top:16px"><h2>${esc(f.title)}</h2>
+      ${f.tmdb ? `<button class="btn" data-open="${f.tmdb.id}" data-type="${f.tmdb.type}">تفاصيل العمل</button>` : ''}</div>`;
+    if (!dlg.open) dlg.showModal();
+    wireVideo(f.url);
+  }
+
+  // في صفحة الفيلم: هل له نسخة مجانية في الأرشيف؟
+  async function findFreeCopy(d, type) {
+    const t = (d.original_title || d.original_name || '').replace(/[():"\\]/g, ' ').trim();
+    const y = +year(dateOf(d));
+    if (!t || !y) return null;
+    const coll = type === 'tv' ? 'classic_tv' : 'feature_films';
+    try {
+      const { docs } = await iaSearch(`collection:${coll} AND mediatype:movies AND title:("${t}") AND year:[${y - 1} TO ${y + 1}]`, 'downloads desc', 1, 1);
+      return docs[0] || null;
+    } catch { return null; }
+  }
 
   // ---------- عام ----------
   function errorMsg(e) {
@@ -366,6 +579,10 @@
   }
 
   document.addEventListener('click', (e) => {
+    const ia = e.target.closest('[data-ia]');
+    if (ia) return openIa(ia.dataset.ia);
+    const fl = e.target.closest('[data-file]');
+    if (fl) return openFile(fl.dataset.file);
     const c = e.target.closest('.card[data-id]');
     if (c) return openDetail(c.dataset.id, c.dataset.type);
     const o = e.target.closest('[data-open]');
@@ -387,6 +604,7 @@
     if (h.startsWith('search=')) return showSearch(h.slice(7));
     if (SECTIONS[tab]) return showSection(tab, sort || Object.keys(SECTIONS[tab].sorts)[0], genre || '');
     if (tab === 'mylist') return showMyList();
+    if (tab === 'watch') return showWatch(sort, genre, h.split('/').slice(3).join('/'));
     return showHome();
   }
   window.addEventListener('hashchange', route);
