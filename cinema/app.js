@@ -576,9 +576,7 @@
     if (src.ia) return `<iframe src="${IA}/embed/${encodeURIComponent(src.ia)}?playlist=1" allow="autoplay; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
     const y = ytId(src.url);
     if (y) return `<iframe src="https://www.youtube-nocookie.com/embed/${y}?autoplay=1&rel=0${YT_AR}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
-    const vtt = src.id && getSubs()[src.id];
-    const track = vtt ? `<track kind="subtitles" srclang="ar" label="العربية" default src="${URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }))}">` : '';
-    return `<video id="vid" controls autoplay playsinline src="${esc(src.url)}">${track}</video>`;
+    return `<video id="vid" controls autoplay playsinline preload="auto" src="${esc(src.url)}"></video>`;
   }
   function wireVideo(url) {
     const v = $('#vid');
@@ -661,27 +659,14 @@
       <button class="d-close" data-close aria-label="إغلاق">✕</button>
       <div class="d-body" style="margin-top:0;padding-top:16px">
         ${info}
-        <div class="btns">
-          <span class="sub-size">الجودة ${Object.keys(QUALITY).map((k) => `<button class="btn ${k === q ? 'on' : ''}" data-q="${k}">${QUALITY_AR[k]}</button>`).join('')}</span>
-          ${ep.sub ? `<span class="sub-size">${ep.subAr ? 'ترجمة عربية' : 'ترجمة'} ✓</span>` : ''}
-          <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1">أ-</button><button class="btn" data-cue="1">أ+</button></span>
-          <label class="btn">+ ترجمة من جهازك<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
-        </div>
+        <div id="pbar"></div>
+        <div class="btns"><span class="sub-size">الجودة ${Object.keys(QUALITY).map((k) => `<button class="btn ${k === q ? 'on' : ''}" data-q="${k}">${QUALITY_AR[k]}</button>`).join('')}</span></div>
         ${eps.length > 1 ? `<h3>الحلقات (${eps.length})</h3><div class="eps">${eps.map((e, k) => `<button class="ep ${k === i ? 'on' : ''}" data-ep="${k}"><b>${k + 1}</b> <span dir="auto">${esc(e.title)}</span></button>`).join('')}</div>` : ''}
         <p dir="auto">${esc(stripHtml(x.description).slice(0, 900))}</p>
         <p class="d-side">المصدر: <a href="${IA}/details/${encodeURIComponent(id)}" target="_blank" rel="noopener">أرشيف الإنترنت</a>.</p>
       </div>`;
     const v = $('#vid');
-    const addTrack = (vtt) => {
-      v.querySelectorAll('track').forEach((t) => t.remove());
-      const t = document.createElement('track');
-      Object.assign(t, { kind: 'subtitles', srclang: 'ar', label: 'الترجمة', default: true, src: URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' })) });
-      v.appendChild(t);
-      t.track.mode = 'showing';
-    };
-    const ownSub = getSubs()['ia:' + id + ':' + i];
-    if (ownSub) addTrack(ownSub);
-    else if (ep.sub) fetch(iaFileUrl(id, ep.sub)).then((r) => r.text()).then((t) => addTrack(toVtt(t))).catch(() => {});
+    mountPlayer(v, $('#pbar'), 'ia:' + id + ':' + i, ep.sub ? () => fetch(iaFileUrl(id, ep.sub)).then((r) => r.text()).then(toVtt) : null);
     wireVideo(`ia:${id}:${i}`);
     v.addEventListener('ended', () => { if (i < eps.length - 1) openIa(id, i + 1); });
     body.querySelectorAll('[data-ep]').forEach((b) => (b.onclick = () => openIa(id, +b.dataset.ep)));
@@ -689,11 +674,6 @@
       const all = progress(); all[`ia:${id}:${i}`] = { t: v.currentTime, d: v.duration }; LS.set('progress', all);
       LS.set('quality', b.dataset.q); openIa(id, i);
     }));
-    body.querySelectorAll('[data-cue]').forEach((b) => (b.onclick = () => {
-      const c = Math.max(0, Math.min(4, LS.get('cue', 1) + +b.dataset.cue)); LS.set('cue', c); applyCue();
-    }));
-    const sf = $('#subFile');
-    sf.onchange = async () => { if (sf.files[0]) { const vtt = await readSubFile(sf.files[0]); saveSub('ia:' + id + ':' + i, vtt); addTrack(vtt); } };
   }
   function openFile(id) {
     const f = getFiles().find((x) => x.id === id);
@@ -701,22 +681,133 @@
     body.innerHTML = `<div class="d-hero playing">${playerHtml(f)}</div>
       <button class="d-close" data-close aria-label="إغلاق">✕</button>
       <div class="d-body" style="margin-top:0;padding-top:16px"><h2>${esc(f.title)}</h2>
-      <div class="btns">
-        ${f.tmdb ? `<button class="btn" data-open="${f.tmdb.id}" data-type="${f.tmdb.type}">تفاصيل العمل</button>` : ''}
-        ${ytId(f.url) ? '<span class="d-side">الترجمة العربية تطلع من زر CC في المشغّل إذا متوفرة.</span>' : `
-        <label class="btn">${getSubs()[f.id] ? 'تغيير الترجمة' : '+ ترجمة عربية (SRT/VTT)'}<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
-        ${getSubs()[f.id] ? '<button class="btn" id="subOff">إزالة الترجمة</button>' : ''}
-        <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1">أ-</button><button class="btn" data-cue="1">أ+</button></span>`}
-      </div></div>`;
+      <div id="pbar"></div>
+      ${ytId(f.url) ? '<p class="d-side">فيديوهات يوتيوب: الترجمة العربية تطلع من زر CC داخل المشغّل إذا متوفرة.</p>' : ''}
+      ${f.tmdb ? `<div class="btns"><button class="btn" data-open="${f.tmdb.id}" data-type="${f.tmdb.type}">تفاصيل العمل</button></div>` : ''}
+      </div>`;
     if (!dlg.open) dlg.showModal();
     wireVideo(f.url);
-    const sf = $('#subFile');
-    if (sf) sf.onchange = async () => { if (sf.files[0]) { saveSub(f.id, await readSubFile(sf.files[0])); openFile(id); } };
-    const so = $('#subOff');
-    if (so) so.onclick = () => { saveSub(f.id, null); openFile(id); };
-    body.querySelectorAll('[data-cue]').forEach((b) => (b.onclick = () => {
-      const v = Math.max(0, Math.min(4, LS.get('cue', 1) + +b.dataset.cue)); LS.set('cue', v); applyCue();
+    mountPlayer($('#vid'), $('#pbar'), f.id);
+  }
+
+  // ---------- شريط المشغّل: ملء الشاشة + الترجمة العربية ----------
+  const AR_RE = /[\u0600-\u06FF]/g;
+  function isArabic(vtt) {
+    const letters = vtt.replace(/^WEBVTT.*$/m, '').replace(/\d{1,2}:\d\d[:.,\d\s>-]*/g, '').replace(/[^\p{L}]/gu, '');
+    return letters.length > 0 && (letters.match(AR_RE) || []).length / letters.length > 0.3;
+  }
+  function parseVtt(vtt) {
+    return vtt.replace(/\r/g, '').split(/\n{2,}/).map((block) => {
+      const lines = block.split('\n');
+      const i = lines.findIndex((l) => l.includes('-->'));
+      return i < 0 ? null : { timing: lines[i], text: lines.slice(i + 1).join('\n').trim() };
+    }).filter((c) => c && c.text);
+  }
+  const buildVtt = (cues) => 'WEBVTT\n\n' + cues.map((c) => `${c.timing}\n${c.text}`).join('\n\n') + '\n';
+  // ترجمة آلية للعربي عبر خدمة جوجل المجانية، على دفعات
+  async function gtranslate(lines) {
+    const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=' + encodeURIComponent(lines.join('\n')));
+    if (!r.ok) throw new Error('translate ' + r.status);
+    const d = await r.json();
+    return d[0].map((x) => x[0]).join('').split('\n');
+  }
+  async function translateVtt(vtt, onProgress) {
+    const cues = parseVtt(vtt);
+    const texts = cues.map((c) => c.text.replace(/<[^>]+>/g, '').replace(/\s*\n\s*/g, ' ').trim());
+    const chunks = [];
+    for (let i = 0; i < texts.length;) {
+      const c = []; let len = 0;
+      while (i < texts.length && (c.length === 0 || len + texts[i].length < 1500)) { c.push(i); len += texts[i].length + 1; i++; }
+      chunks.push(c);
+    }
+    const out = texts.slice();
+    let done = 0;
+    const work = async (idx) => {
+      let res = await gtranslate(idx.map((k) => texts[k]));
+      if (res.length !== idx.length) res = await Promise.all(idx.map((k) => gtranslate([texts[k]]).then((x) => x.join(' ')))); // احتياط سطر بسطر
+      idx.forEach((k, j) => (out[k] = res[j] || texts[k]));
+      onProgress(Math.round((++done / chunks.length) * 100));
+    };
+    const queue = chunks.slice();
+    await Promise.all([0, 1, 2].map(async () => { while (queue.length) await work(queue.shift()); }));
+    return buildVtt(cues.map((c, k) => ({ timing: c.timing, text: out[k] })));
+  }
+
+  function fsSupported(v) { return !!(document.fullscreenEnabled || document.webkitFullscreenEnabled || (v && v.webkitEnterFullscreen)); }
+  function goFull(v) {
+    const hero = $('.d-hero', body);
+    const lock = () => { try { screen.orientation?.lock?.('landscape').catch(() => {}); } catch {} };
+    if (document.fullscreenElement || document.webkitFullscreenElement) return (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    if (document.fullscreenEnabled && hero.requestFullscreen) return hero.requestFullscreen().then(lock).catch(() => v?.webkitEnterFullscreen?.());
+    if (document.webkitFullscreenEnabled && hero.webkitRequestFullscreen) return hero.webkitRequestFullscreen();
+    if (v?.webkitEnterFullscreen) v.webkitEnterFullscreen(); // آيفون: ملء الشاشة حق النظام، والترجمة تظهر فيه
+  }
+
+  // v = عنصر الفيديو (أو null ليوتيوب/الأرشيف المضمّن)، area = مكان الأزرار، subKey = مفتاح حفظ الترجمة، loadRemote = يجيب ترجمة المصدر إن وجدت
+  function mountPlayer(v, area, subKey, loadRemote) {
+    area.innerHTML = `<div class="player-bar">
+      ${fsSupported(v) ? '<button class="btn primary" id="fsBtn">⛶ ملء الشاشة</button>' : ''}
+      ${v ? `<span class="sub-state" id="subState">بدون ترجمة</span>
+        <button class="btn" id="subTr" hidden>ترجم للعربي</button>
+        <button class="btn" id="subToggle" hidden>إخفاء الترجمة</button>
+        <label class="btn">+ ملف ترجمة<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
+        <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1" aria-label="تصغير الترجمة">أ-</button><button class="btn" data-cue="1" aria-label="تكبير الترجمة">أ+</button></span>
+        <label class="auto-ar"><input type="checkbox" id="autoAr" ${LS.get('autoAr', true) ? 'checked' : ''}> ترجم أي ترجمة غير عربية للعربي تلقائياً</label>` : ''}
+    </div>`;
+    const fs = $('#fsBtn', area);
+    if (fs) fs.onclick = () => goFull(v);
+    area.querySelectorAll('[data-cue]').forEach((b) => (b.onclick = () => {
+      const c = Math.max(0, Math.min(4, LS.get('cue', 1) + +b.dataset.cue)); LS.set('cue', c); applyCue();
     }));
+    if (!v) return;
+    const state = $('#subState', area), trBtn = $('#subTr', area), tg = $('#subToggle', area);
+    let cur = null, busy = false;
+    const setTrack = (vtt, label) => {
+      v.querySelectorAll('track').forEach((t) => t.remove());
+      cur = vtt;
+      const t = document.createElement('track');
+      Object.assign(t, { kind: 'subtitles', srclang: isArabic(vtt) ? 'ar' : 'und', label, default: true, src: URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' })) });
+      v.appendChild(t);
+      t.track.mode = 'showing';
+      state.textContent = 'الترجمة: ' + label;
+      tg.hidden = false; tg.textContent = 'إخفاء الترجمة';
+      trBtn.hidden = isArabic(vtt);
+    };
+    const translate = async () => {
+      if (busy || !cur) return;
+      const cached = getSubs()[subKey + ':ar'];
+      if (cached) return setTrack(cached, 'عربي (ترجمة آلية)');
+      busy = true; trBtn.disabled = true;
+      try {
+        const ar = await translateVtt(cur, (pct) => { state.textContent = `جاري الترجمة للعربي… ${pct}%`; });
+        saveSub(subKey + ':ar', ar);
+        if (v.isConnected) setTrack(ar, 'عربي (ترجمة آلية)');
+      } catch { state.textContent = 'ما قدرنا نترجم الحين. حاول مرة ثانية.'; }
+      busy = false; trBtn.disabled = false;
+    };
+    const use = (vtt, label) => {
+      const cachedAr = !isArabic(vtt) && getSubs()[subKey + ':ar'];
+      if (cachedAr) return setTrack(cachedAr, 'عربي (ترجمة آلية)');
+      setTrack(vtt, isArabic(vtt) ? 'عربي' : label);
+      if (!isArabic(vtt) && LS.get('autoAr', true)) translate();
+    };
+    trBtn.onclick = translate;
+    tg.onclick = () => {
+      const t = v.textTracks[0]; if (!t) return;
+      t.mode = t.mode === 'showing' ? 'hidden' : 'showing';
+      tg.textContent = t.mode === 'showing' ? 'إخفاء الترجمة' : 'إظهار الترجمة';
+    };
+    $('#autoAr', area).onchange = (e) => { LS.set('autoAr', e.target.checked); if (e.target.checked && cur && !isArabic(cur)) translate(); };
+    const sf = $('#subFile', area);
+    sf.onchange = async () => {
+      if (!sf.files[0]) return;
+      const vtt = await readSubFile(sf.files[0]);
+      saveSub(subKey, vtt); saveSub(subKey + ':ar', null);
+      use(vtt, 'من ملفك');
+    };
+    const own = getSubs()[subKey];
+    if (own) use(own, 'من ملفك');
+    else if (loadRemote) loadRemote().then((vtt) => { if (vtt && v.isConnected && !cur) use(vtt, 'من المصدر'); }).catch(() => {});
   }
 
   function applyCue() { document.body.dataset.cue = LS.get('cue', 1); }

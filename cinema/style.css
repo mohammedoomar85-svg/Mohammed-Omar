@@ -13,6 +13,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
 body { font-family: "IBM Plex Sans Arabic", system-ui, sans-serif; line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 a { color: inherit; }
@@ -253,3 +254,16 @@ body.imdb .logo b { background: #f5c518; color: #000; border-radius: 4px; paddin
 .ep b { color: var(--muted); min-width: 2ch; }
 .ep.on { border-color: var(--accent); }
 .ep.on b { color: var(--accent); }
+
+/* شريط المشغّل */
+.player-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 12px; }
+.sub-state { font-size: 13px; color: var(--muted); min-width: 0; }
+.auto-ar { flex-basis: 100%; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.auto-ar input { width: 18px; height: 18px; accent-color: var(--accent); }
+.btn[disabled] { opacity: .5; cursor: progress; }
+/* ملء الشاشة (الكمبيوتر والآيباد وأندرويد) */
+.d-hero:fullscreen { max-height: none; aspect-ratio: auto; width: 100vw; height: 100vh; background: #000; }
+.d-hero:-webkit-full-screen { max-height: none; aspect-ratio: auto; width: 100vw; height: 100vh; background: #000; }
+.d-hero:fullscreen video { object-fit: contain; }
+.d-hero:fullscreen::after { display: none; }
+.d-hero:fullscreen video::cue { font-size: 150%; }
