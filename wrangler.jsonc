@@ -1,6 +1,7 @@
 // Cloudflare Workers config for the website (static files only).
 // `wrangler deploy` runs the build below, then uploads landing/dist:
 //   /        landing page        /admin   dashboard        /play/   the games (Expo web build)
+//   /diwaniya/   Diwaniya party game (standalone page)
 {
   "name": "mohammed-omar",
   "compatibility_date": "2025-06-01",
