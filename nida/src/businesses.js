@@ -48,10 +48,12 @@ const dialectOf = (b) => DIALECTS[b.dialect] || DIALECTS.kuwaiti;
 
 // Every call opens by saying this is an AI assistant of the business. The
 // disclosure is built in code, not taken from the config, so it can't be lost.
+export const isFemale = (b) => (b.assistantGender || "f") === "f";
+const aiTitle = (b) => (isFemale(b) ? "المساعدة الذكية التابعة" : "المساعد الذكي التابع");
 export function aiDisclosure(b) {
   return b.dialect === "msa"
-    ? `مرحباً بك في ${b.name}. معك ${b.assistantName}، المساعد الذكي التابع لـ${b.name}.`
-    : `هلا والله، معك ${b.assistantName}، المساعد الذكي التابع لـ${b.name}.`;
+    ? `مرحباً بك في ${b.name}. معك ${b.assistantName}، ${aiTitle(b)} لـ${b.name}.`
+    : `هلا والله، معك ${b.assistantName}، ${aiTitle(b)} لـ${b.name}.`;
 }
 export function voiceGreeting(b, lang = "ar") {
   if (lang !== "ar") return `${disclosure(b, lang)} ${langFor(b, lang).ask}`;
@@ -81,6 +83,7 @@ export function buildSystemPrompt(b, channel = "chat") {
   const contact = Object.entries(b.contact || {}).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   const d = dialectOf(b);
   return `أنت "${b.assistantName}"، مساعد ذكي (ذكاء اصطناعي) يرد على عملاء "${b.name}". لست إنساناً.
+${isFemale(b) ? `تكلم عن نفسك بصيغة المؤنث دائماً في كل اللغات (مثلاً: "أنا مساعدة ذكية"، "أقدر أساعدك"، "मैं मदद कर सकती हूँ"، "میں مدد کر سکتی ہوں").` : "تكلم عن نفسك بصيغة المذكر."}
 
 ${CHANNEL_RULES[channel] || CHANNEL_RULES.chat}
 

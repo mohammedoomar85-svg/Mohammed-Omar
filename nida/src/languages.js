@@ -1,4 +1,5 @@
-// Languages the phone assistant speaks. One place to change speech settings.
+// Languages the phone assistant (Noor) speaks. Hindi, Urdu and Arabic lines are
+// written in the feminine, matching the default assistant. One place to change speech settings.
 //   stt  = Twilio <Gather> speech-recognition language code
 //   tts  = Twilio <Say> voice (Amazon Polly or Google)
 //   sayLang = optional language attribute for <Say> (needed for bilingual voices)
@@ -10,7 +11,7 @@ export const LANGUAGES = {
   ar: {
     label: "العربية (كويتي)", stt: "ar-KW", tts: "Polly.Hala-Neural", digit: "1",
     menu: "تقدر تتكلم على طول بالعربي.",
-    disclose: (a, n) => `هلا والله، معك ${a}، المساعد الذكي التابع لـ${n}.`,
+    disclose: (a, n) => `هلا والله، معك ${a}، المساعدة الذكية التابعة لـ${n}.`,
     ask: "شلون أقدر أساعدك؟",
     pardon: "ما سمعتك زين، ممكن تعيد؟",
     wait: ["لحظة من فضلك.", "ثواني بس.", "خلني أشيك لك."],
@@ -21,7 +22,7 @@ export const LANGUAGES = {
     unknown: "آسف، ما عندي معلومة أكيدة عن هالشي. تبي أحولك لموظف؟ قول موظف.",
     transfer: "أكيد، لحظة.",
     botWords: ["انت انسان", "انت بوت", "روبوت"],
-    botAnswer: "لا، أنا مساعد ذكي، مو إنسان. إذا تحب أحولك لموظف، قول موظف.",
+    botAnswer: "لا، أنا مساعدة ذكية، مو إنسانة. إذا تحب أحولك لموظف، قول موظف.",
     agentWords: ["موظف", "انسان", "مشرف"],
   },
   en: {

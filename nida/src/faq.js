@@ -1,5 +1,6 @@
 // Offline answers used when the Claude API is not configured or fails.
 import { normalizeDigits } from "./safety.js";
+import { isFemale } from "./businesses.js";
 
 const norm = (s) => normalizeDigits(s).toLowerCase()
   .replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي").replace(/[^\p{L}\p{N}\s]/gu, " ");
@@ -16,7 +17,7 @@ export function faqReply(b, message) {
   const has = (words) => words.some((w) => m.includes(norm(w)));
   // Honest answer first: never let "إنسان" in this question trigger a silent hand-off.
   if (has(ARE_YOU_BOT)) {
-    return { text: `لا، أنا مساعد ذكي تابع لـ${b.name}، مو إنسان. إذا تحب أحولك لموظف من الفريق، قول "موظف".` };
+    return { text: `للا، أنا ${isFemale(b) ? "مساعدة ذكية تابعة" : "مساعد ذكي تابع"} لـ${b.name}، مو إنسان. إذا تحب أحولك لموظف من الفريق، قول "موظف".` };
   }
   if (has(HUMAN)) return { text: "أكيد، حوّلت محادثتك لأحد الموظفين وراح يرد عليك هنا بأقرب وقت.", handoff: true };
   for (const f of b.faq || []) {

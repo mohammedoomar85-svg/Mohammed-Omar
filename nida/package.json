@@ -1,7 +1,7 @@
 {
-  "name": "support-desk",
+  "name": "nida",
   "version": "1.0.0",
-  "description": "AI phone and chat customer service for restaurants, cafes, companies and banks",
+  "description": "Nida \u2014 AI voice customer service (assistant: Noor) for restaurants, cafes, companies and banks",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

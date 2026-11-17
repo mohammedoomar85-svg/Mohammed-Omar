@@ -36,7 +36,7 @@ async function start(opts = {}) {
 
 test("every spoken greeting discloses the AI assistant", () => {
   for (const b of Object.values(loadBusinesses("businesses"))) {
-    assert.match(voiceGreeting(b), /المساعد الذكي التابع/);
+    assert.match(voiceGreeting(b), /معك نور، المساعدة الذكية التابعة/);
     assert.ok(voiceGreeting(b).includes(b.name));
     const p = buildSystemPrompt(b, "voice");
     assert.match(p, /لست إنساناً/);
@@ -47,7 +47,7 @@ test("every spoken greeting discloses the AI assistant", () => {
 test("offline mode answers 'are you a bot?' honestly without handing off", () => {
   const b = loadBusinesses("businesses").restaurant;
   const r = faqReply(b, "انت انسان ولا بوت؟");
-  assert.match(r.text, /مساعد ذكي/);
+  assert.match(r.text, /مساعدة ذكية/);
   assert.ok(!r.handoff);
   assert.ok(faqReply(b, "ابي اكلم موظف").handoff);
 });
@@ -92,7 +92,7 @@ test("phone call: greeting, a turn, and goodbye with hang-up", async () => {
     const inc = await app.twilio("/voice/incoming?b=cafe", { CallSid: "CA1", From: "+96555500000", To: "+965222" });
     assert.match(inc.xml, /<Gather input="dtmf speech" numDigits="1" language="ar-KW"/);
     assert.match(inc.xml, /For English, press 2/);
-    assert.match(inc.xml, /المساعد الذكي التابع لـكافيه حبة بن/);
+    assert.match(inc.xml, /المساعدة الذكية التابعة لـكافيه حبة بن/);
     const cid = inc.xml.match(/c=([\w-]+)/)[1];
 
     const t1 = await app.twilio(`/voice/turn?c=${cid}`, { CallSid: "CA1", SpeechResult: "متى تفتحون" });
@@ -170,7 +170,7 @@ test("phone call: pressing 2 switches to English with an English AI disclosure",
     const cid = inc.xml.match(/c=([\w-]+)/)[1];
     const pick = await app.twilio(`/voice/turn?c=${cid}`, { Digits: "2" });
     assert.match(pick.xml, /language="en-US"/);
-    assert.match(pick.xml, /Polly.Joanna-Neural">Hi, this is Sara, the AI assistant for Bait Al Shuwa Restaurant/);
+    assert.match(pick.xml, /Polly.Joanna-Neural">Hi, this is Noor, the AI assistant for Bait Al Shuwa Restaurant/);
     const t = await app.twilio(`/voice/turn?c=${cid}`, { SpeechResult: "When do you open?" });
     assert.match(t.xml, /Joanna-Neural">We open at twelve noon/);
     assert.match(client.calls[0].messages[0].content, /\[لغة المكالمة: English\]/);

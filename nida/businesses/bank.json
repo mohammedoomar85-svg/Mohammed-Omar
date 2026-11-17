@@ -5,6 +5,7 @@
   "nameEn": "Al Waha Bank",
   "assistantName": "نور",
   "assistantNameEn": "Noor",
+  "assistantGender": "f",
   "color": "#1d4ed8",
   "welcome": "مرحباً بك في بنك الواحة 🏦 معك نور، المساعدة الذكية للبنك. أقدر أجاوبك عن المنتجات والخدمات والفروع. تنبيه: لن نطلب منك أبداً الرقم السري أو رمز التحقق (OTP).",
   "currency": "د.ك",
