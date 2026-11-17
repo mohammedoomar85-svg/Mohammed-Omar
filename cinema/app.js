@@ -1,4 +1,4 @@
-// سينما محمد — كل المحتوى يجي مباشرة من TMDB، فالموقع يتحدث تلقائياً بأحدث الأفلام والمسلسلات.
+// مشربية الكوت — كل المحتوى يجي مباشرة من TMDB، فالموقع يتحدث تلقائياً بأحدث الأفلام والمسلسلات.
 (() => {
   const CFG = Object.assign({ TMDB_KEY: '', REGION: 'SA', REFRESH_MINUTES: 30, NEW_DAYS: 21 }, window.CINEMA_CONFIG || {});
   const API = 'https://api.themoviedb.org/3';
@@ -42,7 +42,7 @@
   // كل قسم له طرق ترتيب، وكل طريقة = طلب discover من TMDB بتاريخ اليوم، فالمحتوى دايماً محدث.
   const SECTIONS = {
     'movies-foreign': {
-      title: 'أفلام أجنبية', type: 'movie', arabic: false,
+      title: 'أفلام أجنبية', type: 'movie',
       sorts: {
         latest: ['الأحدث', () => ({ sort_by: 'primary_release_date.desc', 'primary_release_date.lte': today(), 'vote_count.gte': 40 })],
         popular: ['الأكثر شعبية', () => ({ sort_by: 'popularity.desc' })],
@@ -51,7 +51,7 @@
       },
     },
     'movies-arabic': {
-      title: 'أفلام عربية', type: 'movie', arabic: true,
+      title: 'أفلام عربية', type: 'movie', filter: { with_original_language: 'ar' },
       sorts: {
         latest: ['الأحدث', () => ({ sort_by: 'primary_release_date.desc', 'primary_release_date.lte': today(), 'vote_count.gte': 1 })],
         popular: ['الأكثر شعبية', () => ({ sort_by: 'popularity.desc' })],
@@ -59,7 +59,7 @@
       },
     },
     'tv-foreign': {
-      title: 'مسلسلات أجنبية', type: 'tv', arabic: false,
+      title: 'مسلسلات أجنبية', type: 'tv',
       sorts: {
         airing: ['تُعرض الآن', () => ({ sort_by: 'popularity.desc', 'air_date.gte': daysAgo(10), 'air_date.lte': daysAhead(7), 'vote_count.gte': 20 })],
         latest: ['مسلسلات جديدة', () => ({ sort_by: 'first_air_date.desc', 'first_air_date.lte': today(), 'vote_count.gte': 20 })],
@@ -68,7 +68,7 @@
       },
     },
     'tv-arabic': {
-      title: 'مسلسلات عربية', type: 'tv', arabic: true,
+      title: 'مسلسلات عربية', type: 'tv', filter: { with_original_language: 'ar' },
       sorts: {
         airing: ['تُعرض الآن', () => ({ sort_by: 'popularity.desc', 'air_date.gte': daysAgo(14), 'air_date.lte': daysAhead(7) })],
         latest: ['مسلسلات جديدة', () => ({ sort_by: 'first_air_date.desc', 'first_air_date.lte': today() })],
@@ -76,17 +76,46 @@
         top: ['الأعلى تقييماً', () => ({ sort_by: 'vote_average.desc', 'vote_count.gte': 20 })],
       },
     },
+
+    'movies-indian': {
+      title: 'أفلام هندية', type: 'movie', filter: { with_origin_country: 'IN' },
+      sorts: {
+        latest: ['الأحدث', () => ({ sort_by: 'primary_release_date.desc', 'primary_release_date.lte': today(), 'vote_count.gte': 5 })],
+        popular: ['الأكثر شعبية', () => ({ sort_by: 'popularity.desc' })],
+        top: ['الأعلى تقييماً', () => ({ sort_by: 'vote_average.desc', 'vote_count.gte': 150 })],
+        soon: ['قريباً', () => ({ sort_by: 'popularity.desc', 'primary_release_date.gte': daysAhead(1), 'primary_release_date.lte': daysAhead(120) })],
+      },
+    },
+    'movies-turkish': {
+      title: 'أفلام تركية', type: 'movie', filter: { with_original_language: 'tr' },
+      sorts: {
+        latest: ['الأحدث', () => ({ sort_by: 'primary_release_date.desc', 'primary_release_date.lte': today(), 'vote_count.gte': 3 })],
+        popular: ['الأكثر شعبية', () => ({ sort_by: 'popularity.desc' })],
+        top: ['الأعلى تقييماً', () => ({ sort_by: 'vote_average.desc', 'vote_count.gte': 50 })],
+      },
+    },
+    'anime': {
+      title: 'أنمي', type: 'tv', filter: { with_original_language: 'ja', with_genres: '16' },
+      sorts: {
+        airing: ['يُعرض الآن', () => ({ sort_by: 'popularity.desc', 'air_date.gte': daysAgo(10), 'air_date.lte': daysAhead(7) })],
+        latest: ['أنمي جديد', () => ({ sort_by: 'first_air_date.desc', 'first_air_date.lte': today(), 'vote_count.gte': 5 })],
+        popular: ['الأكثر شعبية', () => ({ sort_by: 'popularity.desc' })],
+        top: ['الأعلى تقييماً', () => ({ sort_by: 'vote_average.desc', 'vote_count.gte': 300 })],
+        movies: ['أفلام أنمي', () => ({ sort_by: 'popularity.desc' }), 'movie'],
+      },
+    },
   };
 
   async function discover(id, sortKey, page = 1, genre = '') {
     const s = SECTIONS[id];
-    const params = { ...s.sorts[sortKey][1](), page };
-    if (s.arabic) params.with_original_language = 'ar';
-    if (genre) params.with_genres = genre;
-    const data = await tmdb(`/discover/${s.type}`, params);
-    let results = data.results.map((r) => ({ ...r, media_type: s.type }));
-    if (!s.arabic) results = results.filter((r) => r.original_language !== 'ar');
-    if (s.arabic && sortKey === 'latest') results = results.filter((r) => r.poster_path);
+    const type = s.sorts[sortKey][2] || s.type;
+    const params = { ...(s.filter || {}), ...s.sorts[sortKey][1](), page };
+    // التصنيف المختار يضاف لتصنيف القسم (مثلاً أنمي + أكشن)
+    if (genre) params.with_genres = params.with_genres ? `${params.with_genres},${genre}` : genre;
+    const data = await tmdb(`/discover/${type}`, params);
+    let results = data.results.map((r) => ({ ...r, media_type: type }));
+    if (!s.filter) results = results.filter((r) => r.original_language !== 'ar');
+    if (s.filter && sortKey === 'latest') results = results.filter((r) => r.poster_path);
     return { results, totalPages: Math.min(data.total_pages || 1, 500) };
   }
 
@@ -138,13 +167,16 @@
     const tok = ++renderToken;
     main.innerHTML = `<section class="hero"></section>${['', '', ''].map(() => `<section class="section"><div class="row-scroll">${skeleton()}</div></section>`).join('')}`;
     const safe = (p) => p.catch(() => ({ results: [] }));
-    const [trend, mf, ma, tf, ta, soon] = await Promise.all([
+    const [trend, mf, ma, tf, ta, soon, mi, mt, an] = await Promise.all([
       safe(tmdb('/trending/all/day')),
       safe(discover('movies-foreign', 'latest')),
       safe(discover('movies-arabic', 'latest')),
       safe(discover('tv-foreign', 'airing')),
       safe(discover('tv-arabic', 'airing')),
       safe(discover('movies-foreign', 'soon')),
+      safe(discover('movies-indian', 'latest')),
+      safe(discover('movies-turkish', 'latest')),
+      safe(discover('anime', 'airing')),
     ]);
     if (tok !== renderToken) return;
     const trending = trend.results.filter((r) => r.media_type === 'movie' || r.media_type === 'tv');
@@ -155,6 +187,9 @@
       + row('أحدث الأفلام العربية', ma.results, 'movies-arabic')
       + row('مسلسلات أجنبية تُعرض الآن', tf.results, 'tv-foreign')
       + row('مسلسلات عربية تُعرض الآن', ta.results, 'tv-arabic')
+      + row('أحدث الأفلام الهندية', mi.results, 'movies-indian')
+      + row('أحدث الأفلام التركية', mt.results, 'movies-turkish')
+      + row('أنمي يُعرض الآن', an.results, 'anime')
       + row('قريباً في السينما', soon.results.map((r) => ({ ...r, _badge: fmtDate(r.release_date) })), 'movies-foreign/soon')
       || '<p class="empty">ما قدرنا نجيب المحتوى. تأكد من الاتصال أو المفتاح.</p>';
     stamp();
