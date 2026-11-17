@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مشربية الكوت IMDb</title>
+<meta name="theme-color" content="#0b0d12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../cinema/style.css">
+</head>
+<body>
+<header class="top">
+  <a class="logo" href="#home" data-tab="home">مشربية<span>الكوت</span><b>IMDb</b></a>
+  <nav class="tabs" id="tabs">
+    <a href="#home" data-tab="home">الرئيسية</a>
+    <a href="#watch" data-tab="watch">▶ شاهد الآن</a>
+    <a href="#movies-foreign" data-tab="movies-foreign">أفلام أجنبية</a>
+    <a href="#movies-arabic" data-tab="movies-arabic">أفلام عربية</a>
+    <a href="#tv-foreign" data-tab="tv-foreign">مسلسلات أجنبية</a>
+    <a href="#tv-arabic" data-tab="tv-arabic">مسلسلات عربية</a>
+    <a href="#movies-indian" data-tab="movies-indian">أفلام هندية</a>
+    <a href="#movies-turkish" data-tab="movies-turkish">أفلام تركية</a>
+    <a href="#anime" data-tab="anime">أنمي</a>
+    <a href="#mylist" data-tab="mylist">قائمتي</a>
+  </nav>
+  <form class="search" id="searchForm" role="search">
+    <input id="q" type="search" placeholder="ابحث بالاسم أو رقم IMDb (tt…)" autocomplete="off">
+  </form>
+  <button class="icon-btn" id="settingsBtn" title="الإعدادات" aria-label="الإعدادات">⚙</button>
+</header>
+
+<main id="main"></main>
+
+<footer class="foot">
+  <span id="updated"></span>
+  <span>البيانات والصور من <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>. هذا الموقع يستخدم TMDB API ولا تعتمده TMDB.</span>
+</footer>
+
+<dialog id="detail" class="detail"><div id="detailBody"></div></dialog>
+
+<dialog id="setup" class="setup">
+  <form method="dialog" id="setupForm">
+    <h2>إعداد الموقع</h2>
+    <p>يحتاج الموقع مفتاح مجاني من TMDB عشان يجيب الأفلام والمسلسلات ويتحدث تلقائياً.</p>
+    <ol>
+      <li>سجّل حساب في <a href="https://www.themoviedb.org/signup" target="_blank" rel="noopener">themoviedb.org</a></li>
+      <li>روح <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">الإعدادات ← API</a> واطلب مفتاح (Developer)</li>
+      <li>انسخ <b>API Read Access Token</b> أو <b>API Key</b> وحطه هنا</li>
+    </ol>
+    <label>المفتاح<input id="keyInput" dir="ltr" required placeholder="eyJhbGciOi… أو 32 حرف"></label>
+    <label>الدولة (لمنصات المشاهدة)
+      <select id="regionInput">
+        <option value="SA">السعودية</option><option value="KW">الكويت</option><option value="AE">الإمارات</option>
+        <option value="QA">قطر</option><option value="BH">البحرين</option><option value="OM">عُمان</option>
+        <option value="EG">مصر</option><option value="JO">الأردن</option><option value="MA">المغرب</option><option value="US">أمريكا</option>
+      </select>
+    </label>
+    <label>مفتاح OMDb (اختياري، لتقييمات IMDb)<input id="omdbInput" dir="ltr" placeholder="مجاني من omdbapi.com/apikey.aspx"></label>
+    <p class="err" id="setupErr"></p>
+    <div class="row"><button class="btn primary" value="save">حفظ</button></div>
+  </form>
+</dialog>
+
+<script src="config.js"></script>
+<script src="../cinema/app.js"></script>
+</body>
+</html>

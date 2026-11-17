@@ -219,3 +219,26 @@ dialog { background: #181818; border-radius: 8px; box-shadow: 0 20px 60px rgba(0
   .hero .btn { padding: 7px 14px; font-size: 14px; }
   .tabs a { padding: 2px 8px; font-size: 13px; }
 }
+
+/* الترجمة */
+.sub-pick { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.sub-pick input { max-width: 190px; font-size: 12px; color: var(--muted); }
+.sub-size { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; color: var(--muted); }
+.sub-size .btn { padding: 4px 12px; font-size: 14px; }
+video::cue { background: rgba(0,0,0,.7); color: #fff; font-family: "IBM Plex Sans Arabic", sans-serif; }
+body[data-cue="0"] video::cue { font-size: 70%; }
+body[data-cue="1"] video::cue { font-size: 100%; }
+body[data-cue="2"] video::cue { font-size: 130%; }
+body[data-cue="3"] video::cue { font-size: 160%; }
+body[data-cue="4"] video::cue { font-size: 200%; }
+label.btn { cursor: pointer; }
+
+/* نسخة IMDb */
+body.imdb { --accent: #f5c518; --accent-ink: #000; --new: #f5c518; }
+body.imdb .badge { color: #000; }
+body.imdb .badge.rate { color: #f5c518; }
+body.imdb .logo b { background: #f5c518; color: #000; border-radius: 4px; padding: 0 6px; margin-inline-start: 6px; font-size: .8em; font-family: Impact, "Arial Black", sans-serif; letter-spacing: 0; }
+.imdb-btn { background: #f5c518 !important; color: #000 !important; font-weight: 800; }
+.imdb-rate { background: #f5c518; color: #000; border-radius: 4px; padding: 0 8px; font-weight: 600; }
+.imdb-rate b { font-family: Impact, "Arial Black", sans-serif; font-weight: 400; margin-inline-end: 4px; }
+.imdb-rate small { font-weight: 400; }

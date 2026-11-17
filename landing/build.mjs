@@ -36,4 +36,5 @@ for (const f of ['favicon.svg', 'apple-touch-icon.png']) copyFileSync(join(here,
 cpSync(join(here, 'shop'), join(here, 'dist', 'shop'), { recursive: true });
 // Movie and series site (static, data comes live from TMDB) → /cinema/
 cpSync(join(here, '..', 'cinema'), join(here, 'dist', 'cinema'), { recursive: true });
-console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos), cinema/');
+cpSync(join(here, '..', 'cinema-imdb'), join(here, 'dist', 'cinema-imdb'), { recursive: true });
+console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos), cinema/, cinema-imdb/');

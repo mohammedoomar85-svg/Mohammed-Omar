@@ -1,6 +1,6 @@
 // مشربية الكوت — كل المحتوى يجي مباشرة من TMDB، فالموقع يتحدث تلقائياً بأحدث الأفلام والمسلسلات.
 (() => {
-  const CFG = Object.assign({ TMDB_KEY: '', REGION: 'SA', REFRESH_MINUTES: 30, NEW_DAYS: 21 }, window.CINEMA_CONFIG || {});
+  const CFG = Object.assign({ TMDB_KEY: '', REGION: 'SA', REFRESH_MINUTES: 30, NEW_DAYS: 21, IMDB: false, OMDB_KEY: '' }, window.CINEMA_CONFIG || {});
   const API = 'https://api.themoviedb.org/3';
   const IMG = 'https://image.tmdb.org/t/p/';
   const LS = {
@@ -19,6 +19,16 @@
 
   let key = LS.get('key', '') || CFG.TMDB_KEY;
   let region = LS.get('region', '') || CFG.REGION;
+  // نسخة IMDb: تقييمات IMDb وروابطه وبحث برقم IMDb (tt…)
+  let omdbKey = LS.get('omdb', '') || CFG.OMDB_KEY;
+  if (CFG.IMDB) document.body.classList.add('imdb');
+  const omdbCache = new Map();
+  function omdb(imdbId) {
+    if (!omdbKey) return Promise.resolve(null);
+    if (!omdbCache.has(imdbId)) omdbCache.set(imdbId, fetch(`https://www.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${encodeURIComponent(omdbKey)}`)
+      .then((r) => r.json()).then((d) => (d.Response === 'True' ? d : null)).catch(() => null));
+    return omdbCache.get(imdbId);
+  }
 
   // ---------- API ----------
   const cache = new Map();
@@ -244,6 +254,14 @@
     $('#q').value = q;
     main.innerHTML = `<section class="section"><div class="section-head"><h2>نتائج البحث: ${esc(q)}</h2></div><div class="grid">${skeleton(12)}</div></section>`;
     try {
+      const tt = (q.match(/tt\d{5,}/) || [])[0];
+      if (tt) {
+        const f = await tmdb(`/find/${tt}`, { external_source: 'imdb_id' });
+        if (tok !== renderToken) return;
+        const res = [...f.movie_results.map((r) => ({ ...r, media_type: 'movie' })), ...f.tv_results.map((r) => ({ ...r, media_type: 'tv' }))];
+        $('.grid', main).innerHTML = res.length ? res.map(card).join('') : '<p class="empty">ما لقينا عمل بهالرقم في IMDb.</p>';
+        return;
+      }
       const [p1, p2] = await Promise.all([tmdb('/search/multi', { query: q, page: 1 }), tmdb('/search/multi', { query: q, page: 2 }).catch(() => ({ results: [] }))]);
       if (tok !== renderToken) return;
       const res = [...p1.results, ...p2.results].filter((r) => r.media_type === 'movie' || r.media_type === 'tv');
@@ -295,7 +313,7 @@
     if (!dlg.open) dlg.showModal();
     let d;
     try {
-      d = await tmdb(`/${type}/${id}`, { append_to_response: 'videos,credits,watch/providers,recommendations', include_video_language: 'ar,en,null' });
+      d = await tmdb(`/${type}/${id}`, { append_to_response: 'videos,credits,watch/providers,recommendations,external_ids', include_video_language: 'ar,en,null' });
     } catch (e) { body.innerHTML = `<button class="d-close" data-close>✕</button><div class="d-body" style="margin-top:0;padding-top:48px">${errorMsg(e)}</div>`; return; }
     if (!d.overview) { try { d.overview = (await tmdb(`/${type}/${id}`, { language: 'en' })).overview; } catch {} }
     markSeen(id, type);
@@ -352,7 +370,7 @@
     if (trailer) $('#playTrailer').onclick = () => {
       const h = $('#dHero');
       h.classList.add('playing');
-      h.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailer.key)}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="الإعلان"></iframe>`;
+      h.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailer.key)}?autoplay=1&rel=0${YT_AR}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="الإعلان"></iframe>`;
       h.scrollIntoView({ behavior: 'smooth' });
     };
     if (autoTrailer && trailer) $('#playTrailer').click();
@@ -373,6 +391,21 @@
       openDetail(id, type);
     };
     btns.appendChild(addLink);
+    const imdbId = d.imdb_id || d.external_ids?.imdb_id;
+    if (CFG.IMDB && imdbId) {
+      btns.insertAdjacentHTML('beforeend', `<a class="btn imdb-btn" href="https://www.imdb.com/title/${encodeURIComponent(imdbId)}/" target="_blank" rel="noopener">IMDb ↗</a>`);
+      omdb(imdbId).then((o) => {
+        if (!o || !dlg.open || !$('#addList', body)) return;
+        const meta = $('.d-body .meta', body);
+        if (o.imdbRating && o.imdbRating !== 'N/A') meta.insertAdjacentHTML('afterbegin', `<span class="imdb-rate"><b>IMDb</b> ${esc(o.imdbRating)}/10 <small>(${esc(o.imdbVotes)} صوت)</small></span>`);
+        const rt = (o.Ratings || []).find((r) => r.Source === 'Rotten Tomatoes');
+        if (rt) meta.insertAdjacentHTML('beforeend', `<span>🍅 ${esc(rt.Value)}</span>`);
+        if (o.Metascore && o.Metascore !== 'N/A') meta.insertAdjacentHTML('beforeend', `<span>Metascore ${esc(o.Metascore)}</span>`);
+        const side = $('.d-side', body);
+        if (side && o.Rated && o.Rated !== 'N/A') side.insertAdjacentHTML('beforeend', `<div>التصنيف العمري: <b dir="ltr">${esc(o.Rated)}</b></div>`);
+        if (side && o.Awards && o.Awards !== 'N/A') side.insertAdjacentHTML('beforeend', `<div>الجوائز: <b dir="ltr">${esc(o.Awards)}</b></div>`);
+      });
+    }
     findFreeCopy(d, type).then((x) => {
       if (x && dlg.open && $('#addList', body)) btns.insertAdjacentHTML('afterbegin', `<button class="btn primary" data-ia="${esc(x.identifier)}">▶ شاهد مجاناً</button>`);
     });
@@ -485,28 +518,48 @@
   // ملفاتي
   const getFiles = () => LS.get('files', []);
   const setFiles = (f) => LS.set('files', f);
+  // الترجمة: ملف SRT أو VTT لكل فيديو، ويوتيوب يعرض الترجمة العربية إذا متوفرة
+  const YT_AR = '&cc_load_policy=1&cc_lang_pref=ar&hl=ar';
+  const getSubs = () => LS.get('subs', {});
+  const toVtt = (t) => {
+    t = t.replace(/^\uFEFF/, '').replace(/\r/g, '');
+    if (t.trim().startsWith('WEBVTT')) return t;
+    return 'WEBVTT\n\n' + t.replace(/(\d{1,2}:\d\d:\d\d),(\d{3})/g, '$1.$2');
+  };
+  async function readSubFile(file) {
+    const buf = await file.arrayBuffer();
+    let text;
+    try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+    catch { text = new TextDecoder('windows-1256').decode(buf); } // ملفات الترجمة العربية القديمة
+    return toVtt(text);
+  }
+  function saveSub(id, vtt) { const all = getSubs(); if (vtt) all[id] = vtt; else delete all[id]; LS.set('subs', all); }
   const ytId = (u) => (u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/) || [])[1];
   function showMyFiles(wb) {
     const files = getFiles();
     wb.innerHTML = `<form id="fileForm" class="file-form">
         <input id="fTitle" required placeholder="اسم الفيلم أو الحلقة">
         <input id="fUrl" required dir="ltr" type="url" placeholder="https://…/movie.mp4 أو رابط يوتيوب">
+        <label class="sub-pick">ترجمة (اختياري)<input id="fSub" type="file" accept=".srt,.vtt"></label>
         <button class="btn primary">إضافة</button>
       </form>
       <p class="d-side">أضف روابط لفيديوهات تملكها أو عندك حق تشغيلها: ملف MP4 أو WebM على تخزينك السحابي، أو رابط يوتيوب. يحفظ لك وين وقفت. تقدر بعد تربط الرابط بفيلم من صفحته («+ رابط تشغيل»).</p>
       <div class="grid">${files.map((f) => `<div class="card file-card">
         <button class="poster" data-file="${esc(f.id)}">${f.poster ? `<img loading="lazy" src="${IMG}w342${f.poster}" alt="">` : `<div class="noimg">▶<br>${esc(f.title)}</div>`}${progressBar(f.url)}</button>
         <div class="t" title="${esc(f.title)}">${esc(f.title)}</div>
-        <div class="s"><button class="link" data-delfile="${esc(f.id)}">حذف</button></div></div>`).join('')}</div>`;
-    $('#fileForm').onsubmit = (e) => {
+        <div class="s">${getSubs()[f.id] ? '<span>مترجم</span>' : ''}<button class="link" data-delfile="${esc(f.id)}">حذف</button></div></div>`).join('')}</div>`;
+    $('#fileForm').onsubmit = async (e) => {
       e.preventDefault();
-      setFiles([{ id: Date.now().toString(36), title: $('#fTitle').value.trim(), url: $('#fUrl').value.trim() }, ...getFiles()]);
+      const id = Date.now().toString(36);
+      const sub = $('#fSub').files[0];
+      if (sub) saveSub(id, await readSubFile(sub));
+      setFiles([{ id, title: $('#fTitle').value.trim(), url: $('#fUrl').value.trim() }, ...getFiles()]);
       showMyFiles(wb);
       const c = main.querySelector('[data-count="mine"]'); if (c) c.textContent = ` (${fmtNum(getFiles().length)})`;
     };
     wb.querySelectorAll('[data-delfile]').forEach((b) => (b.onclick = () => {
       if (!confirm('تحذف هالرابط؟')) return;
-      setFiles(getFiles().filter((f) => f.id !== b.dataset.delfile)); showMyFiles(wb);
+      setFiles(getFiles().filter((f) => f.id !== b.dataset.delfile)); saveSub(b.dataset.delfile, null); showMyFiles(wb);
     }));
   }
   const progress = () => LS.get('progress', {});
@@ -519,8 +572,10 @@
   function playerHtml(src) {
     if (src.ia) return `<iframe src="${IA}/embed/${encodeURIComponent(src.ia)}?playlist=1" allow="autoplay; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
     const y = ytId(src.url);
-    if (y) return `<iframe src="https://www.youtube-nocookie.com/embed/${y}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
-    return `<video id="vid" controls autoplay playsinline src="${esc(src.url)}"></video>`;
+    if (y) return `<iframe src="https://www.youtube-nocookie.com/embed/${y}?autoplay=1&rel=0${YT_AR}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title="مشغّل"></iframe>`;
+    const vtt = src.id && getSubs()[src.id];
+    const track = vtt ? `<track kind="subtitles" srclang="ar" label="العربية" default src="${URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }))}">` : '';
+    return `<video id="vid" controls autoplay playsinline src="${esc(src.url)}">${track}</video>`;
   }
   function wireVideo(url) {
     const v = $('#vid');
@@ -554,10 +609,26 @@
     body.innerHTML = `<div class="d-hero playing">${playerHtml(f)}</div>
       <button class="d-close" data-close aria-label="إغلاق">✕</button>
       <div class="d-body" style="margin-top:0;padding-top:16px"><h2>${esc(f.title)}</h2>
-      ${f.tmdb ? `<button class="btn" data-open="${f.tmdb.id}" data-type="${f.tmdb.type}">تفاصيل العمل</button>` : ''}</div>`;
+      <div class="btns">
+        ${f.tmdb ? `<button class="btn" data-open="${f.tmdb.id}" data-type="${f.tmdb.type}">تفاصيل العمل</button>` : ''}
+        ${ytId(f.url) ? '<span class="d-side">الترجمة العربية تطلع من زر CC في المشغّل إذا متوفرة.</span>' : `
+        <label class="btn">${getSubs()[f.id] ? 'تغيير الترجمة' : '+ ترجمة عربية (SRT/VTT)'}<input id="subFile" type="file" accept=".srt,.vtt" hidden></label>
+        ${getSubs()[f.id] ? '<button class="btn" id="subOff">إزالة الترجمة</button>' : ''}
+        <span class="sub-size">حجم الترجمة <button class="btn" data-cue="-1">أ-</button><button class="btn" data-cue="1">أ+</button></span>`}
+      </div></div>`;
     if (!dlg.open) dlg.showModal();
     wireVideo(f.url);
+    const sf = $('#subFile');
+    if (sf) sf.onchange = async () => { if (sf.files[0]) { saveSub(f.id, await readSubFile(sf.files[0])); openFile(id); } };
+    const so = $('#subOff');
+    if (so) so.onclick = () => { saveSub(f.id, null); openFile(id); };
+    body.querySelectorAll('[data-cue]').forEach((b) => (b.onclick = () => {
+      const v = Math.max(0, Math.min(4, LS.get('cue', 1) + +b.dataset.cue)); LS.set('cue', v); applyCue();
+    }));
   }
+
+  function applyCue() { document.body.dataset.cue = LS.get('cue', 1); }
+  applyCue();
 
   // في صفحة الفيلم: هل له نسخة مجانية في الأرشيف؟
   async function findFreeCopy(d, type) {
@@ -630,6 +701,7 @@
   function openSetup() {
     $('#keyInput').value = key;
     $('#regionInput').value = region;
+    if ($('#omdbInput')) $('#omdbInput').value = omdbKey;
     $('#setupErr').textContent = '';
     if (!setup.open) setup.showModal();
   }
@@ -643,6 +715,7 @@
     catch (err) { $('#setupErr').textContent = err.status === 401 ? 'المفتاح غير صحيح.' : 'ما قدرنا نتصل بـ TMDB. تأكد من الإنترنت.'; return; }
     key = k; region = $('#regionInput').value;
     LS.set('key', key); LS.set('region', region);
+    if ($('#omdbInput')) { omdbKey = $('#omdbInput').value.trim(); LS.set('omdb', omdbKey); omdbCache.clear(); }
     cache.clear();
     setup.close();
     route();
