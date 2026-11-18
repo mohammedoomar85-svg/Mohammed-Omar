@@ -107,6 +107,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .ref-list .rs.w0{color:var(--brass)}.ref-list .rs.w1{color:var(--turq)}
 .btn.big{padding:16px;font-size:1.2rem;width:100%}
 .ref-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigclock{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:3px solid var(--turq);border-radius:20px;padding:6px 26px;min-width:150px}
+.bigclock .lbl{font-size:.9rem;font-weight:800;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bigclock .num{font-family:var(--f-display);font-size:clamp(2.8rem,7vw,4.4rem);line-height:1.05;color:var(--turq);font-variant-numeric:tabular-nums}
+.bigclock.low{border-color:var(--rose)}.bigclock.low .num{color:var(--rose)}
+.bigclock.paused{border-color:var(--brass)}.bigclock.paused .num{color:var(--brass);font-size:clamp(2rem,5vw,3rem)}
+.aid.locked{opacity:.7;cursor:default}
+.ref-aids.turn{border-color:var(--brass)}
+.slot.hinted .hid{letter-spacing:1px;font-size:1.05rem;color:var(--brass);font-weight:800}
 .bonus{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;border:2px solid var(--brass);background:color-mix(in srgb,var(--brass) 10%,var(--card))}
 .bonus .q-text{font-size:clamp(1.3rem,3.2vw,2rem);max-width:none}
 .ref-bonus{display:flex;flex-direction:column;gap:10px;border:2px solid var(--brass);border-radius:14px;padding:12px;background:color-mix(in srgb,var(--brass) 10%,var(--card))}
@@ -246,7 +254,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
       <div class="turn-tag" id="tt0"></div>
       <div class="aids" id="a0"></div>
     </div>
-    <div class="brand"><h1>ديوانية مشربية الكوت</h1><small>تحدي الفريقين</small><span class="brand-btns"><button class="theme-btn" id="themeBtn" type="button"></button><button class="theme-btn" id="qrBtn" type="button">QR الحكم</button></span></div>
+    <div class="brand"><h1>ديوانية مشربية الكوت</h1><small>تحدي الفريقين</small><div class="bigclock" id="bigclock" hidden><span class="lbl" id="bigLbl"></span><span class="num" id="bigNum"></span></div><span class="brand-btns"><button class="theme-btn" id="themeBtn" type="button"></button><button class="theme-btn" id="qrBtn" type="button">QR الحكم</button></span></div>
     <div class="team" id="t1">
       <div class="row"><span class="name" id="n1">الفريق الثاني</span><span class="score" id="s1">0</span></div>
       <div class="turn-tag" id="tt1"></div>
@@ -329,7 +337,7 @@ const AIDS = [
   ["double","سؤال الدبل","بعد 3 أجوبة صح في السؤال: يطلع لكم سؤال من نفس الفئة تجاوبونه خلال 20 ثانية، وإذا جاوبتوه صح تتضاعف نقاط آخر جواب صح لكم، وإذا غلطتوا تنخصم"],
   ["two","جاوب جوابين","تقولون جوابين في هذا الدور بدل جواب واحد"],
   ["pass","باس","الدور ينتقل للفريق الثاني: جوابه الصح بضعف النقاط، والغلط يخصم منه 500"],
-  ["hint","تلميح","يكشف أول حرف وعدد حروف أسهل جواب مخفي"],
+  ["hint","تلميح","يكشف نص حروف أسهل جواب مخفي"],
   ["stop","إيقاف الوقت","يوقف وقت الدور ووقت السؤال لين ينحكم على جوابكم"]];
 const newAids = () => ({double:1,two:1,pass:1,hint:HINTS,stop:1});
 const $ = id => document.getElementById(id);
@@ -366,8 +374,20 @@ const sfx = {
 };
 
 /* ---------- header ---------- */
+function bigClock(){
+  const box=$("bigclock"); if(!box) return;
+  const play = !IS_REF && S.phase==="play" && S.round[curKey()] && !S.done[curKey()];
+  box.hidden=!play; if(!play) return;
+  let lbl, num, low=false;
+  if(S.bonus){ const l=Math.max(0,Math.ceil((S.bonus.end-Date.now())/1000)); lbl="سؤال الدبل · "+S.names[S.bonus.team]; num=l<=0?"انتهى":l; low=l<=5; }
+  else{ lbl="دور "+S.names[S.t.team]; num=S.t.stopped?"موقوف":S.t.timeUp||turnLeft<=0?"انتهى":turnLeft; low=!S.t.stopped&&turnLeft<=10; }
+  $("bigLbl").textContent=lbl; $("bigNum").textContent=num;
+  box.classList.toggle("low",low); box.classList.toggle("paused",!!S.t.stopped&&!S.bonus);
+}
 function header(){
+  bigClock();
   const play = S.phase==="play" && S.round[curKey()] && !S.done[curKey()];
+  const locked = refOnline(); // while a referee phone is connected, the lifelines are used from it
   [0,1].forEach(i=>{
     $("n"+i).textContent=S.names[i];
     $("s"+i).textContent=S.scores[i];
@@ -382,14 +402,15 @@ function header(){
       const on = active && ((k==="double"&&S.bonus&&S.bonus.team===i)||(k==="two"&&S.t.extra>0)||(k==="pass"&&S.t.passed)||(k==="stop"&&S.t.stopped));
       if(on) b.classList.add("on");
       if(!n && !on) b.classList.add("spent");
-      let ok = active && n>0;
-      ok = ok && !S.bonus;
+      let ok = (k==="double" ? play : active) && n>0;
+      ok = ok && !S.bonus && !locked;
       if(k==="pass") ok = ok && !S.t.passed && !S.t.extra;
       if(k==="two") ok = ok && !S.t.passed && !S.t.extra;
       if(k==="double") ok = ok && canBonus(i);
       if(k==="hint") ok = ok && hintTarget()>=0;
       if(k==="stop") ok = ok && !S.t.stopped;
-      b.disabled=!ok; b.title = n ? tip : "استُخدمت";
+      if(locked) b.classList.add("locked");
+      b.disabled=!ok; b.title = locked ? "المميزات يتحكم فيها الحكم من جواله" : n ? tip : "استُخدمت";
       b.onclick=()=>useAid(i,k);
       box.appendChild(b);
     });
@@ -509,9 +530,10 @@ function hintTarget(){
   for(let i=0;i<item.a.length;i++) if(S.rev[k][i]===undefined && !S.hints[k][i]) return i;
   return -1;
 }
+// Hint: show about half of the letters of the easiest hidden answer, e.g. «الرياض» → «ا ل ـ ي ـ ض».
 function hintText(ans){
-  const letters=ans.replace(/[\sً-ْـ\-]/g,"");
-  return `يبدأ بـ«${letters[0]}» · ${letters.length} حروف`;
+  const words=String(ans).split(/\s+/).filter(Boolean);
+  return words.map(w=>{ const ch=[...w.replace(/[\u064B-\u0652]/g,"")]; return ch.map((c,i)=>(i%2===0||i===ch.length-1)?c:"ـ").join(" "); }).join("   ");
 }
 function play(v){
   const k=curKey(), c=BANK[k], item=S.round[k];
@@ -669,13 +691,15 @@ function bonusPanel(){
 }
 setInterval(()=>{
   if(!S.bonus||IS_REF) return;
+  bigClock();
   const left=Math.max(0,Math.ceil((S.bonus.end-Date.now())/1000)), n=$("bn"), c=$("bc");
   if(n) n.textContent = left<=0 ? "انتهى" : left;
   if(c) c.classList.toggle("low",left<=5);
   if(left<=0 && !S.bonus.timeUp){ S.bonus.timeUp=true; sfx.timeUp(); }
 },250);
 function useAid(i,k){
-  if(S.phase!=="play"||S.t.team!==i||!S.aids[i][k]||S.bonus) return;
+  if(S.phase!=="play"||!S.aids[i][k]||S.bonus) return;
+  if(k!=="double"&&S.t.team!==i) return; // the double question may be taken by either team that has 3 correct answers
   const ck=curKey(); if(!S.round[ck]||S.done[ck]) return;
   if(k==="hint"){ const h=hintTarget(); if(h<0) return; snapshot(); S.hints[ck][h]=true; S.aids[i].hint--; sfx.hint(); render(); return; }
   if(k==="stop"){ if(S.t.stopped) return; snapshot(); S.aids[i].stop--; S.t.stopped=true; S.t.stopAt=Date.now(); stopTurnTimer(); sfx.hint(); render(); return; }
@@ -710,6 +734,7 @@ function nextQ(){
 let turnTimer=null, turnLeft=QTIME, turnEnd=0;
 function turnTick(){
   turnLeft=Math.max(0,Math.ceil((turnEnd-Date.now())/1000));
+  bigClock();
   const n=$("tn"), c=$("tc");
   if(n) n.textContent = turnLeft<=0 ? "انتهى" : turnLeft;
   if(c) c.classList.toggle("low",turnLeft<=10);
@@ -792,7 +817,9 @@ if(window.claude && claude.use){
 
 const SB_URL="https://mxocmwkxnihenqmfhjcc.supabase.co", SB_KEY="sb_publishable_NgFczrw5qNiMZN_VDpdeQg_0wcG4wxD", CODE_KEY="mashrabiya-room";
 const ROOM_PARAM=(/[?&]room=([a-z0-9]{4,12})/.exec(location.search)||[])[1];
-let sbChan=null, sbReady=false, sbLive=null;
+let sbChan=null, sbReady=false, sbLive=null, lastRefSeen=0, helloTimer=null, refWasOnline=false;
+function refOnline(){ return Date.now()-lastRefSeen < 25000; }
+setInterval(()=>{ const on=refOnline(); if(on!==refWasOnline){ refWasOnline=on; if(!IS_REF) header(); } },3000);
 function roomCode(){
   let c=null; try{ c=localStorage.getItem(CODE_KEY); }catch(e){}
   if(!c||!/^[a-z0-9]{6}$/.test(c)){ c=Math.random().toString(36).slice(2,8).padEnd(6,"0"); try{ localStorage.setItem(CODE_KEY,c); }catch(e){} }
@@ -808,12 +835,13 @@ function startSync(){
       sbChan.on("broadcast",{event:"state"},m=>{ sbLive=m.payload; renderRef(); });
     }else{
       sbChan.on("broadcast",{event:"ref"},m=>applyRef(m.payload));
-      sbChan.on("broadcast",{event:"hello"},()=>pushState());
+      sbChan.on("broadcast",{event:"hello"},()=>{ const was=refOnline(); lastRefSeen=Date.now(); pushState(); if(!was) header(); });
     }
     sbChan.subscribe(st=>{
       sbReady = st==="SUBSCRIBED";
       if(!sbReady) return;
-      if(IS_REF) sbChan.send({type:"broadcast",event:"hello",payload:{}}).catch(()=>{}); else pushState();
+      if(IS_REF){ const hi=()=>sbChan.send({type:"broadcast",event:"hello",payload:{}}).catch(()=>{}); hi(); if(!helloTimer) helloTimer=setInterval(hi,8000); }
+      else pushState();
     });
   }catch(e){}
 }
@@ -824,7 +852,7 @@ function hostState(){
   return Object.assign(base,{n:S.curCat+1,of:S.cats.length,cat:BANK[k].name,q:item.q,a:item.a,rev:S.rev[k]||{},
     team:S.t.team,passed:!!S.t.passed,
     bonus:S.bonus?{team:S.bonus.team,q:S.bonus.item.q,a:S.bonus.item.a,base:S.bonus.base,end:S.bonus.end}:null,
-    canDbl:canBonus(S.t.team),extra:S.t.extra||0,stopped:!!S.t.stopped,aids:S.aids,hintLeft:hintTarget()>=0,done:!!S.done[k]});
+    canDbl:[canBonus(0),canBonus(1)],cnt:[correctCount(0),correctCount(1)],extra:S.t.extra||0,stopped:!!S.t.stopped,aids:S.aids,hintLeft:hintTarget()>=0,done:!!S.done[k]});
 }
 function pushState(){
   if(IS_REF) return;
@@ -840,7 +868,7 @@ function applyRef(d){
   else if(d.act==="wrong") wrong();
   else if(d.act==="switch") switchTurn();
   else if(d.act==="bonus" && S.bonus) endBonus(!!d.ok);
-  else if(d.act==="aid" && AIDS.some(a=>a[0]===d.k)) useAid(S.t.team,d.k); // the referee uses a lifeline for the team whose turn it is
+  else if(d.act==="aid" && AIDS.some(a=>a[0]===d.k)) useAid(d.team===0||d.team===1?d.team:S.t.team,d.k);
 }
 function sendRef(data){
   if(sbChan&&sbReady){ sbChan.send({type:"broadcast",event:"ref",payload:data}).catch(()=>{ const n=$("refmsg"); if(n) n.textContent="ما وصل الأمر، جرّب مرة ثانية."; }); return; }
@@ -849,19 +877,20 @@ function sendRef(data){
     const n=$("refmsg"); if(n) n.textContent = e&&e.code==="not_permitted" ? "حسابك ما عنده صلاحية يتحكم باللعبة. اطلب من صاحب اللعبة يشاركها معك بصلاحية مساهم أو محرر." : "ما وصل الأمر، جرّب مرة ثانية.";
   });
 }
-function refAidButtons(st){
-  const mine=st.aids[st.team]||{};
+function refAidButtons(st,team){
+  const mine=st.aids[team]||{}, turn=team===st.team;
   return AIDS.map(([k,label])=>{
     const n=mine[k]||0;
-    const on=(k==="double"&&st.bonus)||(k==="two"&&st.extra>0)||(k==="pass"&&st.passed)||(k==="stop"&&st.stopped);
-    let ok=n>0&&!on;
+    const on=(k==="double"&&st.bonus&&st.bonus.team===team)||(turn&&((k==="two"&&st.extra>0)||(k==="pass"&&st.passed)||(k==="stop"&&st.stopped)));
+    let ok=n>0&&!on&&(turn||k==="double");
     ok=ok&&!st.bonus;
     if(k==="pass") ok=ok&&!st.passed&&!st.extra;
     if(k==="two") ok=ok&&!st.passed&&!st.extra;
-    if(k==="double") ok=ok&&!!st.canDbl;
+    if(k==="double") ok=ok&&!!(Array.isArray(st.canDbl)?st.canDbl[team]:st.canDbl);
     if(k==="hint") ok=ok&&st.hintLeft!==false;
-    const txt = k==="hint" ? `${label} ${n}/${HINTS}` : label;
-    return `<button type="button" class="aid ref-aid${on?" on":""}${!n&&!on?" spent":""}" data-aid="${k}" ${ok?"":"disabled"}>${txt}</button>`;
+    const cnt=st.cnt?st.cnt[team]:0;
+    const txt = k==="hint" ? `${label} ${n}/${HINTS}` : k==="double"&&n>0&&cnt<3 ? `${label} (${cnt}/3 صح)` : label;
+    return `<button type="button" class="aid ref-aid${on?" on":""}${!n&&!on?" spent":""}" data-aid="${k}" data-team="${team}" ${ok?"":"disabled"}>${txt}</button>`;
   }).join("");
 }
 function renderRef(){
@@ -903,7 +932,7 @@ function renderRef(){
       <h3>${esc(st.bonus.q)}</h3><p class="note">أي جواب من هذي صح (+${st.bonus.base}). الغلط أو خلصان الوقت يخصم ${st.bonus.base}:</p>
       <ol class="ref-list">${st.bonus.a.map((x,i)=>`<li><span class="no">${i+1}</span><span class="ra">${esc(x)}</span></li>`).join("")}</ol>
       <div class="ref-acts"><button class="btn turq big" id="rbok" type="button">صح: +${st.bonus.base}</button><button class="btn danger big" id="rbno" type="button">غلط: −${st.bonus.base}</button></div></div>`:""}
-    ${st.done||!st.aids?"":`<div class="ref-aids"><span class="lbl">مميزات ${esc(st.names[st.team])}:</span>${refAidButtons(st)}</div>`}
+    ${st.done||!st.aids?"":[st.team,1-st.team].map(t=>`<div class="ref-aids${t===st.team?" turn":""}"><span class="lbl">مميزات ${esc(st.names[t])}${t===st.team?" (عليه الدور)":""}:</span>${refAidButtons(st,t)}</div>`).join("")}
     <ol class="ref-list">${rows}</ol>
     ${st.done?"":'<div class="ref-acts"><button class="btn danger big" id="refwrong" type="button">غلط</button><button class="btn ghost big" id="refswap" type="button">تبديل الدور</button></div>'}
     <p class="note" id="refmsg"></p>
@@ -913,7 +942,7 @@ function renderRef(){
   if($("refswap")) $("refswap").onclick=()=>sendRef({act:"switch",q:st.q});
   if($("rbok")) $("rbok").onclick=()=>sendRef({act:"bonus",ok:true,q:st.q});
   if($("rbno")) $("rbno").onclick=()=>sendRef({act:"bonus",ok:false,q:st.q});
-  v.querySelectorAll("button[data-aid]").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"aid",k:b.dataset.aid,q:st.q}); });
+  v.querySelectorAll("button[data-aid]").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"aid",k:b.dataset.aid,team:+b.dataset.team,q:st.q}); });
 }
 
 /* ---------- QR modal on the main screen ---------- */
