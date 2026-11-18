@@ -115,7 +115,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .bigclock .num{font-family:var(--f-display);font-size:clamp(2.8rem,7vw,4.4rem);line-height:1.05;color:var(--turq);font-variant-numeric:tabular-nums}
 .bigclock.low{border-color:var(--rose)}.bigclock.low .num{color:var(--rose)}
 .bigclock.paused{border-color:var(--brass)}.bigclock.paused .num{color:var(--brass);font-size:clamp(2rem,5vw,3rem)}
-.aid.locked{opacity:.7;cursor:default}
+.aid.badge{display:inline-block;cursor:default;user-select:none;transition:background .2s,box-shadow .2s,transform .2s}
+.aid.badge.spent{opacity:.35;text-decoration:line-through}
+.aid.badge.on{background:var(--brass);border-color:var(--brass);color:var(--brass-ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--brass) 30%,transparent);transform:scale(1.08)}
 .ref-aids.turn{border-color:var(--brass)}
 .slot.hinted .hid{letter-spacing:1px;font-size:1.05rem;color:var(--brass);font-weight:800}
 .bonus{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;border:2px solid var(--brass);background:color-mix(in srgb,var(--brass) 10%,var(--card))}
@@ -449,7 +451,6 @@ function bigClock(){
 function header(){
   bigClock();
   const play = S.phase==="play" && S.round[curKey()] && !S.done[curKey()];
-  const locked = refOnline(); // while a referee phone is connected, the lifelines are used from it
   [0,1].forEach(i=>{
     $("n"+i).textContent=S.names[i];
     $("s"+i).textContent=S.scores[i];
@@ -457,23 +458,15 @@ function header(){
     $("t"+i).classList.toggle("turn",active);
     $("tt"+i).textContent = !active ? "" : (S.t.passed ? "يجاوب على الباس" : "دوره الآن");
     const box=$("a"+i); box.innerHTML="";
+    // On the teams' screen the lifelines are display-only badges; the referee uses them from the referee page.
     AIDS.forEach(([k,label,tip])=>{
       const n=S.aids[i][k];
-      const b=document.createElement("button");b.className="aid";b.type="button";
+      const b=document.createElement("span");b.className="aid badge";
       b.textContent = k==="hint" ? `${label} ${n}/${HINTS}` : label;
-      const on = active && ((k==="double"&&S.bonus&&S.bonus.team===i)||(k==="two"&&S.t.extra>0)||(k==="pass"&&S.t.passed)||(k==="stop"&&S.t.stopped));
+      const on = play && ((k==="double"&&S.bonus&&S.bonus.team===i)||(active&&((k==="two"&&S.t.extra>0)||(k==="pass"&&S.t.passed)||(k==="stop"&&S.t.stopped))));
       if(on) b.classList.add("on");
-      if(!n && !on) b.classList.add("spent");
-      let ok = (k==="double" ? play : active) && n>0;
-      ok = ok && !S.bonus && !locked;
-      if(k==="pass") ok = ok && !S.t.passed && !S.t.extra;
-      if(k==="two") ok = ok && !S.t.passed && !S.t.extra;
-      if(k==="double") ok = ok && canBonus(i);
-      if(k==="hint") ok = ok && hintTarget()>=0;
-      if(k==="stop") ok = ok && !S.t.stopped;
-      if(locked) b.classList.add("locked");
-      b.disabled=!ok; b.title = locked ? "المميزات يتحكم فيها الحكم من جواله" : n ? tip : "استُخدمت";
-      b.onclick=()=>useAid(i,k);
+      else if(!n) b.classList.add("spent");
+      b.title = on ? "مفعّلة الحين" : n ? tip : "استُخدمت";
       box.appendChild(b);
     });
   });
