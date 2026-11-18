@@ -494,8 +494,8 @@ function setup(v){
     </div>
     <div class="cats" id="cats"></div>
     <ul class="rules">
-      <li>كل سؤال له 10 أجوبة مخفية، ونقاطها من 100 للأشهر إلى 1000 للأصعب. النقاط والفئة مخفية، وتظهر النقاط مع كل جواب ينكشف والفئة بعد نهاية السؤال.</li>
-      <li>ترتيب الفئات في الجولة يتلخبط عشوائيًا، فحتى اللي اختار الفئات ما يعرف وش السؤال الجاي. وتقدرون تضغطون «اختيار عشوائي» عشان ما أحد يعرف الفئات أصلًا.</li>
+      <li>كل سؤال له 10 أجوبة مخفية، ونقاطها من 100 للأشهر إلى 1000 للأصعب. النقاط مخفية وتظهر مع كل جواب ينكشف، واسم كل فئة ظاهر في الجولة.</li>
+      <li>ترتيب الفئات في الجولة يتلخبط عشوائيًا. وتقدرون تضغطون «اختيار عشوائي» عشان اللعبة تختار الفئات بنفسها.</li>
       <li>الفرق تتناوب: كل فريق عنده 30 ثانية يقول جواب. المضيف يضغط على الجواب إذا كان صح، أو على «غلط».</li>
       <li>لكل سؤال 7 دقائق. إذا خلص الوقت تنكشف كل الأجوبة الباقية وتنتقلون للسؤال التالي.</li>
       <li>مميزات كل فريق في الجولة: <b>دبل النقاط</b>، <b>جاوب جوابين</b>، <b>باس</b> (صح = ضعف النقاط، غلط = خصم 500)، و<b>تلميحين</b>.</li>
@@ -579,7 +579,7 @@ function steps(){
   return `<nav class="steps" aria-label="أسئلة الجولة">${S.cats.map((x,i)=>{
     const st = S.done[x]?"done":(i===S.curCat?"now":"");
     const r=S.rev[x]||{}, got=Object.values(r).filter(v=>v>=0).length;
-    return `<div class="step ${st}"><span class="sn">${i+1}</span><span class="sl">${S.done[x]?BANK[x].name:"فئة مخفية"}</span><span class="sc">${S.done[x]?"انتهى":(S.round[x]?got+"/"+PER:"—")}</span></div>`;
+    return `<div class="step ${st}"><span class="sn">${i+1}</span><span class="sl">${BANK[x].name}</span><span class="sc">${S.done[x]?"انتهى":(S.round[x]?got+"/"+PER:"—")}</span></div>`;
   }).join("")}</nav>`;
 }
 function hintTarget(){
@@ -626,7 +626,7 @@ function play(v){
   }).join("");
   v.innerHTML=`${steps()}
     <section class="panel qhead">
-      <div class="q-meta"><span class="chip dark">سؤال ${S.curCat+1} من ${S.cats.length}</span>${done?`<span class="chip">الفئة: ${c.name}</span>`:""}</div>
+      <div class="q-meta"><span class="chip dark">سؤال ${S.curCat+1} من ${S.cats.length}</span><span class="chip">${c.name}</span></div>
       <h2 class="q-text">${esc(item.q)}</h2>
     </section>
     <div class="clocks">
