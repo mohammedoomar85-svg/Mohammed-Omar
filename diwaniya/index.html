@@ -243,6 +243,65 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
   .cells.solo .cell{font-size:1.1rem;padding:12px 0}
   .panel{padding:16px}
 }
+
+/* Landscape: the whole play screen fits on one rotated screen, readable by both teams */
+@media (orientation:landscape) and (max-height:900px){
+  body.playing{padding-block:6px}
+  body.playing .wrap{max-width:none;gap:8px}
+  body.playing .top{grid-template-columns:1fr auto 1fr;gap:10px}
+  body.playing .brand{grid-column:auto;order:0;padding:0}
+  body.playing .brand h1{font-size:clamp(.95rem,3.2vh,1.6rem)}
+  body.playing .brand small{display:none}
+  body.playing .brand-btns{margin-top:2px}
+  body.playing .theme-btn{padding:2px 10px;font-size:.72rem;margin-top:2px}
+  body.playing .bigclock{margin-top:4px;padding:2px 22px}
+  body.playing .bigclock .num{font-size:clamp(2rem,12vh,5rem)}
+  body.playing .team{padding:6px 12px;gap:3px}
+  body.playing .team .score{font-size:clamp(1.6rem,9vh,3.4rem)}
+  body.playing .team .name{font-size:clamp(.9rem,3.2vh,1.4rem)}
+  body.playing .aids{gap:4px}
+  body.playing .aid{font-size:.72rem;padding:1px 8px}
+  body.playing .steps{display:none}
+  body.playing .qhead{padding:8px 14px;gap:4px}
+  body.playing .qhead .q-text{font-size:clamp(1.05rem,5.4vh,2.4rem)}
+  body.playing .qhead .chip{font-size:.75rem;padding:1px 10px}
+  body.playing .clocks{gap:6px}
+  body.playing .clocks .turn-clock{display:none}
+  body.playing .cat-clock{padding:2px 12px}
+  body.playing .cat-clock .ctime{font-size:clamp(1rem,4vh,1.5rem)}
+  body.playing .answers{padding:8px;gap:6px}
+  body.playing .ans-h{display:none}
+  body.playing .slots{gap:6px}
+  body.playing .slot{min-height:0;padding:clamp(4px,1.4vh,12px) 12px;font-size:clamp(.85rem,3.9vh,1.5rem)}
+  body.playing .slot .no{width:clamp(22px,5.5vh,36px);height:clamp(22px,5.5vh,36px);font-size:clamp(.7rem,2.6vh,1rem)}
+  body.playing .host{gap:6px}
+  body.playing .host .btn{padding:6px 14px;font-size:.85rem}
+  body.playing .bonus{padding:10px;gap:6px}
+  body.playing .bonus .q-text{font-size:clamp(1rem,5vh,2rem)}
+}
+/* Phones turned sideways: answers in two rows of five so nothing needs scrolling */
+@media (orientation:landscape) and (max-height:520px){
+  body.playing .slots{grid-template-columns:repeat(5,minmax(0,1fr))}
+  body.playing .slot{grid-template-columns:auto 1fr;padding:4px 6px;gap:4px;font-size:clamp(.72rem,3.6vh,1rem)}
+  body.playing .slot .pt{display:none}
+  body.playing .slot.got .pt{display:block;grid-column:1/-1;font-size:.7rem}
+  body.playing .team .row{gap:4px}
+  body.playing .turn-tag{display:none}
+  body.playing .brand h1{display:none}
+  body.playing .bigclock{margin-top:0}
+  body.playing .team{padding:4px 10px}
+  body.playing .qhead{padding:4px 12px}
+  body.playing .wrap{gap:5px}
+  body.playing .bigclock .num{font-size:clamp(1.8rem,10vh,3rem)}
+  body.playing .bigclock .lbl{font-size:.75rem}
+  body.playing .theme-btn{font-size:.65rem;padding:1px 8px}
+  body.playing .aid{font-size:.64rem;padding:0 6px}
+  body.playing .answers{padding:5px}
+  body.playing .cat-clock{padding:0 10px}
+  body.playing .cat-clock .ctime{font-size:1rem}
+  body.playing .slots{gap:4px}
+  body.playing .host .btn{padding:4px 10px;font-size:.78rem}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -418,6 +477,7 @@ function header(){
 }
 
 function render(){
+  document.body.classList.toggle("playing", !IS_REF && S.phase==="play");
   if(IS_REF) return renderRef();
   header(); save(); pushState();
   const v=$("view");
