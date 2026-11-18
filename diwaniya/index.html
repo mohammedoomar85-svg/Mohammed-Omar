@@ -326,7 +326,7 @@ let sampleFn=null;
 if(window.claude&&claude.use) claude.use("sample").then(f=>{sampleFn=f;}).catch(()=>{});
 
 const AIDS = [
-  ["double","سؤال الدبل","بعد 3 أجوبة صح في السؤال: يطلع لكم سؤال من نفس الفئة تجاوبونه خلال 20 ثانية، وإذا جاوبتوه صح تتضاعف نقاط آخر جواب صح لكم"],
+  ["double","سؤال الدبل","بعد 3 أجوبة صح في السؤال: يطلع لكم سؤال من نفس الفئة تجاوبونه خلال 20 ثانية، وإذا جاوبتوه صح تتضاعف نقاط آخر جواب صح لكم، وإذا غلطتوا تنخصم"],
   ["two","جاوب جوابين","تقولون جوابين في هذا الدور بدل جواب واحد"],
   ["pass","باس","الدور ينتقل للفريق الثاني: جوابه الصح بضعف النقاط، والغلط يخصم منه 500"],
   ["hint","تلميح","يكشف أول حرف وعدد حروف أسهل جواب مخفي"],
@@ -634,7 +634,7 @@ function afterAnswer(){
 }
 /* ---------- double question ----------
    After 3 correct answers in the current question, a team may take one question from the same category.
-   20 seconds to give one of its answers; if right, the points of the team's latest correct answer are added again. */
+   20 seconds to give one of its answers; if right, the points of the team's latest correct answer are added again, if wrong they are taken off. */
 function correctCount(team){ const r=S.rev[curKey()]||{}; return Object.values(r).filter(v=>v===team).length; }
 function lastPts(team){ const k=curKey(); return S.last&&S.last.k===k ? S.last.pts[team]||0 : 0; }
 function bonusPick(k){
@@ -652,7 +652,7 @@ function startBonus(team){
 }
 function endBonus(ok){
   const b=S.bonus; if(!b) return;
-  if(ok){ S.scores[b.team]+=b.base; sfx.reveal(); } else sfx.wrong();
+  if(ok){ S.scores[b.team]+=b.base; sfx.reveal(); } else { S.scores[b.team]-=b.base; sfx.wrong(); }
   const k=curKey(); if(S.catEnd[k] && !S.t.stopped) S.catEnd[k]+=Date.now()-b.pausedAt; // the question clock was paused during the double question
   S.bonus=null;
   if(S.t.stopped) S.t.stopAt=Date.now(); else startTurnTimer();
@@ -661,10 +661,10 @@ function endBonus(ok){
 function bonusPanel(){
   const b=S.bonus, left=Math.max(0,Math.ceil((b.end-Date.now())/1000));
   return `<section class="panel bonus">
-    <div class="q-meta"><span class="chip hot">سؤال الدبل · ${esc(S.names[b.team])}</span><span class="chip">جواب واحد صح يضاعف ${b.base} نقطة</span></div>
+    <div class="q-meta"><span class="chip hot">سؤال الدبل · ${esc(S.names[b.team])}</span><span class="chip">صح: +${b.base} · غلط أو خلص الوقت: −${b.base}</span></div>
     <h2 class="q-text">${esc(b.item.q)}</h2>
     <span class="turn-clock" id="bc"><span class="lbl">الوقت</span><span class="tnum" id="bn">${left<=0?"انتهى":left}</span></span>
-    <div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط</button></div>
+    <div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>
   </section>`;
 }
 setInterval(()=>{
@@ -900,9 +900,9 @@ function renderRef(){
     <div class="ref-turn">${st.done?"انتهى السؤال":`الدور على <b>${esc(st.names[st.team])}</b>`} ${tags.join("")}</div>
     <p class="note warn">لا تعرض هذه الشاشة على الفريقين: فيها كل الأجوبة.</p>
     ${st.bonus&&!st.done?`<div class="ref-bonus"><span class="chip hot">سؤال الدبل · ${esc(st.names[st.bonus.team])}</span>
-      <h3>${esc(st.bonus.q)}</h3><p class="note">أي جواب من هذي صح، ويضاعف ${st.bonus.base} نقطة:</p>
+      <h3>${esc(st.bonus.q)}</h3><p class="note">أي جواب من هذي صح (+${st.bonus.base}). الغلط أو خلصان الوقت يخصم ${st.bonus.base}:</p>
       <ol class="ref-list">${st.bonus.a.map((x,i)=>`<li><span class="no">${i+1}</span><span class="ra">${esc(x)}</span></li>`).join("")}</ol>
-      <div class="ref-acts"><button class="btn turq big" id="rbok" type="button">صح: +${st.bonus.base}</button><button class="btn danger big" id="rbno" type="button">غلط</button></div></div>`:""}
+      <div class="ref-acts"><button class="btn turq big" id="rbok" type="button">صح: +${st.bonus.base}</button><button class="btn danger big" id="rbno" type="button">غلط: −${st.bonus.base}</button></div></div>`:""}
     ${st.done||!st.aids?"":`<div class="ref-aids"><span class="lbl">مميزات ${esc(st.names[st.team])}:</span>${refAidButtons(st)}</div>`}
     <ol class="ref-list">${rows}</ol>
     ${st.done?"":'<div class="ref-acts"><button class="btn danger big" id="refwrong" type="button">غلط</button><button class="btn ghost big" id="refswap" type="button">تبديل الدور</button></div>'}
