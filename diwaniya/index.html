@@ -107,6 +107,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .ref-list .rs.w0{color:var(--brass)}.ref-list .rs.w1{color:var(--turq)}
 .btn.big{padding:16px;font-size:1.2rem;width:100%}
 .ref-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ref-tools{display:flex;flex-wrap:wrap;gap:8px}
+.ref-tools .btn{flex:1 1 auto;padding:10px 12px;font-size:.9rem}
+.ref-chg{display:flex;flex-direction:column;gap:8px;border:2px solid var(--brass);border-radius:12px;padding:10px}
 .bigclock{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:3px solid var(--turq);border-radius:20px;padding:6px 26px;min-width:150px}
 .bigclock .lbl{font-size:.9rem;font-weight:800;color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bigclock .num{font-family:var(--f-display);font-size:clamp(2.8rem,7vw,4.4rem);line-height:1.05;color:var(--turq);font-variant-numeric:tabular-nums}
@@ -613,7 +616,7 @@ function play(v){
     return;
   }
   if(!S.catEnd[k] && !S.done[k]){ S.catEnd[k]=Date.now()+CATTIME*1000; markSeen(k,item.q); S.qStart={scores:S.scores.slice(),aids:JSON.parse(JSON.stringify(S.aids)),team:S.t.team}; startTurnTimer(); save(); }
-  const done=!!S.done[k], last=S.curCat>=S.cats.length-1;
+  const done=!!S.done[k], last=S.curCat>=S.cats.length-1, refCtl=refOnline(); // the referee phone holds the controls
   const tags=[];
   if(!done){
     if(S.t.extra>0) tags.push('<span class="chip hot">باقي جواب إضافي</span>');
@@ -638,8 +641,8 @@ function play(v){
       ${tags.join("")}
     </div>
     ${S.bonus&&!done?bonusPanel():""}
-    <section class="answers"><h3 class="ans-h">الإجابات <span class="note">${done?"":"(اضغط على الجواب الصح لما يقوله الفريق)"}</span></h3><div class="slots" id="slots">${slots}</div></section>
-    <div class="host">
+    <section class="answers"><h3 class="ans-h">الإجابات <span class="note">${done||refCtl?"":"(اضغط على الجواب الصح لما يقوله الفريق)"}</span></h3><div class="slots" id="slots">${slots}</div></section>
+    ${refCtl?"":`<div class="host">
       ${done
         ? `<button class="btn" id="nextq" type="button">${last?"النتيجة النهائية":"السؤال التالي"}</button>`
         : `<button class="btn danger" id="wrong" type="button">غلط${S.t.passed?` (−${PASS_PENALTY})`:""}</button><button class="btn ghost" id="swap" type="button">تبديل الدور</button><button class="btn ghost" id="undo" type="button" ${S.undo.length?"":"disabled"}>تراجع</button><button class="btn ghost" id="revall" type="button">إظهار كل الأجوبة</button><button class="btn ghost" id="chg" type="button">تغيير السؤال</button>`}
@@ -647,7 +650,12 @@ function play(v){
     </div>
     <div class="panel chg" id="chgbox" hidden><b>ليش تبي تغير السؤال؟</b>
       <div class="actions">${Object.entries(WHY).map(([r,o])=>`<button class="btn" type="button" data-r="${r}">${o.label}</button>`).join("")}<button class="btn ghost" id="chgx" type="button">إلغاء</button></div>
-      <p class="note">النقاط والمميزات اللي اناخذت في هذا السؤال ترجع مثل ما كانت، والسؤال المرفوض ما يرجع لكم.</p></div>`;
+      <p class="note">النقاط والمميزات اللي اناخذت في هذا السؤال ترجع مثل ما كانت، والسؤال المرفوض ما يرجع لكم.</p></div>`}`;
+  if(refCtl){
+    v.querySelectorAll(".slot").forEach(b=>b.disabled=true);
+    if(!done){ const nx=S.cats[S.curCat+1]; if(nx) ensureCat(nx); }
+    return;
+  }
   if(!done && S.bonus){
     $("bok").onclick=()=>endBonus(true); $("bno").onclick=()=>endBonus(false);
     v.querySelectorAll(".slot").forEach(b=>b.disabled=true);
@@ -666,6 +674,7 @@ function play(v){
   }else $("nextq").onclick=nextQ;
   armConfirm($("rst"),"لعبة جديدة",()=>{const {names,cats,hideScores}=S; stopTurnTimer(); S=fresh(); Object.assign(S,{names,cats,hideScores}); render();});
 }
+function newGame(){ const {names,cats,hideScores}=S; stopTurnTimer(); S=fresh(); Object.assign(S,{names,cats,hideScores}); render(); }
 function armConfirm(btn,label,fn){
   if(!btn) return; let armed=false;
   btn.onclick=()=>{
@@ -746,7 +755,7 @@ function bonusPanel(){
     <div class="q-meta"><span class="chip hot">سؤال الدبل · ${esc(S.names[b.team])}</span><span class="chip">صح: +${b.base} · غلط أو خلص الوقت: −${b.base}</span></div>
     <h2 class="q-text">${esc(b.item.q)}</h2>
     <span class="turn-clock" id="bc"><span class="lbl">الوقت</span><span class="tnum" id="bn">${left<=0?"انتهى":left}</span></span>
-    <div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>
+    ${refOnline()?"":`<div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>`}
   </section>`;
 }
 setInterval(()=>{
@@ -821,9 +830,9 @@ function results(v){
   v.innerHTML=`<section class="panel res">
     <div class="big">${title}</div>
     <div class="final"><div>${esc(S.names[0])}<b>${a}</b></div><div>${esc(S.names[1])}<b>${b}</b></div></div>
-    <div class="actions"><button class="btn" id="again" type="button">جولة جديدة بنفس الفرق</button></div>
+    ${refOnline()?"":'<div class="actions"><button class="btn" id="again" type="button">جولة جديدة بنفس الفرق</button></div>'}
   </section>`;
-  $("again").onclick=()=>{const {names,cats,hideScores}=S;S=fresh();Object.assign(S,{names,cats,hideScores});render();};
+  if($("again")) $("again").onclick=newGame;
 }
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -879,7 +888,7 @@ const SB_URL="https://mxocmwkxnihenqmfhjcc.supabase.co", SB_KEY="sb_publishable_
 const ROOM_PARAM=(/[?&]room=([a-z0-9]{4,12})/.exec(location.search)||[])[1];
 let sbChan=null, sbReady=false, sbLive=null, lastRefSeen=0, helloTimer=null, refWasOnline=false;
 function refOnline(){ return Date.now()-lastRefSeen < 25000; }
-setInterval(()=>{ const on=refOnline(); if(on!==refWasOnline){ refWasOnline=on; if(!IS_REF) header(); } },3000);
+setInterval(()=>{ const on=refOnline(); if(on!==refWasOnline){ refWasOnline=on; if(!IS_REF) render(); } },3000);
 function roomCode(){
   let c=null; try{ c=localStorage.getItem(CODE_KEY); }catch(e){}
   if(!c||!/^[a-z0-9]{6}$/.test(c)){ c=Math.random().toString(36).slice(2,8).padEnd(6,"0"); try{ localStorage.setItem(CODE_KEY,c); }catch(e){} }
@@ -895,7 +904,7 @@ function startSync(){
       sbChan.on("broadcast",{event:"state"},m=>{ sbLive=m.payload; renderRef(); });
     }else{
       sbChan.on("broadcast",{event:"ref"},m=>applyRef(m.payload));
-      sbChan.on("broadcast",{event:"hello"},()=>{ const was=refOnline(); lastRefSeen=Date.now(); pushState(); if(!was) header(); });
+      sbChan.on("broadcast",{event:"hello"},()=>{ const was=refOnline(); lastRefSeen=Date.now(); if(!was){ refWasOnline=true; render(); } else pushState(); });
     }
     sbChan.subscribe(st=>{
       sbReady = st==="SUBSCRIBED";
@@ -912,7 +921,7 @@ function hostState(){
   return Object.assign(base,{n:S.curCat+1,of:S.cats.length,cat:BANK[k].name,q:item.q,a:item.a,rev:S.rev[k]||{},
     team:S.t.team,passed:!!S.t.passed,
     bonus:S.bonus?{team:S.bonus.team,q:S.bonus.item.q,a:S.bonus.item.a,base:S.bonus.base,end:S.bonus.end}:null,
-    canDbl:[canBonus(0),canBonus(1)],cnt:[correctCount(0),correctCount(1)],extra:S.t.extra||0,stopped:!!S.t.stopped,aids:S.aids,hintLeft:hintTarget()>=0,done:!!S.done[k]});
+    canDbl:[canBonus(0),canBonus(1)],cnt:[correctCount(0),correctCount(1)],extra:S.t.extra||0,stopped:!!S.t.stopped,aids:S.aids,hintLeft:hintTarget()>=0,canUndo:S.undo.length>0&&!S.bonus,last:S.curCat>=S.cats.length-1,done:!!S.done[k]});
 }
 function pushState(){
   if(IS_REF) return;
@@ -921,14 +930,20 @@ function pushState(){
   room.presence({role:"host",st:hostState()}).catch(()=>{ room.presence({role:"host",st:{names:S.names,scores:S.scores,phase:S.phase,big:true}}).catch(()=>{}); });
 }
 function applyRef(d){
-  if(!d||S.phase!=="play") return;
+  if(!d) return;
+  if(d.act==="newgame"){ newGame(); return; }
+  if(S.phase!=="play") return;
   const k=curKey(), item=S.round[k];
-  if(!item||S.done[k]||d.q!==item.q) return; // stale command for another question
+  if(!item||d.q!==item.q) return; // stale command for another question
+  if(S.done[k]){ if(d.act==="next") nextQ(); return; }
   if(d.act==="ok"){ const i=Number(d.i); if(Number.isInteger(i)&&i>=0&&i<item.a.length) correct(i); }
   else if(d.act==="wrong") wrong();
   else if(d.act==="switch") switchTurn();
   else if(d.act==="bonus" && S.bonus) endBonus(!!d.ok);
   else if(d.act==="aid" && AIDS.some(a=>a[0]===d.k)) useAid(d.team===0||d.team===1?d.team:S.t.team,d.k);
+  else if(d.act==="undo") undo();
+  else if(d.act==="revall") finishQ(false);
+  else if(d.act==="change" && WHY[d.r]) changeQ(d.r);
 }
 function sendRef(data){
   if(sbChan&&sbReady){ sbChan.send({type:"broadcast",event:"ref",payload:data}).catch(()=>{ const n=$("refmsg"); if(n) n.textContent="ما وصل الأمر، جرّب مرة ثانية."; }); return; }
@@ -969,7 +984,9 @@ function renderRef(){
   const st=host.presence.st;
   const score=`<div class="ref-scores"><span>${esc(st.names[0])}: <b>${st.scores[0]}</b></span><span>${esc(st.names[1])}: <b>${st.scores[1]}</b></span></div>`;
   if(st.phase!=="play"||!st.q){
-    v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2>${score}<p class="note">${st.big?"السؤال الحالي أكبر من أن ينرسل للجوال.":st.phase==="end"?"انتهت الجولة.":"بانتظار بداية السؤال."}</p></section>`;
+    v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2>${score}<p class="note">${st.big?"السؤال الحالي أكبر من أن ينرسل للجوال.":st.phase==="end"?"انتهت الجولة.":"بانتظار بداية السؤال. اختاروا الفئات واضغطوا «ابدأ اللعب» على الشاشة الكبيرة."}</p>
+      ${st.phase==="end"?'<button class="btn big" id="refnew" type="button">جولة جديدة بنفس الفرق</button>':""}</section>`;
+    if($("refnew")) $("refnew").onclick=()=>sendRef({act:"newgame"});
     return;
   }
   const tags=[];
@@ -994,13 +1011,25 @@ function renderRef(){
       <div class="ref-acts"><button class="btn turq big" id="rbok" type="button">صح: +${st.bonus.base}</button><button class="btn danger big" id="rbno" type="button">غلط: −${st.bonus.base}</button></div></div>`:""}
     ${st.done||!st.aids?"":[st.team,1-st.team].map(t=>`<div class="ref-aids${t===st.team?" turn":""}"><span class="lbl">مميزات ${esc(st.names[t])}${t===st.team?" (عليه الدور)":""}:</span>${refAidButtons(st,t)}</div>`).join("")}
     <ol class="ref-list">${rows}</ol>
-    ${st.done?"":'<div class="ref-acts"><button class="btn danger big" id="refwrong" type="button">غلط</button><button class="btn ghost big" id="refswap" type="button">تبديل الدور</button></div>'}
+    ${st.done
+      ? `<button class="btn big" id="refnext" type="button">${st.last?"النتيجة النهائية":"السؤال التالي"}</button>`
+      : `<div class="ref-acts"><button class="btn danger big" id="refwrong" type="button">غلط</button><button class="btn ghost big" id="refswap" type="button">تبديل الدور</button></div>
+    <div class="ref-tools"><button class="btn ghost" id="refundo" type="button" ${st.canUndo?"":"disabled"}>تراجع</button><button class="btn ghost" id="refrev" type="button">إظهار كل الأجوبة</button><button class="btn ghost" id="refchg" type="button">تغيير السؤال</button></div>
+    <div class="ref-chg" id="refchgbox" hidden><b>ليش تبي تغير السؤال؟</b><div class="ref-tools">${Object.entries(WHY).map(([r,o])=>`<button class="btn" type="button" data-why="${r}">${o.label}</button>`).join("")}<button class="btn ghost" id="refchgx" type="button">إلغاء</button></div></div>`}
+    <button class="btn ghost" id="refnew" type="button">لعبة جديدة</button>
     <p class="note" id="refmsg"></p>
   </section>`;
   v.querySelectorAll("button.ok").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"ok",i:+b.dataset.i,q:st.q}); });
   if($("refwrong")) $("refwrong").onclick=()=>sendRef({act:"wrong",q:st.q});
   if($("refswap")) $("refswap").onclick=()=>sendRef({act:"switch",q:st.q});
   if($("rbok")) $("rbok").onclick=()=>sendRef({act:"bonus",ok:true,q:st.q});
+  if($("refnext")) $("refnext").onclick=()=>sendRef({act:"next",q:st.q});
+  if($("refundo")) $("refundo").onclick=()=>sendRef({act:"undo",q:st.q});
+  armConfirm($("refrev"),"إظهار كل الأجوبة",()=>sendRef({act:"revall",q:st.q}));
+  if($("refchg")) $("refchg").onclick=()=>{ $("refchgbox").hidden=false; };
+  if($("refchgx")) $("refchgx").onclick=()=>{ $("refchgbox").hidden=true; };
+  v.querySelectorAll("[data-why]").forEach(b=>b.onclick=()=>sendRef({act:"change",r:b.dataset.why,q:st.q}));
+  armConfirm($("refnew"),"لعبة جديدة",()=>sendRef({act:"newgame"}));
   if($("rbno")) $("rbno").onclick=()=>sendRef({act:"bonus",ok:false,q:st.q});
   v.querySelectorAll("button[data-aid]").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"aid",k:b.dataset.aid,team:+b.dataset.team,q:st.q}); });
 }
