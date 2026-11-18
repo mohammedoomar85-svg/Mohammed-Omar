@@ -108,6 +108,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .btn.big{padding:16px;font-size:1.2rem;width:100%}
 .ref-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ref-tools{display:flex;flex-wrap:wrap;gap:8px}
+.ref-hint{text-align:center;font-weight:800;color:var(--brass)}
 .ref-tools .btn{flex:1 1 auto;padding:10px 12px;font-size:.9rem}
 .ref-chg{display:flex;flex-direction:column;gap:8px;border:2px solid var(--brass);border-radius:12px;padding:10px}
 .bigclock{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:3px solid var(--turq);border-radius:20px;padding:6px 26px;min-width:150px}
@@ -609,7 +610,7 @@ function play(v){
     return;
   }
   if(!S.catEnd[k] && !S.done[k]){ S.catEnd[k]=Date.now()+CATTIME*1000; markSeen(k,item.q); S.qStart={scores:S.scores.slice(),aids:JSON.parse(JSON.stringify(S.aids)),team:S.t.team}; startTurnTimer(); save(); }
-  const done=!!S.done[k], last=S.curCat>=S.cats.length-1, refCtl=refOnline(); // the referee phone holds the controls
+  const done=!!S.done[k], last=S.curCat>=S.cats.length-1, refCtl=true; // all game controls live on the referee phone
   const tags=[];
   if(!done){
     if(S.t.extra>0) tags.push('<span class="chip hot">باقي جواب إضافي</span>');
@@ -635,6 +636,7 @@ function play(v){
     </div>
     ${S.bonus&&!done?bonusPanel():""}
     <section class="answers"><h3 class="ans-h">الإجابات <span class="note">${done||refCtl?"":"(اضغط على الجواب الصح لما يقوله الفريق)"}</span></h3><div class="slots" id="slots">${slots}</div></section>
+    ${refOnline()?"":`<p class="note ref-hint">التحكم كله من جوال الحكم. اضغط «QR الحكم» فوق وخلّه يمسح الباركود.</p>`}
     ${refCtl?"":`<div class="host">
       ${done
         ? `<button class="btn" id="nextq" type="button">${last?"النتيجة النهائية":"السؤال التالي"}</button>`
@@ -748,7 +750,7 @@ function bonusPanel(){
     <div class="q-meta"><span class="chip hot">سؤال الدبل · ${esc(S.names[b.team])}</span><span class="chip">صح: +${b.base} · غلط أو خلص الوقت: −${b.base}</span></div>
     <h2 class="q-text">${esc(b.item.q)}</h2>
     <span class="turn-clock" id="bc"><span class="lbl">الوقت</span><span class="tnum" id="bn">${left<=0?"انتهى":left}</span></span>
-    ${refOnline()?"":`<div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>`}
+    ${true?"":`<div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>`}
   </section>`;
 }
 setInterval(()=>{
@@ -823,7 +825,7 @@ function results(v){
   v.innerHTML=`<section class="panel res">
     <div class="big">${title}</div>
     <div class="final"><div>${esc(S.names[0])}<b>${a}</b></div><div>${esc(S.names[1])}<b>${b}</b></div></div>
-    ${refOnline()?"":'<div class="actions"><button class="btn" id="again" type="button">جولة جديدة بنفس الفرق</button></div>'}
+    <p class="note">الجولة الجديدة تبدأ من جوال الحكم.</p>
   </section>`;
   if($("again")) $("again").onclick=newGame;
 }
