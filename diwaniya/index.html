@@ -107,6 +107,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .ref-list .rs.w0{color:var(--brass)}.ref-list .rs.w1{color:var(--turq)}
 .btn.big{padding:16px;font-size:1.2rem;width:100%}
 .ref-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ref-aids{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:10px}
+.ref-aids .lbl{font-weight:800;font-size:.9rem;width:100%}
+.ref-aid{font-size:.95rem;padding:6px 14px}
 .chg{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;border-color:var(--brass)}
 @media (max-width:560px){.slots{gap:6px}.slot{padding:8px;gap:6px;min-height:52px;font-size:.9rem}.slot .no{width:24px;height:24px;font-size:.75rem}}
 .brand-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
@@ -763,7 +766,7 @@ function hostState(){
   const base={names:S.names,scores:S.scores,phase:S.phase};
   if(S.phase!=="play"||!item) return base;
   return Object.assign(base,{n:S.curCat+1,of:S.cats.length,cat:BANK[k].name,q:item.q,a:item.a,rev:S.rev[k]||{},
-    team:S.t.team,passed:!!S.t.passed,dbl:!!S.t.double,extra:S.t.extra||0,stopped:!!S.t.stopped,done:!!S.done[k]});
+    team:S.t.team,passed:!!S.t.passed,dbl:!!S.t.double,extra:S.t.extra||0,stopped:!!S.t.stopped,aids:S.aids,hintLeft:hintTarget()>=0,done:!!S.done[k]});
 }
 function pushState(){
   if(IS_REF) return;
@@ -778,6 +781,7 @@ function applyRef(d){
   if(d.act==="ok"){ const i=Number(d.i); if(Number.isInteger(i)&&i>=0&&i<item.a.length) correct(i); }
   else if(d.act==="wrong") wrong();
   else if(d.act==="switch") switchTurn();
+  else if(d.act==="aid" && AIDS.some(a=>a[0]===d.k)) useAid(S.t.team,d.k); // the referee uses a lifeline for the team whose turn it is
 }
 function sendRef(data){
   if(sbChan&&sbReady){ sbChan.send({type:"broadcast",event:"ref",payload:data}).catch(()=>{ const n=$("refmsg"); if(n) n.textContent="ما وصل الأمر، جرّب مرة ثانية."; }); return; }
@@ -785,6 +789,19 @@ function sendRef(data){
   room.emit("ref",data).catch(e=>{
     const n=$("refmsg"); if(n) n.textContent = e&&e.code==="not_permitted" ? "حسابك ما عنده صلاحية يتحكم باللعبة. اطلب من صاحب اللعبة يشاركها معك بصلاحية مساهم أو محرر." : "ما وصل الأمر، جرّب مرة ثانية.";
   });
+}
+function refAidButtons(st){
+  const mine=st.aids[st.team]||{};
+  return AIDS.map(([k,label])=>{
+    const n=mine[k]||0;
+    const on=(k==="double"&&st.dbl)||(k==="two"&&st.extra>0)||(k==="pass"&&st.passed)||(k==="stop"&&st.stopped);
+    let ok=n>0&&!on;
+    if(k==="pass") ok=ok&&!st.passed&&!st.dbl&&!st.extra;
+    if(k==="double"||k==="two") ok=ok&&!st.passed;
+    if(k==="hint") ok=ok&&st.hintLeft!==false;
+    const txt = k==="hint" ? `${label} ${n}/${HINTS}` : label;
+    return `<button type="button" class="aid ref-aid${on?" on":""}${!n&&!on?" spent":""}" data-aid="${k}" ${ok?"":"disabled"}>${txt}</button>`;
+  }).join("");
 }
 function renderRef(){
   const v=$("view");
@@ -822,6 +839,7 @@ function renderRef(){
     ${score}
     <div class="ref-turn">${st.done?"انتهى السؤال":`الدور على <b>${esc(st.names[st.team])}</b>`} ${tags.join("")}</div>
     <p class="note warn">لا تعرض هذه الشاشة على الفريقين: فيها كل الأجوبة.</p>
+    ${st.done||!st.aids?"":`<div class="ref-aids"><span class="lbl">مميزات ${esc(st.names[st.team])}:</span>${refAidButtons(st)}</div>`}
     <ol class="ref-list">${rows}</ol>
     ${st.done?"":'<div class="ref-acts"><button class="btn danger big" id="refwrong" type="button">غلط</button><button class="btn ghost big" id="refswap" type="button">تبديل الدور</button></div>'}
     <p class="note" id="refmsg"></p>
@@ -829,6 +847,7 @@ function renderRef(){
   v.querySelectorAll("button.ok").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"ok",i:+b.dataset.i,q:st.q}); });
   if($("refwrong")) $("refwrong").onclick=()=>sendRef({act:"wrong",q:st.q});
   if($("refswap")) $("refswap").onclick=()=>sendRef({act:"switch",q:st.q});
+  v.querySelectorAll("button[data-aid]").forEach(b=>b.onclick=()=>{ b.disabled=true; sendRef({act:"aid",k:b.dataset.aid,q:st.q}); });
 }
 
 /* ---------- QR modal on the main screen ---------- */
