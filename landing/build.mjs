@@ -37,4 +37,6 @@ cpSync(join(here, 'shop'), join(here, 'dist', 'shop'), { recursive: true });
 // The Diwaniya party game is a standalone page served at /diwaniya/.
 mkdirSync(join(here, 'dist', 'diwaniya'), { recursive: true });
 copyFileSync(join(here, '..', 'diwaniya', 'index.html'), join(here, 'dist', 'diwaniya', 'index.html'));
+// supabase-js browser build (MIT), served next to the game so the referee link doesn't depend on a CDN.
+copyFileSync(join(here, '..', 'diwaniya', 'supabase.js'), join(here, 'dist', 'diwaniya', 'supabase.js'));
 console.log('Built landing/dist: index.html, admin.html, privacy.html, shop/ (shop page and photos), diwaniya/ (party game)');
