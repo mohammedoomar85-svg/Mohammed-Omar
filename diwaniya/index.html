@@ -319,7 +319,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
       <div class="turn-tag" id="tt0"></div>
       <div class="aids" id="a0"></div>
     </div>
-    <div class="brand"><h1>ديوانية مشربية الكوت</h1><small>تحدي الفريقين</small><div class="bigclock" id="bigclock" hidden><span class="lbl" id="bigLbl"></span><span class="num" id="bigNum"></span></div><span class="brand-btns"><button class="theme-btn" id="themeBtn" type="button"></button><button class="theme-btn" id="qrBtn" type="button">QR الحكم</button></span></div>
+    <div class="brand"><h1>ديوانية مشربية الكوت</h1><small>تحدي الفريقين</small><div class="bigclock" id="bigclock" hidden><span class="lbl" id="bigLbl"></span><span class="num" id="bigNum"></span></div><span class="brand-btns"><button class="theme-btn" id="themeBtn" type="button"></button><button class="theme-btn" id="qrBtn" type="button">QR الحكم</button><button class="theme-btn" id="newBtn" type="button" hidden>جولة جديدة</button></span></div>
     <div class="team" id="t1">
       <div class="row"><span class="name" id="n1">الفريق الثاني</span><span class="score" id="s1">0</span></div>
       <div class="turn-tag" id="tt1"></div>
@@ -415,7 +415,7 @@ function newTurn(team){return {team,double:false,extra:0,passed:false,timeUp:fal
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){try{const v=JSON.parse(localStorage.getItem(KEY));if(v&&v.phase&&v.cats.every(k=>BANK[k])&&v.rev)return v}catch(e){}return null}
 const curKey = () => S.cats[S.curCat];
-const catTimeLeft = k => S.catEnd[k] ? (S.catEnd[k]-Date.now())/1000 : CATTIME;
+const catTimeLeft = k => S.catEnd[k] ? Math.min(CATTIME,(S.catEnd[k]-Date.now())/1000) : CATTIME;
 const allDone = () => S.cats.every(k=>S.done[k]);
 
 /* ---------- sound ---------- */
@@ -446,11 +446,13 @@ function bigClock(){
   let lbl, num, low=false;
   if(S.bonus){ const l=Math.max(0,Math.ceil((S.bonus.end-Date.now())/1000)); lbl="سؤال الدبل · "+S.names[S.bonus.team]; num=l<=0?"انتهى":l; low=l<=5; }
   else{ lbl="دور "+S.names[S.t.team]; num=S.t.stopped?"موقوف":S.t.timeUp||turnLeft<=0?"انتهى":turnLeft; low=!S.t.stopped&&turnLeft<=10; }
+  if(waitingRef()){ lbl="الوقت واقف لين يتصل الحكم"; low=false; }
   $("bigLbl").textContent=lbl; $("bigNum").textContent=num;
   box.classList.toggle("low",low); box.classList.toggle("paused",!!S.t.stopped&&!S.bonus);
 }
 function header(){
   bigClock();
+  const nb=$("newBtn"); if(nb) nb.hidden = IS_REF || S.phase==="setup";
   const play = S.phase==="play" && S.round[curKey()] && !S.done[curKey()];
   [0,1].forEach(i=>{
     $("n"+i).textContent=S.names[i];
@@ -636,7 +638,7 @@ function play(v){
     </div>
     ${S.bonus&&!done?bonusPanel():""}
     <section class="answers"><h3 class="ans-h">الإجابات <span class="note">${done||refCtl?"":"(اضغط على الجواب الصح لما يقوله الفريق)"}</span></h3><div class="slots" id="slots">${slots}</div></section>
-    ${refOnline()?"":`<p class="note ref-hint">التحكم كله من جوال الحكم. اضغط «QR الحكم» فوق وخلّه يمسح الباركود.</p>`}
+    ${refOnline()?"":`<p class="note ref-hint">التحكم كله من جوال الحكم، والوقت واقف لين يتصل. اضغط «QR الحكم» فوق وخلّه يمسح الباركود.</p>`}
     ${refCtl?"":`<div class="host">
       ${done
         ? `<button class="btn" id="nextq" type="button">${last?"النتيجة النهائية":"السؤال التالي"}</button>`
@@ -797,7 +799,7 @@ function nextQ(){
 // The turn clock counts against a fixed end time, so it stays right even if the screen sleeps or the tab is in the background.
 let turnTimer=null, turnLeft=QTIME, turnEnd=0;
 function turnTick(){
-  turnLeft=Math.max(0,Math.ceil((turnEnd-Date.now())/1000));
+  turnLeft=Math.min(QTIME,Math.max(0,Math.ceil((turnEnd-Date.now())/1000)));
   bigClock();
   const n=$("tn"), c=$("tc");
   if(n) n.textContent = turnLeft<=0 ? "انتهى" : turnLeft;
@@ -883,6 +885,17 @@ const SB_URL="https://mxocmwkxnihenqmfhjcc.supabase.co", SB_KEY="sb_publishable_
 const ROOM_PARAM=(/[?&]room=([a-z0-9]{4,12})/.exec(location.search)||[])[1];
 let sbChan=null, sbReady=false, sbLive=null, lastRefSeen=0, helloTimer=null, refWasOnline=false;
 function refOnline(){ return Date.now()-lastRefSeen < 25000; }
+// On the website the game is run from the referee phone, so all clocks hold still until that phone is connected.
+function waitingRef(){ return STANDALONE && !!sbChan && !refOnline(); }
+let lastFreeze=Date.now();
+setInterval(()=>{
+  const now=Date.now(), dt=now-lastFreeze; lastFreeze=now;
+  if(IS_REF||S.phase!=="play"||!waitingRef()) return;
+  const k=curKey();
+  if(S.catEnd[k]&&!S.done[k]&&!S.t.stopped) S.catEnd[k]+=dt;
+  if(turnTimer) turnEnd+=dt;
+  if(S.bonus) S.bonus.end+=dt;
+},200);
 setInterval(()=>{ const on=refOnline(); if(on!==refWasOnline){ refWasOnline=on; if(!IS_REF) render(); } },3000);
 function roomCode(){
   let c=null; try{ c=localStorage.getItem(CODE_KEY); }catch(e){}
@@ -1044,6 +1057,7 @@ function openQR(){
     : roomState==="on" ? "الحكم يشوف الأجوبة. وإذا كان مسجّل دخول في Claude بحساب مشارك، يقدر بعد يضغط صح وغلط من جواله." : "الحكم يشوف كل الأجوبة. التحكم بالصح والغلط يكون من هذه الشاشة.";
 }
 $("qrBtn").onclick=openQR;
+armConfirm($("newBtn"),"جولة جديدة",()=>{ newGame(); });
 $("qrClose").onclick=()=>{ $("qrModal").hidden=true; };
 $("qrCopy").onclick=()=>{
   const t=$("qrLink");
