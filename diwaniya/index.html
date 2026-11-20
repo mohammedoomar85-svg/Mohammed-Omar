@@ -109,6 +109,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
 .ref-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ref-tools{display:flex;flex-wrap:wrap;gap:8px}
 .ref-hint{text-align:center;font-weight:800;color:var(--brass)}
+.room-code{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px dashed var(--brass);border-radius:12px;padding:8px 14px;width:100%}
+.room-code b{font-family:var(--f-display);font-size:2rem;letter-spacing:3px;direction:ltr;color:var(--brass)}
+.room-code small{color:var(--muted);font-size:.78rem}
 .ref-tools .btn{flex:1 1 auto;padding:10px 12px;font-size:.9rem}
 .ref-chg{display:flex;flex-direction:column;gap:8px;border:2px solid var(--brass);border-radius:12px;padding:10px}
 .bigclock{margin-top:8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card);border:3px solid var(--turq);border-radius:20px;padding:6px 26px;min-width:150px}
@@ -333,6 +336,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
       <p class="note">الحكم يمسح الباركود بجواله، فتفتح له لوحة فيها أسئلة الجولة الست وكل أجوبتها، بدون ما يحتاج حساب.</p>
       <div class="qr-box" id="qrBox"></div>
       <p class="note" id="qrNote"></p>
+      <div class="room-code" id="roomBox" hidden><span>رمز الغرفة</span><b id="roomCode"></b><small>الحكم يقدر يفتح <span id="refFixed" style="direction:ltr;unicode-bidi:isolate"></span> ويكتب هذا الرمز. الرمز ثابت لهذا الجهاز، فيصلح لكل الجولات.</small></div>
       <div class="qr-link"><input id="qrLink" readonly aria-label="رابط الحكم"><button class="btn ghost" id="qrCopy" type="button">انسخ الرابط</button></div>
       <details class="qr-base"><summary>رابط اللعبة المستخدم في الباركود</summary>
         <p class="note">إذا شاركت اللعبة برابط عام مختلف، الصقه هنا عشان الباركود يفتح للحكم بدون حساب.</p>
@@ -343,7 +347,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--turq);outline-o
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
 <script>
 /* QRCode.js 1.0.0 (davidshimjs) — MIT License
 The MIT License (MIT)
@@ -612,7 +616,7 @@ function play(v){
     return;
   }
   if(!S.catEnd[k] && !S.done[k]){ S.catEnd[k]=Date.now()+CATTIME*1000; markSeen(k,item.q); S.qStart={scores:S.scores.slice(),aids:JSON.parse(JSON.stringify(S.aids)),team:S.t.team}; startTurnTimer(); save(); }
-  const done=!!S.done[k], last=S.curCat>=S.cats.length-1, refCtl=true; // all game controls live on the referee phone
+  const done=!!S.done[k], last=S.curCat>=S.cats.length-1, refCtl=syncOk(); // controls live on the referee phone; if the phone link can't work here, they stay on this screen
   const tags=[];
   if(!done){
     if(S.t.extra>0) tags.push('<span class="chip hot">باقي جواب إضافي</span>');
@@ -638,7 +642,7 @@ function play(v){
     </div>
     ${S.bonus&&!done?bonusPanel():""}
     <section class="answers"><h3 class="ans-h">الإجابات <span class="note">${done||refCtl?"":"(اضغط على الجواب الصح لما يقوله الفريق)"}</span></h3><div class="slots" id="slots">${slots}</div></section>
-    ${refOnline()?"":`<p class="note ref-hint">التحكم كله من جوال الحكم، والوقت واقف لين يتصل. اضغط «QR الحكم» فوق وخلّه يمسح الباركود.</p>`}
+    ${!refCtl||refOnline()?"":`<p class="note ref-hint">التحكم كله من جوال الحكم، والوقت واقف لين يتصل. اضغط «QR الحكم» فوق وخلّه يمسح الباركود.</p>`}
     ${refCtl?"":`<div class="host">
       ${done
         ? `<button class="btn" id="nextq" type="button">${last?"النتيجة النهائية":"السؤال التالي"}</button>`
@@ -752,7 +756,7 @@ function bonusPanel(){
     <div class="q-meta"><span class="chip hot">سؤال الدبل · ${esc(S.names[b.team])}</span><span class="chip">صح: +${b.base} · غلط أو خلص الوقت: −${b.base}</span></div>
     <h2 class="q-text">${esc(b.item.q)}</h2>
     <span class="turn-clock" id="bc"><span class="lbl">الوقت</span><span class="tnum" id="bn">${left<=0?"انتهى":left}</span></span>
-    ${true?"":`<div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>`}
+    ${syncOk()?"":`<div class="actions"><button class="btn turq" id="bok" type="button">صح: +${b.base}</button><button class="btn danger" id="bno" type="button">غلط: −${b.base}</button></div>`}
   </section>`;
 }
 setInterval(()=>{
@@ -827,7 +831,7 @@ function results(v){
   v.innerHTML=`<section class="panel res">
     <div class="big">${title}</div>
     <div class="final"><div>${esc(S.names[0])}<b>${a}</b></div><div>${esc(S.names[1])}<b>${b}</b></div></div>
-    <p class="note">الجولة الجديدة تبدأ من جوال الحكم.</p>
+    ${syncOk()?'<p class="note">الجولة الجديدة تبدأ من جوال الحكم أو من زر «جولة جديدة» فوق.</p>':'<div class="actions"><button class="btn" id="again" type="button">جولة جديدة بنفس الفرق</button></div>'}
   </section>`;
   if($("again")) $("again").onclick=newGame;
 }
@@ -839,7 +843,7 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 const DEFAULT_BASE = location.origin + location.pathname, BASE_KEY = "mashrabiya-base";
 const STANDALONE = !window.claude; // served as a plain web page, not inside Claude
 const REF_PARAM = (/[?&]ref=([a-z0-9-]*)/.exec(location.search)||[])[1];
-const IS_REF = location.hash.indexOf("#ref") === 0 || REF_PARAM !== undefined;
+const IS_REF = location.hash.indexOf("#ref") === 0 || /[?&]ref(=|&|$)/.test(location.search);
 // "#ref-geo12-hist3-..." carries the round's question numbers, so the referee page works without any account or connection
 const REF_IDS = (location.hash.indexOf("#ref-") === 0 ? location.hash.slice(5) : (REF_PARAM||"")).split("-").filter(Boolean);
 let refTab = 0;
@@ -886,7 +890,9 @@ const ROOM_PARAM=(/[?&]room=([a-z0-9]{4,12})/.exec(location.search)||[])[1];
 let sbChan=null, sbReady=false, sbLive=null, lastRefSeen=0, helloTimer=null, refWasOnline=false;
 function refOnline(){ return Date.now()-lastRefSeen < 25000; }
 // On the website the game is run from the referee phone, so all clocks hold still until that phone is connected.
-function waitingRef(){ return STANDALONE && !!sbChan && !refOnline(); }
+function waitingRef(){ return STANDALONE && sbReady && !refOnline(); }
+// True when a referee phone can drive this game: the live channel is up (website) or the Claude room is available.
+function syncOk(){ return STANDALONE ? !!(sbChan&&sbReady) : !!room; }
 let lastFreeze=Date.now();
 setInterval(()=>{
   const now=Date.now(), dt=now-lastFreeze; lastFreeze=now;
@@ -915,7 +921,8 @@ function startSync(){
       sbChan.on("broadcast",{event:"hello"},()=>{ const was=refOnline(); lastRefSeen=Date.now(); if(!was){ refWasOnline=true; render(); } else pushState(); });
     }
     sbChan.subscribe(st=>{
-      sbReady = st==="SUBSCRIBED";
+      const was=sbReady; sbReady = st==="SUBSCRIBED";
+      if(!IS_REF && was!==sbReady) render(); // controls move to the referee phone or back to this screen
       if(!sbReady) return;
       if(IS_REF){ const hi=()=>sbChan.send({type:"broadcast",event:"hello",payload:{}}).catch(()=>{}); hi(); if(!helloTimer) helloTimer=setInterval(hi,8000); }
       else pushState();
@@ -979,6 +986,23 @@ function refAidButtons(st,team){
 function renderRef(){
   const v=$("view");
   const liveHost = roomState==="on" && refPeers.find(p=>p.presence&&p.presence.role==="host"&&!p.sameTab&&p.presence.st);
+  // Website: a fixed referee link (?ref) asks for the game screen's room code; with a code it waits for the live game.
+  if(STANDALONE && !ROOM_PARAM && !REF_IDS.length){
+    v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2>
+      <p class="note">اكتب رمز الغرفة اللي يطلع على شاشة اللعبة تحت «QR الحكم».</p>
+      <form id="codeForm" class="qr-link"><input id="codeIn" inputmode="latin" autocomplete="off" autocapitalize="off" maxlength="12" placeholder="مثل: ab12cd" aria-label="رمز الغرفة" style="direction:ltr;text-align:center;font-size:1.3rem"><button class="btn" type="submit">دخول</button></form>
+      <p class="note" id="codeMsg"></p></section>`;
+    $("codeForm").onsubmit=e=>{ e.preventDefault(); const c=$("codeIn").value.trim().toLowerCase();
+      if(!/^[a-z0-9]{4,12}$/.test(c)){ $("codeMsg").textContent="الرمز حروف إنجليزية وأرقام، مثل ab12cd."; return; }
+      location.href=location.pathname+"?ref=&room="+c; };
+    return;
+  }
+  if(STANDALONE && ROOM_PARAM && !sbLive && !REF_IDS.length){
+    v.innerHTML=`<section class="panel wait"><div class="spin" aria-hidden="true"></div><h2>لوحة الحكم</h2>
+      <p class="note">${sbReady?"متصل، بانتظار شاشة اللعبة. تأكد إن اللعبة مفتوحة على الشاشة الكبيرة.":"نتصل بشاشة اللعبة…"}</p>
+      <p class="note">رمز الغرفة: <b style="direction:ltr;unicode-bidi:isolate">${esc(ROOM_PARAM)}</b> · <a href="${location.pathname}?ref=">تغيير الرمز</a></p></section>`;
+    return;
+  }
   if(!liveHost && !sbLive && REF_IDS.length) return renderStaticRef();
   if(!sbLive && roomState!=="on"){
     v.innerHTML=`<section class="panel wait"><h2>لوحة الحكم</h2><p class="note">${roomState==="connecting"&&!STANDALONE?"نتصل بشاشة اللعبة…":"هذا الباركود ما فيه أسئلة الجولة لأنه انفتح قبل بداية اللعب. ابدأ الجولة على الشاشة الكبيرة، بعدها اضغط «QR الحكم» وامسح الباركود من جديد."}</p></section>`;
@@ -1047,6 +1071,7 @@ function openQR(){
   const m=$("qrModal"); m.hidden=false;
   const url=refUrl(), box=$("qrBox");
   $("qrLink").value=url; $("qrBase").value=baseUrl();
+  if(STANDALONE){ $("roomBox").hidden=false; $("roomCode").textContent=roomCode(); $("refFixed").textContent=baseUrl().split("?")[0]+"?ref"; }
   box.innerHTML="";
   if(S.phase!=="play"){ box.textContent="ابدأ الجولة أول، وبعدها يطلع الباركود هنا."; $("qrNote").textContent=""; return; }
   try{ new QRCode(box,{text:url,width:240,height:240,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.L}); }
