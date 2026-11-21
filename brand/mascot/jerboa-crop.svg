@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 22 412 380">
+<defs>
+  <!-- limb drawn as navy outline + fill -->
+</defs>
+<g stroke-linecap="round" stroke-linejoin="round" fill="none">
+  <!-- tail -->
+  <path d="M150 232 C95 250 55 225 60 175 C64 140 48 112 30 104" stroke="#1B2A4A" stroke-width="10"/>
+  <!-- tail tuft -->
+  <path d="M30 104 C10 96 8 70 26 62 C46 56 58 80 44 100 Z" fill="#F2604F" stroke="#1B2A4A" stroke-width="8"/>
+  <!-- far leg -->
+  <path d="M170 255 L135 300 L92 318" stroke="#1B2A4A" stroke-width="24"/>
+  <path d="M170 255 L135 300 L92 318" stroke="#E5A52A" stroke-width="10"/>
+  <!-- body -->
+  <ellipse cx="200" cy="222" rx="58" ry="46" fill="#FFC23D" stroke="#1B2A4A" stroke-width="9" transform="rotate(-32 200 222)"/>
+  <ellipse cx="216" cy="236" rx="30" ry="22" fill="#FFF1CC" transform="rotate(-32 216 236)"/>
+  <!-- near leg: thigh, shin, long foot -->
+  <path d="M175 240 L128 292 L70 304" stroke="#1B2A4A" stroke-width="30"/>
+  <path d="M175 240 L128 292 L70 304" stroke="#FFC23D" stroke-width="15"/>
+  <ellipse cx="172" cy="238" rx="30" ry="25" fill="#FFC23D" stroke="#1B2A4A" stroke-width="9" transform="rotate(-30 172 238)"/>
+  <path d="M150 250 C160 236 178 228 196 232" stroke="#FFC23D" stroke-width="12"/>
+  <!-- ears -->
+  <ellipse cx="232" cy="86" rx="30" ry="44" fill="#FFC23D" stroke="#1B2A4A" stroke-width="9" transform="rotate(-24 232 86)"/>
+  <ellipse cx="233" cy="90" rx="16" ry="28" fill="#F79A8D" transform="rotate(-24 233 90)"/>
+  <ellipse cx="296" cy="80" rx="30" ry="44" fill="#FFC23D" stroke="#1B2A4A" stroke-width="9" transform="rotate(12 296 80)"/>
+  <ellipse cx="296" cy="84" rx="16" ry="28" fill="#F79A8D" transform="rotate(12 296 84)"/>
+  <!-- head -->
+  <circle cx="272" cy="160" r="56" fill="#FFC23D" stroke="#1B2A4A" stroke-width="9"/>
+  <ellipse cx="306" cy="182" rx="27" ry="20" fill="#FFF1CC"/>
+  <!-- eyes -->
+  <ellipse cx="262" cy="150" rx="13" ry="17" fill="#1B2A4A"/>
+  <ellipse cx="303" cy="148" rx="12" ry="16" fill="#1B2A4A"/>
+  <circle cx="266" cy="143" r="5" fill="#fff"/><circle cx="306" cy="141" r="4.5" fill="#fff"/>
+  <!-- nose, smile, cheek -->
+  <ellipse cx="327" cy="171" rx="7.5" ry="5.5" fill="#1B2A4A"/>
+  <path d="M296 190 Q309 203 324 190" stroke="#1B2A4A" stroke-width="5.5"/>
+  <circle cx="246" cy="180" r="10" fill="#F2604F" opacity=".45"/>
+  <path d="M333 176 L358 170 M333 182 L358 186" stroke="#1B2A4A" stroke-width="3.5"/>
+  <!-- front paws tucked -->
+  <path d="M252 214 Q272 214 282 200" stroke="#1B2A4A" stroke-width="20"/>
+  <path d="M252 214 Q272 214 282 200" stroke="#FFC23D" stroke-width="8"/>
+  <!-- motion lines -->
+  <path d="M58 340 L18 340 M70 365 L38 372 M40 300 L12 300" stroke="#0A7F96" stroke-width="8"/>
+</g>
+</svg>
