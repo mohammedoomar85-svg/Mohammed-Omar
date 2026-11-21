@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -30 440 410">
+<g stroke="#1B2A4A" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M20 330 L380 330" stroke="#FFC23D" stroke-width="10"/>
+  <rect x="34" y="262" width="68" height="68" rx="14" fill="#F2604F"/>
+  <path d="M50 292 q8 7 16 0 M74 292 q8 7 16 0" fill="none" stroke-width="5"/>
+  <text x="96" y="248" font-family="Baloo" font-size="34" fill="#1B2A4A" stroke="none">z</text><text x="114" y="222" font-family="Baloo" font-size="24" fill="#1B2A4A" stroke="none">z</text>
+  <path d="M190 206 L232 280 L148 280 Z" fill="#0A7F96" stroke-width="8"/>
+  <path d="M170 280 L166 330 M210 280 L214 330" stroke-width="8"/><ellipse cx="160" cy="330" rx="10" ry="5" fill="#1B2A4A" stroke="none"/><ellipse cx="220" cy="330" rx="10" ry="5" fill="#1B2A4A" stroke="none"/>
+  <circle cx="181" cy="250" r="5" fill="#1B2A4A" stroke="none"/><circle cx="201" cy="250" r="5" fill="#1B2A4A" stroke="none"/>
+  <path d="M184 264 L198 264" stroke-width="4"/>
+  <path d="M236 250 Q250 170 278 140" fill="none" stroke="#0A7F96" stroke-width="6" stroke-dasharray="2 16"/>
+  <circle cx="312" cy="96" r="46" fill="#FFC23D"/>
+  <path d="M294 138 L284 172 M330 138 L340 172" stroke-width="8"/>
+  <ellipse cx="280" cy="174" rx="11" ry="6" fill="#1B2A4A" stroke="none"/><ellipse cx="344" cy="174" rx="11" ry="6" fill="#1B2A4A" stroke="none"/>
+  <path d="M270 80 L244 46 M354 80 L380 46" stroke-width="8"/>
+  <circle cx="242" cy="42" r="8" fill="#FFC23D" stroke-width="6"/><circle cx="382" cy="42" r="8" fill="#FFC23D" stroke-width="6"/>
+  <path d="M294 86 q6 -8 12 0 M318 86 q6 -8 12 0" fill="none" stroke-width="5"/>
+  <path d="M296 106 Q312 126 328 106 Z" fill="#F2604F" stroke-width="5"/>
+</g>
+<g stroke="#F2604F" stroke-width="7" stroke-linecap="round"><path d="M300 200 L300 222 M324 200 L324 222"/></g></svg>
