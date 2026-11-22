@@ -3,7 +3,7 @@ Phone OTP sign in,onboarding,must,yes,no,original has OTP complaints - make it r
 Arabic and English with RTL,onboarding,must,yes,no,Gulf market
 Business profile setup,onboarding,must,yes,no,
 Connect Meta assets (Instagram account Facebook page pixel),accounts,must,yes,no,W04; needs Meta Marketing API app review
-Connect Snapchat ad account,accounts,must,yes,no,needs Snap Marketing API approval
+Connect Snapchat ad account,accounts,should,yes,no,needs Snap Marketing API approval - phase 2 (Atheer runs IG + TikTok)
 Pick platform and ad format,ads,must,yes,no,W02
 Choose goal (sales traffic app installs),ads,must,yes,no,W02
 Upload image or video creative,ads,must,yes,no,original has upload failure complaints
@@ -15,7 +15,7 @@ Campaign status (review live paused ended rejected),ads,must,yes,no,
 Unified dashboard across platforms,reporting,must,yes,no,mobile + desktop
 Campaign detail with results,reporting,must,yes,no,
 Support chat on every screen,support,must,yes,no,W04; their support is a top complaint - beat it
-Connect TikTok ad account,accounts,should,yes,no,needs TikTok Marketing API approval
+Connect TikTok ad account,accounts,must,yes,no,needs TikTok Marketing API approval - Atheer core platform
 Edit live campaign budget end date name,ads,should,yes,no,
 Meta pixel and Snapchat pixel + CAPI,tracking,should,yes,no,
 AI auto targeting,ads,should,yes,no,W01
