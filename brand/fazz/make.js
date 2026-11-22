@@ -5,34 +5,8 @@ const textPath = require('../text2path');
 const C = { navy: '#1B2A4A', cream: '#FFFBF2', sun: '#FFC23D', coral: '#F2604F', sea: '#0A7F96', leaf: '#2E9E62', belly: '#FFF1CC', ear: '#F79A8D' };
 const N = C.navy;
 
-// A: Fizzo springs up out of the toy box.
-const boxPop = `
-<g stroke="${N}" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
-  <path d="M110 250 L290 250 L270 232 L130 232 Z" fill="${N}"/>
-  <path d="M286 300 C340 300 352 250 336 205" fill="none" stroke-width="9"/>
-  <path d="M336 205 C326 186 338 166 356 172 C374 180 366 206 344 210 Z" fill="${C.coral}"/>
-  <ellipse cx="200" cy="222" rx="50" ry="58" fill="${C.sun}"/>
-  <ellipse cx="200" cy="236" rx="28" ry="32" fill="${C.belly}" stroke="none"/>
-  <path d="M162 205 L122 160" stroke-width="22"/><path d="M162 205 L122 160" stroke="${C.sun}" stroke-width="9"/>
-  <path d="M238 205 L278 160" stroke-width="22"/><path d="M238 205 L278 160" stroke="${C.sun}" stroke-width="9"/>
-  <circle cx="119" cy="155" r="11" fill="${C.sun}" stroke-width="7"/><circle cx="281" cy="155" r="11" fill="${C.sun}" stroke-width="7"/>
-  <ellipse cx="166" cy="70" rx="27" ry="42" fill="${C.sun}" transform="rotate(-22 166 70)"/>
-  <ellipse cx="166" cy="74" rx="14" ry="27" fill="${C.ear}" stroke="none" transform="rotate(-22 166 74)"/>
-  <ellipse cx="234" cy="70" rx="27" ry="42" fill="${C.sun}" transform="rotate(22 234 70)"/>
-  <ellipse cx="234" cy="74" rx="14" ry="27" fill="${C.ear}" stroke="none" transform="rotate(22 234 74)"/>
-  <circle cx="200" cy="138" r="54" fill="${C.sun}"/>
-  <ellipse cx="200" cy="160" rx="25" ry="18" fill="${C.belly}" stroke="none"/>
-  <ellipse cx="180" cy="128" rx="11" ry="15" fill="${N}" stroke="none"/><ellipse cx="220" cy="128" rx="11" ry="15" fill="${N}" stroke="none"/>
-  <circle cx="183" cy="122" r="4.5" fill="#fff" stroke="none"/><circle cx="223" cy="122" r="4.5" fill="#fff" stroke="none"/>
-  <ellipse cx="200" cy="150" rx="7" ry="5" fill="${N}" stroke="none"/>
-  <path d="M186 160 Q200 182 214 160 Z" fill="${C.coral}" stroke-width="5"/>
-  <circle cx="162" cy="152" r="9" fill="${C.coral}" stroke="none" opacity=".45"/><circle cx="238" cy="152" r="9" fill="${C.coral}" stroke="none" opacity=".45"/>
-  <rect x="110" y="250" width="180" height="118" rx="10" fill="${C.sea}"/>
-  <path d="M110 250 L58 214 L84 192 L134 232 Z" fill="#0C93AD"/>
-  <path d="M290 250 L342 214 L316 192 L266 232 Z" fill="#0C93AD"/>
-  <path d="M188 250 L188 368 M212 250 L212 368" stroke="${C.sun}" stroke-width="10"/>
-</g>
-<g stroke="${C.coral}" stroke-width="8" stroke-linecap="round"><path d="M100 96 L78 82 M92 128 L66 126 M300 96 L322 82 M308 128 L334 126 M200 14 L200 -6"/></g>`;
+// A: a Kuwaiti boy and girl spring up out of the toy box.
+const boxPop = require('./kids');
 
 // C: three shapes wake up — asleep, getting up, jumping.
 const wakeUp = `
@@ -82,7 +56,7 @@ const wakeUp = `
   .c{flex:1;background:${C.cream};border-radius:28px;padding:24px 16px 30px;display:flex;flex-direction:column;align-items:center;gap:10px}
   .t{font:800 30px Baloo}.s{font:700 18px Taj;color:#55607A;text-align:center;min-height:50px}
   </style></head><body>
-  ${card('أ · يفز من الصندوق', 'فزّو يقوم من الصندوق ويقول: يلا نلعب!', boxPop)}
+  ${card('أ · يفزون من الصندوق', 'ولد وبنت من الكويت: يلا نلعب!', boxPop)}
   ${card('ب · الحرف الناط', 'الفاء على سوستة، ونقطتها تفز لفوق', springF)}
   ${card('ج · نايم ← يقوم ← يفز', 'الأشكال تصحى وتقوم تلعب', wakeUp)}
   </body></html>`;
