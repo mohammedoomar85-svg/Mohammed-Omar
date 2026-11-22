@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "claude-code-setup@claude-plugins-official": true,
+    "tokeneconomizer@tokeneconomizer": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "tokeneconomizer": {
+      "source": {
+        "source": "github",
+        "repo": "microsoft/TokenEconomizer"
+      }
+    }
+  }
+}
