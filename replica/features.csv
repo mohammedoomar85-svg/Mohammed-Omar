@@ -1,0 +1,34 @@
+feature,area,priority,original,clone,notes
+Phone OTP sign in,onboarding,must,yes,no,original has OTP complaints - make it reliable + add Apple/Google sign in
+Arabic and English with RTL,onboarding,must,yes,no,Gulf market
+Business profile setup,onboarding,must,yes,no,
+Connect Meta ad account (Instagram + Facebook),accounts,must,yes,no,needs Meta Marketing API app review
+Connect Snapchat ad account,accounts,must,yes,no,needs Snap Marketing API approval
+Connect TikTok ad account,accounts,should,yes,no,needs TikTok Marketing API approval
+Connect Google Ads account,accounts,could,yes,no,developer token; lower priority in Gulf social commerce
+Create one ad and launch on several platforms,ads,must,yes,no,core loop
+Upload image or video creative,ads,must,yes,no,original has upload failure complaints
+Per-platform ad preview,ads,must,yes,no,guess - confirm on real app
+Audience targeting (location age gender interests),ads,must,yes,no,
+Budget and schedule with minimum check,ads,must,yes,no,original min $75/3 days
+Review and pay,payments,must,yes,no,decide money model in /replica-architect
+Campaign status (review live paused ended rejected),ads,must,yes,no,
+Unified dashboard across platforms,reporting,must,yes,no,
+Campaign detail with per-platform results,reporting,must,yes,no,
+Edit live campaign budget end date name,ads,should,yes,no,
+Meta pixel connection,tracking,should,yes,no,
+Snapchat pixel and Conversions API,tracking,should,yes,no,
+AI audience targeting,ads,should,yes,no,
+AI-generated visuals,ads,should,yes,no,
+Automated scheduling,ads,should,yes,no,
+Zid store integration,integrations,should,yes,no,
+Push notifications for status changes,notifications,should,unknown,no,confirm on real app
+Shopify integration,integrations,could,yes,no,separate Shopify listing exists
+Salla integration,integrations,could,unknown,no,big in Saudi
+Free trial (7 days),payments,could,yes,no,seen on Zid listing
+In-app support chat,support,could,yes,no,original support is a top complaint
+Book a demo,support,could,yes,no,
+Reports export,reporting,could,unknown,no,
+Their ad platform partner status,platform,skip,yes,skip,must be earned with your own API approvals
+Their customer base and case studies,platform,skip,yes,skip,not a feature
+Their brand name tagline and visuals,brand,skip,yes,skip,clean room - replica-brand makes yours
