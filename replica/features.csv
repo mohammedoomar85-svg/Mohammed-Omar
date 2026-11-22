@@ -2,33 +2,41 @@ feature,area,priority,original,clone,notes
 Phone OTP sign in,onboarding,must,yes,no,original has OTP complaints - make it reliable + add Apple/Google sign in
 Arabic and English with RTL,onboarding,must,yes,no,Gulf market
 Business profile setup,onboarding,must,yes,no,
-Connect Meta ad account (Instagram + Facebook),accounts,must,yes,no,needs Meta Marketing API app review
+Connect Meta assets (Instagram account Facebook page pixel),accounts,must,yes,no,W04; needs Meta Marketing API app review
 Connect Snapchat ad account,accounts,must,yes,no,needs Snap Marketing API approval
-Connect TikTok ad account,accounts,should,yes,no,needs TikTok Marketing API approval
-Connect Google Ads account,accounts,could,yes,no,developer token; lower priority in Gulf social commerce
-Create one ad and launch on several platforms,ads,must,yes,no,core loop
+Pick platform and ad format,ads,must,yes,no,W02
+Choose goal (sales traffic app installs),ads,must,yes,no,W02
 Upload image or video creative,ads,must,yes,no,original has upload failure complaints
-Per-platform ad preview,ads,must,yes,no,guess - confirm on real app
 Audience targeting (location age gender interests),ads,must,yes,no,
-Budget and schedule with minimum check,ads,must,yes,no,original min $75/3 days
+Daily budget stepper with minimum and tip,ads,must,yes,no,W01
+Duration: instant N days or scheduled,ads,must,yes,no,W01
 Review and pay,payments,must,yes,no,decide money model in /replica-architect
 Campaign status (review live paused ended rejected),ads,must,yes,no,
-Unified dashboard across platforms,reporting,must,yes,no,
-Campaign detail with per-platform results,reporting,must,yes,no,
+Unified dashboard across platforms,reporting,must,yes,no,mobile + desktop
+Campaign detail with results,reporting,must,yes,no,
+Support chat on every screen,support,must,yes,no,W04; their support is a top complaint - beat it
+Connect TikTok ad account,accounts,should,yes,no,needs TikTok Marketing API approval
 Edit live campaign budget end date name,ads,should,yes,no,
-Meta pixel connection,tracking,should,yes,no,
-Snapchat pixel and Conversions API,tracking,should,yes,no,
-AI audience targeting,ads,should,yes,no,
-AI-generated visuals,ads,should,yes,no,
-Automated scheduling,ads,should,yes,no,
-Zid store integration,integrations,should,yes,no,
+Meta pixel and Snapchat pixel + CAPI,tracking,should,yes,no,
+AI auto targeting,ads,should,yes,no,W01
+Template picker for ads,creative,should,yes,no,W05; design your own templates
+In-app editor (transform adjust sticker text),creative,should,yes,no,W05; use an editor SDK
+Create ad from store product without uploading,creative,should,yes,no,W01
+Connect Zid store,integrations,should,yes,no,W01
+Connect Shopify store,integrations,should,yes,no,W01
+Funnel report (impressions to purchase),reporting,should,yes,no,W03
+Export PDF report by email,reporting,should,yes,no,W01 W06
 Push notifications for status changes,notifications,should,unknown,no,confirm on real app
-Shopify integration,integrations,could,yes,no,separate Shopify listing exists
-Salla integration,integrations,could,unknown,no,big in Saudi
-Free trial (7 days),payments,could,yes,no,seen on Zid listing
-In-app support chat,support,could,yes,no,original support is a top complaint
+Team members and roles,team,should,yes,no,W04 flexible user permissions
+Connect Google Ads account,accounts,could,yes,no,W02 shows Google; developer token
+Connect ordable store,integrations,could,yes,no,W04
+Salla integration,integrations,could,unknown,no,big in Saudi - not seen in theirs
+Creative performance: ads driving most sales,reporting,could,yes,no,W06
+Gender and age breakdown charts,reporting,could,yes,no,W06
+AI-generated visuals,creative,could,yes,no,features page
+Free trial (7 days),payments,could,yes,no,Zid listing
+Local and global payment methods (KNET mada Apple Pay cards),payments,could,yes,no,W04 says local/global
 Book a demo,support,could,yes,no,
-Reports export,reporting,could,unknown,no,
-Their ad platform partner status,platform,skip,yes,skip,must be earned with your own API approvals
+Their ad platform partner status and credit-back deal,platform,skip,yes,skip,earn your own with API approvals
 Their customer base and case studies,platform,skip,yes,skip,not a feature
-Their brand name tagline and visuals,brand,skip,yes,skip,clean room - replica-brand makes yours
+Their brand name logo templates and copy,brand,skip,yes,skip,clean room - replica-brand makes yours
