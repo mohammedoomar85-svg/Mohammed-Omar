@@ -40,3 +40,12 @@ Book a demo,support,could,yes,no,
 Their ad platform partner status and credit-back deal,platform,skip,yes,skip,earn your own with API approvals
 Their customer base and case studies,platform,skip,yes,skip,not a feature
 Their brand name logo templates and copy,brand,skip,yes,skip,clean room - replica-brand makes yours
+No wallet: spend goes straight to the platform on the user's own ad account; flat visible subscription,fix,must,no,no,F1 - hate #6 #7 (fixes.md)
+Minimum budget equals the platform's own minimum + small-budget mode,fix,must,no,no,F2 - hate #7 + 3 requests
+AI pre-check before submit + plain-Arabic rejection reason + one-tap fix,fix,must,no,no,F3 - hate #8 #4
+Review tracker with push notifications and expected time,fix,must,no,no,F4 - hate #4
+Sign in with Apple/Google/phone; WhatsApp OTP fallback; minimal fields,fix,must,no,no,F5 - hate #2
+Sales reconciliation: real store orders next to platform conversions,fix,should,no,no,F6 - hate #1
+Daily spend receipt per campaign (paid / spent / fee),fix,must,no,no,F7 - hate #1 #6
+Human chat in working hours + AI assistant on weekends,fix,should,no,no,F8 - hate #5
+Resumable video upload with on-device compression and Arabic errors,fix,should,no,no,F9 - hate #3

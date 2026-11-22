@@ -1,0 +1,28 @@
+{
+  "_about": "Themes for an ad-launcher app in the Gulf (Arabic + English reviews). Used with: python3 reviews.py replica/reviews.csv --themes replica/themes-ads.json --months 36",
+  "request_patterns": [
+    "اتمنى", "أتمنى", "يفضل", "ياليت", "نرجو", "يحتاج تطوير", "اين ", "\\bwhy there is no\\b", "\\bi wish\\b", "\\bplease add\\b"
+  ],
+  "themes": [
+    {"id": "review_wait", "label": "Waiting: account verification and ad review take too long", "kind": "complaint",
+     "patterns": ["تحت المراجع", "توثيق", "انتظر", "ينتظر", "٧٢ ساعة", "تجاوز 24", "under review", "حضر الحساب", "هيتحظر", "يتقفل", "عدم توثيق"]},
+    {"id": "rejected", "label": "Ads or accounts rejected, often with no reason given", "kind": "complaint",
+     "patterns": ["يرفض", "رفض", "الغوا الاعلان", "جودة", "جودتة", "غير عالية الجودة", "دون توضيح", "توضيح سبب", "reject"]},
+    {"id": "money", "label": "Money held: wallet, refunds refused, budget not fully spent", "kind": "complaint",
+     "patterns": ["المحفظة", "استرجاع", "يرجعون المبلغ", "اعادة المبلغ", "سحب المبالغ", "نص المبلغ", "stole my money", "نصب", "نصابين", "يمتصون فلوسك", "لن يرجع"]},
+    {"id": "price", "label": "Too expensive: fees above the platforms and high minimum budget", "kind": "complaint",
+     "patterns": ["غالي", "أسعار", "اسعار", "سعر الاعلان", "اقل مبلغ", "اقل ميزانية", "مرتفع", "ارخص", "رواتب الموظفين", "رسوم اعلان"]},
+    {"id": "no_results", "label": "No results, or numbers that do not match real sales", "kind": "complaint",
+     "patterns": ["بدون فائدة", "بدون فايدة", "من دون فائدة", "لم يعد لنا بالفائده", "مااستفدت", "ما استفدت", "ماستفدت", "لا تستفيد", "ارقام وهمية", "أرقام وهمية", "غير صحيح", "مختلف عن عدد المبيعات", "لايوجد عائد", "نتائج جداً سيئه", "على الفاضي", "يهدر المال"]},
+    {"id": "signup", "label": "Sign up and OTP problems", "kind": "complaint",
+     "patterns": ["\\bOTP\\b", "رمز التحقق", "التسجيل", "اسجل", "تسجيل الدخول", "الدخول", "\\bregister\\b", "اختار الدولة"]},
+    {"id": "bugs", "label": "Crashes, freezes and upload errors", "kind": "complaint",
+     "patterns": ["يقفل التطبيق", "يغلق التطبيق", "يعلق", "الشاشة الزرقاء", "\\bcrash", "\\berrors?\\b", "can.t upload", "ارفع", "going crazy", "تعثر", "لا يظهر شي", "not working", "التحديث الاخير", "سلاسه"]},
+    {"id": "support", "label": "Support: slow, unhelpful, absent on weekends", "kind": "complaint",
+     "patterns": ["خدمة عملاء سيئة", "خدمة العملاء سيئ", "الخدمة سيئة", "خدمة سيئه", "الدعم سيء", "لا يوجد دعم", "ولا يوجد دعم", "لايوجد رد", "customer service", "التواصل مع الفريق محدود", "عدم الخبرة", "الاجازة الاسبوعية", "غير متعاونين", "مافي اي تعاون"]},
+    {"id": "language", "label": "Arabic language not applied", "kind": "complaint",
+     "patterns": ["اللغه العربيه", "اللغة العربية"]},
+    {"id": "req_more", "label": "Wants more campaign options, AI, Facebook, lower minimum", "kind": "request",
+     "patterns": ["أتمنى فقط تطوير", "\\bAI\\b", "اين اعلانات الفايسبوك", "personalized option", "ان لا يكون اقل ميزانية", "التقارير والقراءات"]}
+  ]
+}
