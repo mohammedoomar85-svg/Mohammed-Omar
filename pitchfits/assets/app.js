@@ -138,6 +138,8 @@
       const o = e.target.closest("[data-open]"); if (o) { e.preventDefault(); $("#" + o.dataset.open).classList.add("open"); if (o.dataset.open === "drawer") renderCart(); }
       if (e.target.closest("[data-close]")) e.target.closest(".drawer, .mnav").classList.remove("open");
       if (e.target.closest("[data-toggle-search]")) { $(".search-bar").classList.toggle("open"); $(".search-bar input").focus(); }
+      const cs = e.target.closest("[data-card-size]");
+      if (cs) { const p = byId(cs.dataset.id); addToCart(p.id, cs.dataset.cardSize, 1, p.print ? { name: p.print.name, number: p.print.number, included: true } : null); }
       const add = e.target.closest("[data-quick-add]");
       if (add) { e.preventDefault(); location.href = "product.html?id=" + encodeURIComponent(add.dataset.quickAdd); }
     });
@@ -159,7 +161,7 @@
     const key = id + "|" + size + "|" + (custom ? custom.name + "#" + custom.number + (custom.included ? "*" : "") : "");
     const ex = cart.find(l => l.key === key);
     if (ex) ex.qty += qty; else cart.push({ key, id, size, qty, custom });
-    save(); toast("Added to cart");
+    save(); toast(`Added size ${size} to cart`);
     $("#drawer").classList.add("open"); renderCart();
   }
 
@@ -230,7 +232,6 @@
       <a class="media ${im.length ? "has-photo" : ""}" href="product.html?id=${p.id}">
         <div class="badges">${off ? `<span class="badge sale">-${off}%</span>` : ""}${p.badge ? `<span class="badge ${p.badge === "Best Seller" ? "hot" : ""}">${esc(p.badge)}</span>` : ""}</div>
         ${im.length ? photo(im[0], p.name, "a") + (im[1] ? photo(im[1], p.name + " back", "b") : "") : jersey(p.kit)}
-        <button class="btn quick" data-quick-add="${p.id}">Choose Size +</button>
       </a>
       <a class="info" href="product.html?id=${p.id}">
         <div class="meta-line">${esc(p.team || "")}${p.season ? " · " + esc(p.season) : ""}</div>
@@ -238,7 +239,9 @@
         ${p.print ? `<div class="print-line">${esc(printLabel(p.print))}</div>` : ""}
         ${stars(p)}
         <div class="price"><span class="now ${off ? "on-sale" : ""}">${money(p.price)}</span>${p.compareAt ? `<s>${money(p.compareAt)}</s>` : ""}</div>
-      </a></div>`;
+      </a>
+      <div class="card-sizes" aria-label="Add to cart in size">${(isKids(p) ? SIZES.kids : SIZES.adult).map(s => `<button data-card-size="${s}" data-id="${p.id}" aria-label="Add size ${s} to cart">${s}</button>`).join("")}</div>
+    </div>`;
   }
   const inCol = (p, id) => id === "all" ? true : id === "sale" ? !!p.compareAt
     : id === "classic" ? p.collections.some(c => c.startsWith("classic")) : p.collections.includes(id);
