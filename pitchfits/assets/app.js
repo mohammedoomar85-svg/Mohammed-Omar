@@ -103,7 +103,7 @@
     const foot = `
       <section class="news block"><div class="wrap">
         <h2 class="display">Get <em>10% Off</em> Your First Kit</h2>
-        <p>Join the squad for drops, restocks and members-only deals.</p>
+        <p>Join the squad for drops, restocks and members-only deals. Code WELCOME10 works on full-price jerseys.</p>
         <form id="newsForm"><input type="email" required placeholder="Enter your email"><button class="btn accent">Join Now</button></form>
       </div></section>
       <footer class="footer"><div class="wrap">
@@ -142,7 +142,7 @@
       if (add) { e.preventDefault(); location.href = "product.html?id=" + encodeURIComponent(add.dataset.quickAdd); }
     });
     document.addEventListener("keydown", e => { if (e.key === "Escape") $$(".drawer.open, .mnav.open").forEach(x => x.classList.remove("open")); });
-    $("#newsForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast("You're in! Use code PITCH10 for 10% off"); });
+    $("#newsForm").addEventListener("submit", e => { e.preventDefault(); e.target.reset(); toast(S.blackFriday ? "You're in! Your WELCOME10 code works after Black Friday" : "You're in! Use code WELCOME10 for 10% off"); });
   }
 
   let tt;
@@ -172,10 +172,11 @@
       units.forEach((u, i) => { if ((i % g) >= S.buyXGetY.buy) bxgy += u; });
     }
     const pct = S.discountCodes[code] || 0;
-    const codeOff = (sub - bxgy) * pct / 100;
+    const eligible = cart.filter(l => !byId(l.id).compareAt).reduce((a, l) => a + unitPrice(l) * l.qty, 0);
+    const codeOff = Math.min(eligible, sub - bxgy) * pct / 100;
     const after = sub - bxgy - codeOff;
     const ship = cart.length === 0 || after >= S.freeShippingThreshold ? 0 : S.shippingFee;
-    return { sub, bxgy, codeOff, pct, ship, total: after + ship, after, units: cart.reduce((a, l) => a + l.qty, 0) };
+    return { sub, bxgy, codeOff, pct, eligible, ship, total: after + ship, after, units: cart.reduce((a, l) => a + l.qty, 0) };
   }
 
   function renderCart() {
@@ -200,7 +201,7 @@
     $(".sum", d).innerHTML = `
       ${S.buyXGetY && t.units % g === S.buyXGetY.buy ? `<div class="deal-box" style="margin:0 0 6px">${I.gift.replace("<svg", '<svg width="20" height="20"')} Add 1 more jersey — it's FREE!</div>` : S.buyXGetY && t.bxgy === 0 ? `<div style="font-size:13px;color:var(--muted)">Add ${g - (t.units % g)} more for <b>Buy ${S.buyXGetY.buy} Get ${S.buyXGetY.free} Free</b></div>` : ""}
       <div class="code"><input id="codeIn" placeholder="Discount code" value="${esc(code)}"><button id="codeBtn">Apply</button></div>
-      <div class="code-msg">${code ? (t.pct ? `<span style="color:#0a7d3b">Code ${esc(code)} applied: ${t.pct}% off</span>` : `<span style="color:var(--sale)">Code not valid</span>`) : ""}</div>
+      <div class="code-msg">${code ? (t.pct && !t.eligible ? `<span style="color:var(--sale)">${esc(code)} can't be combined with Black Friday prices</span>` : t.pct ? `<span style="color:#0a7d3b">Code ${esc(code)} applied: ${t.pct}% off</span>` : `<span style="color:var(--sale)">Code not valid</span>`) : ""}</div>
       <div class="r"><span>Subtotal</span><span>${money(t.sub)}</span></div>
       ${t.bxgy ? `<div class="r disc"><span>Buy ${S.buyXGetY.buy} Get ${S.buyXGetY.free} Free</span><span>−${money(t.bxgy)}</span></div>` : ""}
       ${t.codeOff ? `<div class="r disc"><span>Code ${esc(code)}</span><span>−${money(t.codeOff)}</span></div>` : ""}

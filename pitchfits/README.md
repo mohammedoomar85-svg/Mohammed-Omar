@@ -14,3 +14,12 @@
 
 ## الدفع
 زر Checkout يحتاج ربط (Shopify أو Stripe) — حط الرابط في `STORE.checkoutUrl`.
+
+## العروض الحالية
+- **Black Friday:** كل الجيرسيات بـ 45$ بدل 65$. لإنهاء العرض غيّر في `assets/products.js`:
+  `blackFriday: { price: 45 },` ← `blackFriday: null,`
+  وترجع الأسعار 65$ ويرجع كود الترحيب يشتغل تلقائياً.
+- **WELCOME10:** خصم 10% على القطع بسعرها الكامل (65$) فقط، وما يشتغل مع أسعار Black Friday.
+- **Buy 2 Get 1:** موقوف (`buyXGetY: null`).
+- **التوصيل:** 5–7 أيام عمل لكل أمريكا (`deliveryDays`).
+- **طرق الدفع المعروضة:** `paymentMethods`. تشتغل فعلياً بعد ربط Shopify Payments / PayPal.
