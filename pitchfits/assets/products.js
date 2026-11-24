@@ -16,6 +16,7 @@ window.STORE = {
     WELCOME15: 15
   },
   announcements: [
+    "🖤 BLACK FRIDAY SALE — ALL JERSEYS $45 (WAS $65)",
     "🔥 BUY 2 GET 1 FREE — automatically applied at checkout",
     "🚚 FREE US SHIPPING ON ORDERS $75+",
     "⚽ WORLD CUP 2026 KITS IN STOCK — USE CODE PITCH10 FOR 10% OFF"
@@ -50,53 +51,53 @@ window.PRODUCTS = [
 
   /* ---------- Classic club kits — previous seasons ---------- */
   { id: "real-madrid-third-2526", team: "Real Madrid", season: "25/26", name: "Real Madrid Third Jersey 25/26", print: { name: "MBAPPÉ", number: "10" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-clubs"], badge: "Best Seller",
+    price: 45, compareAt: 65, collections: ["classic-clubs"], badge: "Best Seller",
     images: [IMG + "real-madrid-third-2526-front.jpg", IMG + "real-madrid-third-2526-back.jpg"],
     details: ["Champions League sleeve badges", "Club World champions badge"] },
 
   /* ---------- National teams — World Cup 2026 ---------- */
   { id: "brazil-home-2026-neymar", team: "Brazil", season: "2026", name: "Brazil Home Jersey 2026", print: { name: "NEYMAR JR", number: "10" },
-    price: 39.99, compareAt: 69.99, collections: ["national", "new"], badge: "Best Seller",
+    price: 45, compareAt: 65, collections: ["national", "new"], badge: "Best Seller",
     images: [IMG + "brazil-home-2026-neymar-front.jpg", IMG + "brazil-home-2026-neymar-back.jpg"],
     details: ["World Cup 2026 sleeve badges"] },
   { id: "brazil-home-2026-raphinha", team: "Brazil", season: "2026", name: "Brazil Home Jersey 2026", print: { name: "RAPHINHA", number: "11" },
-    price: 39.99, compareAt: 69.99, collections: ["national"], badge: "",
+    price: 45, compareAt: 65, collections: ["national"], badge: "",
     images: [IMG + "brazil-home-2026-raphinha-front.jpg", IMG + "brazil-home-2026-raphinha-back.jpg"],
     details: ["World Cup 2026 sleeve badges"] },
   { id: "brazil-away-2026-neymar", team: "Brazil", season: "2026", name: "Brazil Away Jersey 2026", print: { name: "NEYMAR JR", number: "10" },
-    price: 39.99, compareAt: 69.99, collections: ["national", "new"], badge: "New",
+    price: 45, compareAt: 65, collections: ["national", "new"], badge: "New",
     images: [IMG + "brazil-away-2026-front.jpg", IMG + "brazil-away-2026-back.jpg"],
     details: ["World Cup 2026 sleeve badges"] },
   { id: "portugal-home-2026-ronaldo", team: "Portugal", season: "2026", name: "Portugal Home Jersey 2026", print: { name: "RONALDO", number: "7" },
-    price: 39.99, compareAt: 69.99, collections: ["national", "new"], badge: "Best Seller",
+    price: 45, compareAt: 65, collections: ["national", "new"], badge: "Best Seller",
     images: [IMG + "portugal-home-2026-back.jpg"],
     details: ["World Cup 2026 sleeve badges"] },
   { id: "england-home-2026", team: "England", season: "2026", name: "England Home Jersey 2026", print: { name: "BELLINGHAM", number: "10" },
-    price: 39.99, compareAt: 69.99, collections: ["national", "new"], badge: "",
+    price: 45, compareAt: 65, collections: ["national", "new"], badge: "",
     images: [IMG + "england-home-2026-back.jpg", IMG + "england-home-2026-front.jpg"] },
   { id: "england-away-2026", team: "England", season: "2026", name: "England Away Jersey 2026", print: { name: "KANE", number: "9" },
-    price: 39.99, compareAt: 69.99, collections: ["national", "new"], badge: "",
+    price: 45, compareAt: 65, collections: ["national", "new"], badge: "",
     images: [IMG + "england-away-2026-back.jpg", IMG + "england-away-2026-front.jpg"] },
 
   { id: "psg-home-2425-ucl-final", team: "Paris Saint-Germain", season: "24/25", name: "PSG Home Jersey 24/25 — Champions League Final", print: { name: "O.DEMBÉLÉ", number: "10" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-clubs"], badge: "Best Seller",
+    price: 45, compareAt: 65, collections: ["classic-clubs"], badge: "Best Seller",
     images: [IMG + "psg-home-2425-front.jpg", IMG + "psg-home-2425-back.jpg"],
     details: ["Final Munich 2025 match details", "Champions League sleeve badges"] },
   { id: "santos-home-2012", team: "Santos", season: "2012", name: "Santos Home Jersey 2012 — Centenary", print: { name: "NEYMAR JR", number: "11" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-clubs"], badge: "",
+    price: 45, compareAt: 65, collections: ["classic-clubs"], badge: "",
     images: [IMG + "santos-home-2012-front.jpg", IMG + "santos-home-2012-back.jpg"],
     details: ["1912–2012 centenary crest"] },
   { id: "barcelona-away-0405", team: "Barcelona", season: "04/05", name: "Barcelona Away Jersey 04/05", print: { name: "RONALDINHO", number: "10" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-clubs"], badge: "",
+    price: 45, compareAt: 65, collections: ["classic-clubs"], badge: "",
     images: [IMG + "barcelona-away-0405-back.jpg"],
     details: ["LFP sleeve and number badges"] },
 
   /* ---------- Classic national kits — past tournaments ---------- */
   { id: "france-away-2024", team: "France", season: "2024", name: "France Away Jersey 2024", print: { name: "MBAPPE", number: "10" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-national"], badge: "",
+    price: 45, compareAt: 65, collections: ["classic-national"], badge: "",
     images: [IMG + "france-away-2024-front.jpg", IMG + "france-away-2024-back.jpg"] },
   { id: "brazil-home-2022", team: "Brazil", season: "2022", name: "Brazil Home Jersey 2022", print: { name: "NEYMAR JR", number: "10" },
-    price: 44.99, compareAt: 74.99, collections: ["classic-national"], badge: "",
+    price: 45, compareAt: 65, collections: ["classic-national"], badge: "",
     images: [IMG + "brazil-home-2022-front.jpg", IMG + "brazil-home-2022-back.jpg"] }
 ];
 
