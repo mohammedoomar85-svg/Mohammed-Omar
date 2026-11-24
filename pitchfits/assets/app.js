@@ -111,8 +111,8 @@
           <div><div class="logo">PITCH<b>FITS</b></div><p>Football jerseys for fans across the USA. Club, national team and classic kits, delivered to your door.</p>
             <div class="social"><a href="${S.instagram}" aria-label="Instagram">${I.ig}</a><a href="${S.tiktok}" aria-label="TikTok">${I.tt}</a></div></div>
           <div><h4>Shop</h4><a href="collection.html?c=new">New Arrivals</a>${P.some(p => p.collections.includes("clubs")) ? `<a href="collection.html?c=clubs">Club Kits</a>` : ""}<a href="collection.html?c=national">National Teams</a><a href="collection.html?c=classic-clubs">Classic Club Kits</a><a href="collection.html?c=classic-national">Classic National Kits</a><a href="collection.html?c=sale">Sale</a></div>
-          <div><h4>Help</h4><a href="info.html#track">Track Order</a><a href="info.html#shipping">Shipping Policy</a><a href="info.html#returns">Returns &amp; Refunds</a><a href="info.html#sizes">Size Guide</a><a href="info.html#faq">FAQ</a></div>
-          <div><h4>Company</h4><a href="info.html#about">About Us</a><a href="info.html#contact">Contact</a><a href="info.html#privacy">Privacy Policy</a><a href="info.html#terms">Terms of Service</a><a href="mailto:${S.email}">${S.email}</a></div>
+          <div><h4>Help</h4><a href="track.html">Track Your Order</a><a href="shipping.html">Shipping Policy</a><a href="returns.html">Returns &amp; Refunds</a><a href="size-guide.html">Size Guide</a><a href="faq.html">FAQ</a></div>
+          <div><h4>Company</h4><a href="about.html">About Us</a><a href="contact.html">Contact Us</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a><a href="mailto:${S.email}">${S.email}</a></div>
         </div>
         <div class="bottom"><span>© ${new Date().getFullYear()} ${S.domain} — All rights reserved.</span>
           ${payBadges()}</div>
@@ -355,9 +355,9 @@
         </div>
         ${payBadges()}
         <div style="margin-top:22px">
-          <details class="acc" open><summary>Details</summary><ul>${(p.details || []).map(d => `<li>${esc(d)}</li>`).join("")}<li>Lightweight, breathable performance fabric</li><li>Regular fit, true to size</li><li>Machine wash cold, inside out — do not iron the print</li></ul></details>
+          <details class="acc" open><summary>Details</summary><ul>${(p.details || []).map(d => `<li>${esc(d)}</li>`).join("")}<li>Lightweight, breathable performance fabric</li><li>Athletic fit — between sizes? Size up one</li><li>Machine wash cold, inside out — do not iron the print</li></ul></details>
           <details class="acc" id="sizeGuide"><summary>Size Guide</summary><table class="size-table"><tr><th>Size</th><th>Chest (in)</th><th>Length (in)</th><th>Height</th></tr><tr><td>S</td><td>36–38</td><td>27</td><td>5'5"–5'8"</td></tr><tr><td>M</td><td>38–40</td><td>28</td><td>5'8"–5'11"</td></tr><tr><td>L</td><td>40–42</td><td>29</td><td>5'11"–6'1"</td></tr><tr><td>XL</td><td>42–45</td><td>30</td><td>6'1"–6'3"</td></tr><tr><td>2XL</td><td>45–48</td><td>31</td><td>6'3"–6'5"</td></tr><tr><td>3XL</td><td>48–51</td><td>32</td><td>6'5"+</td></tr></table></details>
-          <details class="acc"><summary>Shipping &amp; Returns</summary><p>Every order is delivered in ${S.deliveryDays} business days anywhere in the USA, with tracking. Free shipping on orders over ${money(S.freeShippingThreshold)}. Returns accepted within 30 days for unworn items (custom name/number items are final sale).</p></details>
+          <details class="acc"><summary>Shipping &amp; Returns</summary><p>Every order is delivered in ${S.deliveryDays} business days anywhere in the USA, with tracking. Free shipping on orders over ${money(S.freeShippingThreshold)}. Returns accepted within 30 days for unworn items (custom name/number items are final sale). <a href="shipping.html" style="text-decoration:underline">Shipping</a> · <a href="returns.html" style="text-decoration:underline">Returns</a></p></details>
         </div>
       </div>`;
     const upd = () => {

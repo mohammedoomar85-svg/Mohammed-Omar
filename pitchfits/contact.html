@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Contact Us — PitchFits</title>
+<meta name="description" content="Contact PitchFits customer support. We reply within 24 hours, Monday to Saturday.">
+</head>
+<body data-page="info">
+<section class="col-hero"><div class="wrap"><p class="hero-tag">We're Here To Help</p><h1 class="display">Contact Us</h1></div></section>
+<div class="wrap info-layout">
+  <aside class="info-side"><h4>Help</h4><a href="track.html" class="">Track Your Order</a><a href="shipping.html" class="">Shipping Policy</a><a href="returns.html" class="">Returns &amp; Refunds</a><a href="size-guide.html" class="">Size Guide</a><a href="faq.html" class="">FAQ</a><h4>Company</h4><a href="about.html" class="">About Us</a><a href="contact.html" class="on">Contact Us</a><a href="privacy.html" class="">Privacy Policy</a><a href="terms.html" class="">Terms of Service</a></aside>
+  <article class="info-body">
+<p class="lead">Have a question about an order, sizing or a product? Our team replies to every message within 24 hours, Monday to Saturday.</p>
+<div class="info-grid">
+  <div><b>Email</b><p><a href="mailto:support@pitchfits.com">support@pitchfits.com</a></p></div>
+  <div><b>Support hours</b><p>Monday – Saturday<br>9:00 AM – 6:00 PM (ET)</p></div>
+  <div><b>Response time</b><p>Within 24 hours (business days)</p></div>
+  <div><b>Social</b><p>Instagram &amp; TikTok: @pitchfits</p></div>
+</div>
+<h2>Send us a message</h2>
+<form class="info-form" id="contactForm">
+  <div class="row2"><input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Your email" required></div>
+  <input name="order" placeholder="Order number (optional), e.g. #PF1001">
+  <select name="topic" required>
+    <option value="">What is it about?</option><option>Order status / tracking</option><option>Return or exchange</option>
+    <option>Damaged or wrong item</option><option>Sizing question</option><option>Product question</option><option>Something else</option>
+  </select>
+  <textarea name="message" rows="5" placeholder="How can we help?" required></textarea>
+  <button class="btn">Send Message</button>
+  <small>This opens your email app with your message ready to send.</small>
+</form>
+<h2>Before you write</h2>
+<p>Many answers are already in our <a href="faq.html">FAQ</a>, <a href="shipping.html">Shipping Policy</a> and <a href="returns.html">Returns &amp; Refunds</a> pages. If you're contacting us about an order, please include your order number so we can help faster.</p>
+</article>
+</div>
+<script src="assets/products.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  function mailto(form, subject, lines) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = new FormData(form), body = lines.map(function (k) { return k[0] + ': ' + (f.get(k[1]) || '-'); }).join('\n');
+      location.href = 'mailto:support@pitchfits.com?subject=' + encodeURIComponent(subject(f)) + '&body=' + encodeURIComponent(body);
+    });
+  }
+  var c = document.getElementById('contactForm');
+  if (c) mailto(c, function (f) { return (f.get('topic') || 'Question') + (f.get('order') ? ' — ' + f.get('order') : ''); },
+    [['Name', 'name'], ['Email', 'email'], ['Order', 'order'], ['Topic', 'topic'], ['Message', 'message']]);
+  var t = document.getElementById('trackForm');
+  if (t) mailto(t, function (f) { return 'Tracking request — ' + f.get('order'); }, [['Order', 'order'], ['Email', 'email']]);
+})();
+</script>
+</body>
+</html>

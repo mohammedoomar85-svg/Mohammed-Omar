@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Track Your Order — PitchFits</title>
+<meta name="description" content="Track your PitchFits order. Delivery in 5–7 business days anywhere in the USA.">
+</head>
+<body data-page="info">
+<section class="col-hero"><div class="wrap"><p class="hero-tag">Where's My Jersey?</p><h1 class="display">Track Your Order</h1></div></section>
+<div class="wrap info-layout">
+  <aside class="info-side"><h4>Help</h4><a href="track.html" class="on">Track Your Order</a><a href="shipping.html" class="">Shipping Policy</a><a href="returns.html" class="">Returns &amp; Refunds</a><a href="size-guide.html" class="">Size Guide</a><a href="faq.html" class="">FAQ</a><h4>Company</h4><a href="about.html" class="">About Us</a><a href="contact.html" class="">Contact Us</a><a href="privacy.html" class="">Privacy Policy</a><a href="terms.html" class="">Terms of Service</a></aside>
+  <article class="info-body">
+<p class="lead">As soon as your order ships, we email you a tracking number and a link to follow your package. Every order is delivered in <b>5–7 business days</b> anywhere in the USA.</p>
+<h2>How to track</h2>
+<ol class="steps">
+  <li><b>Check your email.</b> Look for "Your PitchFits order is on the way" — it contains your tracking number. Check your spam or promotions folder too.</li>
+  <li><b>Click the tracking link</b> in that email, or enter the tracking number on the carrier's website (USPS, UPS or FedEx).</li>
+  <li><b>No email yet?</b> Send us your order number below and we'll reply with your tracking details.</li>
+</ol>
+<form class="info-form" id="trackForm">
+  <div class="row2"><input name="order" placeholder="Order number, e.g. #PF1001" required><input name="email" type="email" placeholder="Email used at checkout" required></div>
+  <button class="btn">Get My Tracking Info</button>
+  <small>This opens your email app with your request ready to send. We reply within 24 hours.</small>
+</form>
+<h2>Tracking says delivered, but no package?</h2>
+<p>Check around your property, mailbox, with neighbors and your building's front desk — carriers sometimes mark packages delivered up to 24 hours early. Still nothing after 48 hours? <a href="contact.html">Contact us</a> and we'll open a claim with the carrier.</p>
+</article>
+</div>
+<script src="assets/products.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  function mailto(form, subject, lines) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = new FormData(form), body = lines.map(function (k) { return k[0] + ': ' + (f.get(k[1]) || '-'); }).join('\n');
+      location.href = 'mailto:support@pitchfits.com?subject=' + encodeURIComponent(subject(f)) + '&body=' + encodeURIComponent(body);
+    });
+  }
+  var c = document.getElementById('contactForm');
+  if (c) mailto(c, function (f) { return (f.get('topic') || 'Question') + (f.get('order') ? ' — ' + f.get('order') : ''); },
+    [['Name', 'name'], ['Email', 'email'], ['Order', 'order'], ['Topic', 'topic'], ['Message', 'message']]);
+  var t = document.getElementById('trackForm');
+  if (t) mailto(t, function (f) { return 'Tracking request — ' + f.get('order'); }, [['Order', 'order'], ['Email', 'email']]);
+})();
+</script>
+</body>
+</html>
