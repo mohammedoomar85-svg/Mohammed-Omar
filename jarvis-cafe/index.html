@@ -45,6 +45,16 @@ header { display: flex; flex-wrap: wrap; align-items: center; justify-content: s
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--mute); }
 .chip.demo { border-color: var(--saffron); color: var(--saffron); }
+.persona { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.persona button { font: 600 14px var(--font-display); color: var(--mute); background: transparent; border: 0; border-radius: 999px; padding: 5px 16px; cursor: pointer; }
+.persona button[aria-pressed="true"] { background: var(--core); color: var(--night); }
+.persona button:focus-visible { outline: 2px solid var(--saffron); outline-offset: 2px; }
+:root { --core: var(--cyan); --ring: var(--saffron); }
+:root[data-persona="noor"] { --core: var(--saffron); --ring: var(--cyan); }
+.brand-mark, .wa-av { border-color: var(--core) !important; box-shadow: 0 0 18px color-mix(in srgb, var(--core) 45%, transparent), inset 0 0 12px color-mix(in srgb, var(--core) 40%, transparent) !important; }
+.btn { background: var(--core); box-shadow: 0 0 24px color-mix(in srgb, var(--core) 35%, transparent); }
+.btn.stop { color: var(--core); border-color: var(--core); }
+.status { color: var(--core); }
 
 .main { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .grid2 > .panel, .stack .grid2 { align-self: start; }
@@ -54,7 +64,8 @@ header { display: flex; flex-wrap: wrap; align-items: center; justify-content: s
 .panel h2 { font-size: 15px; color: var(--mute); font-weight: 600; margin-bottom: 12px; letter-spacing: .3px; }
 
 /* Orb */
-.core { display: grid; gap: 14px; justify-items: center; text-align: center; }
+.core { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; justify-items: center; text-align: center; }
+[hidden] { display: none !important; }
 .orb-box { width: min(340px, 100%); aspect-ratio: 1; max-width: 100%; position: relative; }
 #orb { width: 100%; height: 100%; display: block; }
 .status { font-size: 13px; color: var(--cyan); letter-spacing: .5px; min-height: 22px; }
@@ -73,6 +84,17 @@ header { display: flex; flex-wrap: wrap; align-items: center; justify-content: s
 .subtitle .hint { color: var(--mute); font-size: 15px; font-family: var(--font-body); }
 .asks { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .ask { font: 500 14px var(--font-body); color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.talk { display: flex; gap: 8px; width: 100%; }
+.talk input { flex: 1; min-width: 0; font: 500 15px var(--font-body); color: var(--ink); background: #081427; border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; }
+.talk input:focus-visible { outline: 2px solid var(--core); outline-offset: 1px; }
+.icon-btn { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--core); background: transparent; color: var(--core); font-size: 20px; cursor: pointer; display: grid; place-items: center; }
+.icon-btn.on { background: var(--core); color: var(--night); box-shadow: 0 0 22px color-mix(in srgb, var(--core) 50%, transparent); }
+.icon-btn:focus-visible { outline: 2px solid var(--saffron); outline-offset: 3px; }
+.log { width: 100%; display: grid; gap: 6px; text-align: start; font-size: 14px; max-height: 220px; overflow-y: auto; }
+.log p { margin: 0; padding: 6px 10px; border-radius: 10px; }
+.log .me { background: #10233d; color: var(--mute); justify-self: start; }
+.log .ai { background: color-mix(in srgb, var(--core) 14%, transparent); justify-self: end; }
+.note { font-size: 12px; color: var(--mute); }
 .ask:hover { border-color: var(--cyan); color: var(--cyan); }
 
 /* Numbers */
@@ -128,11 +150,15 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"></div>
       <div>
-        <h1>جارفس</h1>
+        <h1 id="pname">بدر</h1>
         <p>مساعد كافيه دلّة · فرع الشويخ وفرع السالمية</p>
       </div>
     </div>
     <div class="chips">
+      <div class="persona" role="group" aria-label="اختار المساعد">
+        <button type="button" id="p-bader" data-p="bader" aria-pressed="true">بدر</button>
+        <button type="button" id="p-noor" data-p="noor" aria-pressed="false">نور</button>
+      </div>
       <span class="chip" id="today"></span>
       <span class="chip demo">بيانات تجريبية</span>
     </div>
@@ -142,14 +168,21 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
     <div class="panel core">
       <div class="orb-box"><canvas id="orb" aria-hidden="true"></canvas></div>
       <div class="status" id="status">جاهز</div>
-      <button class="btn" id="go" type="button">صباح الخير جارفس</button>
-      <div class="subtitle" id="sub" aria-live="polite"><span class="hint">اضغط الزر، وجارفس يقرا لك تقرير الصبح بالصوت.</span></div>
-      <div class="asks" role="group" aria-label="اسأل جارفس">
+      <button class="btn" id="go" type="button">صباح الخير يا بدر</button>
+      <div class="subtitle" id="sub" aria-live="polite"><span class="hint" id="hint">اضغط الزر، وبدر يقرا لك تقرير الصبح بالصوت.</span></div>
+      <div class="asks" role="group" aria-label="اسأل المساعد">
         <button class="ask" type="button" data-q="sales">شلون المبيعات؟</button>
         <button class="ask" type="button" data-q="reviews">شنو التقييمات؟</button>
         <button class="ask" type="button" data-q="stock">شنو ناقص بالمخزون؟</button>
         <button class="ask" type="button" data-q="tip">عطني نصيحة لليوم</button>
       </div>
+      <form class="talk" id="talk" autocomplete="off">
+        <button class="icon-btn" id="mic" type="button" aria-label="كلّمه بالمايك" title="كلّمه بالمايك" hidden>🎙</button>
+        <input id="q" type="text" placeholder="اكتب سؤالك… مثلاً: أي فرع أحسن؟" aria-label="سؤالك">
+        <button class="icon-btn" type="submit" aria-label="أرسل" title="أرسل">➤</button>
+      </form>
+      <div class="note" id="note">اضغط المايك وتكلم، أو اكتب سؤالك.</div>
+      <div class="log" id="log" aria-live="polite"></div>
     </div>
 
     <div class="stack">
@@ -208,7 +241,7 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
   <section class="panel">
     <h2>نفس التقرير على الواتساب · الساعة 8:00 الصبح</h2>
     <div class="wa">
-      <div class="wa-head"><span class="wa-av" aria-hidden="true"></span><span>جارفس</span></div>
+      <div class="wa-head"><span class="wa-av" aria-hidden="true"></span><span id="waname">بدر</span></div>
       <div class="bubble" id="wa"></div>
       <button class="copy" id="copy" type="button">انسخ الرسالة</button>
     </div>
@@ -221,7 +254,7 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
 (() => {
   // ---------- Demo data ----------
   const briefing = [
-    "صباح الخير بو محمد، هذا تقرير كافيه دلّة لليوم.",
+    "صباح الخير بو محمد، معاك {NAME}، وهذا تقرير كافيه دلّة لليوم.",
     "أمس كان يوم زين. المبيعات وصلت خمسمية وأربعة وعشرين دينار، أعلى من الأحد اللي طاف باثنعش بالمية.",
     "فرع الشويخ شايل الشغل، ثلاثمية وثمنطعش دينار. السالمية أقل، ميتين وستة دنانير.",
     "طلبات التوصيل اثنين وستين طلب: طلبات خمسة وثلاثين، كيتا خمسطعش، وجاهز اثنعش.",
@@ -229,12 +262,12 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
     "وفي إنستقرام ثمان رسايل ما انرد عليها، ثلاث منهم يسألون عن حجز طاولات يوم الجمعة.",
     "المخزون: حليب الشوفان يخلص بعد يومين، والبن الإثيوبي باقي منه كيلو واحد.",
     "نصيحتي اليوم: السبانش لاتيه أكثر شي ينباع، والكرواسان الزعتر ما يتحرك. جرّب تسوي عليه عرض مع القهوة.",
-    "هذا كل شي. يومك سعيد، وأنا موجود إذا احتجتني."
+    "هذا كل شي. يومك سعيد، وأنا {HERE} إذا احتجتني."
   ];
   const answers = {
     sales: ["المبيعات أمس خمسمية وأربعة وعشرين دينار.", "هذا أعلى من الأحد اللي طاف باثنعش بالمية، والشويخ لحاله جاب ستين بالمية من الدخل."],
     reviews: ["متوسط التقييم أربعة ونص.", "بس فيه تقييمين نجمة وحدة على طلبات، الاثنين عن التأخير بعد الساعة تسع بالليل. أقترح نزيد باريستا وقت العشا."],
-    stock: ["حليب الشوفان يخلص بعد يومين، والبن الإثيوبي باقي منه كيلو.", "تبيني أجهز لك طلبية للمورد؟"],
+    stock: ["حليب الشوفان يخلص بعد يومين، والبن الإثيوبي باقي منه كيلو.", "تبيني {PREP} لك طلبية للمورد؟"],
     tip: ["الكرواسان الزعتر انباع منه أربع حبات بس أمس.", "سو عليه عرض: كرواسان مع قهوة اليوم بدينار ونص، وخله بالستوري الساعة عشر الصبح."]
   };
   const waText =
@@ -255,14 +288,26 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
 
 💡 الكرواسان الزعتر ما يتحرك. جرب عرض مع القهوة.
 
-يومك سعيد 🤍`;
+يومك سعيد 🤍
+— {NAME}`;
+
+  // ---------- Personas ----------
+  const PERSONAS = {
+    bader: { name: "بدر", here: "موجود", prep: "أجهز", reads: "يقرا", hello: "صباح الخير يا بدر", talking: "بدر يتكلم…", answering: "بدر يرد…", thinking: "بدر يفكر…", voice: "rounded", gender: "(رجّال)", grammar: "تكلم بصيغة المذكر عن نفسك.",
+             pitch: .9, core: "70,200,255", ring: "232,176,74", dot: "120,215,255", hot: "220,245,255" },
+    noor:  { name: "نور", here: "موجودة", prep: "أجهز", reads: "تقرا", hello: "صباح الخير يا نور", talking: "نور تتكلم…", answering: "نور ترد…", thinking: "نور تفكر…", voice: "airy", gender: "(بنت)", grammar: "تكلمي بصيغة المؤنث عن نفسك، مثل: أنا موجودة، شفت، جهزت لك.",
+             pitch: 1.15, core: "232,176,74", ring: "70,200,255", dot: "245,208,140", hot: "255,244,220" }
+  };
+  let persona = "bader";
+  try { const saved = localStorage.getItem("cafe-persona"); if (PERSONAS[saved]) persona = saved; } catch (e) {}
+  const P = () => PERSONAS[persona];
+  const fill = t => t.replaceAll("{NAME}", P().name).replaceAll("{HERE}", P().here).replaceAll("{PREP}", P().prep);
 
   // ---------- Static bits ----------
   try {
     document.getElementById("today").textContent =
       new Intl.DateTimeFormat("ar-KW", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   } catch (e) { document.getElementById("today").textContent = "اليوم"; }
-  document.getElementById("wa").innerHTML = escapeHtml(waText) + '<time class="num">8:00 AM</time>';
 
   // Sparkline: last 7 days sales (KD)
   const week = [412, 389, 455, 498, 470, 541, 524];
@@ -303,7 +348,7 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
     ctx.clearRect(0, 0, w, h);
     // outer ticks
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(t * .15);
-    ctx.strokeStyle = "rgba(70,200,255,.35)"; ctx.lineWidth = c * .008;
+    ctx.strokeStyle = `rgba(${P().core},.35)`; ctx.lineWidth = c * .008;
     for (let i = 0; i < 72; i++) {
       const a = i / 72 * Math.PI * 2, L = i % 6 === 0 ? .08 : .035;
       ctx.beginPath(); ctx.moveTo(Math.cos(a) * c * .92, Math.sin(a) * c * .92); ctx.lineTo(Math.cos(a) * c * (.92 - L), Math.sin(a) * c * (.92 - L)); ctx.stroke();
@@ -311,20 +356,20 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
     ctx.restore();
     // arcs
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(-t * .4);
-    ctx.strokeStyle = "rgba(232,176,74,.7)"; ctx.lineWidth = c * .012;
+    ctx.strokeStyle = `rgba(${P().ring},.7)`; ctx.lineWidth = c * .012;
     for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(0, 0, c * .78, i * 2.1, i * 2.1 + .6); ctx.stroke(); }
     ctx.restore();
     // particles
     for (const p of parts) {
       p.a += p.s * (1 + level * 3);
       const rr = c * p.r * (.62 + level * .12 * Math.sin(t * 3 + p.a * 4));
-      ctx.fillStyle = `rgba(120,215,255,${.25 + p.z * .6})`;
+      ctx.fillStyle = `rgba(${P().dot},${.25 + p.z * .6})`;
       ctx.beginPath(); ctx.arc(cx + Math.cos(p.a) * rr, cy + Math.sin(p.a) * rr, c * (.006 + p.z * .008), 0, Math.PI * 2); ctx.fill();
     }
     // core glow
     const R = c * (.26 + level * .08);
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.8);
-    g.addColorStop(0, "rgba(220,245,255,.95)"); g.addColorStop(.25, "rgba(70,200,255,.85)"); g.addColorStop(1, "rgba(70,200,255,0)");
+    g.addColorStop(0, `rgba(${P().hot},.95)`); g.addColorStop(.25, `rgba(${P().core},.85)`); g.addColorStop(1, `rgba(${P().core},0)`);
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 1.8, 0, Math.PI * 2); ctx.fill();
     if (!reduce) requestAnimationFrame(frame);
   }
@@ -334,48 +379,166 @@ footer { color: var(--mute); font-size: 12px; text-align: center; }
   // ---------- Voice ----------
   const sub = document.getElementById("sub"), status = document.getElementById("status"), go = document.getElementById("go");
   const synth = "speechSynthesis" in window ? window.speechSynthesis : null;
-  let voice = null, runId = 0;
+  let voice = null, runId = 0, player = null;
+  // Real recorded voice: drop mp3 files in audio/bader/ and audio/noor/ named brief-0.mp3 … brief-8.mp3, sales-0.mp3 …
+  const recorded = { bader: null, noor: null };
+  async function hasRecorded(p) {
+    if (recorded[p] !== null) return recorded[p];
+    try { const r = await fetch(`audio/${p}/brief-0.mp3`, { method: "HEAD" }); recorded[p] = r.ok; }
+    catch (e) { recorded[p] = false; }
+    return recorded[p];
+  }
   function pickVoice() {
     if (!synth) return;
-    const vs = synth.getVoices();
-    voice = vs.find(v => /ar[-_]KW/i.test(v.lang)) || vs.find(v => /ar[-_](SA|AE|QA|BH|OM)/i.test(v.lang)) || vs.find(v => /^ar/i.test(v.lang)) || null;
+    const ar = synth.getVoices().filter(v => /^ar/i.test(v.lang));
+    const rank = v => (/KW/i.test(v.lang) ? 0 : /SA|AE|QA|BH|OM/i.test(v.lang) ? 1 : 2);
+    ar.sort((x, y) => rank(x) - rank(y));
+    const female = /noura|laila|layla|mariam|maryam|salma|zariyah|amira|amany|hoda|fatima|reem|sana|female|امرأة|أنثى/i;
+    const male = /fahed|hamed|maged|majed|tarik|tarek|naayf|shakir|hamdan|omar|male|رجل|ذكر/i;
+    const want = persona === "noor" ? female : male;
+    const avoid = persona === "noor" ? male : female;
+    voice = ar.find(v => want.test(v.name)) || ar.find(v => !avoid.test(v.name)) || ar[0] || null;
   }
   if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
 
-  function sayLine(text, id) {
+  function playFile(src) {
     return new Promise(res => {
+      player = new Audio(src);
+      player.onended = res; player.onerror = res;
+      player.play().catch(res);
+    });
+  }
+  // Claude runtime capabilities (only inside claude.ai): natural voice, mic, AI answers
+  let tts = null, dict = null, ai = null;
+  if (window.claude?.use) {
+    claude.use("tts").then(t => { tts = t; }).catch(() => {});
+    claude.use("sample").then(x => { ai = x; }).catch(() => {});
+    claude.use("dictation").then(d => { dict = d; if (d) setupMic(d); }).catch(() => {});
+  }
+  function sayLine(text, key, id) {
+    return new Promise(async res => {
       sub.textContent = text;
+      if (await hasRecorded(persona)) { await playFile(`audio/${persona}/${key}.mp3`); res(); return; }
+      if (tts) {
+        try { await tts.speak(text, { voice: P().voice, language: "ar", rate: 1 }); res(); return; }
+        catch (e) { if (e && (e.code === "stopped")) { res(); return; } if (e && e.code === "not_granted") tts = null; }
+      }
       const fallback = () => setTimeout(res, Math.max(2200, text.length * 75));
       if (!synth || !voice) { fallback(); return; }
       const u = new SpeechSynthesisUtterance(text);
-      u.voice = voice; u.lang = voice.lang; u.rate = 1; u.pitch = 1;
+      u.voice = voice; u.lang = voice.lang; u.rate = .95; u.pitch = P().pitch;
       let done = false; const finish = () => { if (!done) { done = true; res(); } };
       u.onend = finish; u.onerror = finish;
       setTimeout(finish, 20000);
       synth.speak(u);
     }).then(() => { if (id !== runId) throw "stopped"; });
   }
-  async function speak(lines, label) {
-    const id = ++runId;
-    if (synth) synth.cancel();
+  function stopAll() { runId++; if (synth) synth.cancel(); if (tts && tts.active()) tts.stop().catch(() => {}); if (player) { player.pause(); player = null; } }
+  async function speak(lines, prefix, label) {
+    stopAll(); const id = runId;
     target = .6; status.textContent = label; go.textContent = "وقّف"; go.classList.add("stop");
-    if (synth && !voice) status.textContent = label + " · ما فيه صوت عربي بجهازك، أعرض الكلام مكتوب";
-    try { for (const l of lines) await sayLine(l, id); } catch (e) { return; }
+    if (!(await hasRecorded(persona)) && !tts && synth && !voice) status.textContent = label + " · ما فيه صوت عربي بجهازك، أعرض الكلام مكتوب";
+    try { for (let i = 0; i < lines.length; i++) await sayLine(fill(lines[i]), `${prefix}-${i}`, id); } catch (e) { return false; }
     if (id === runId) idle();
   }
   function idle() {
-    target = 0; status.textContent = "جاهز"; go.textContent = "صباح الخير جارفس"; go.classList.remove("stop");
+    target = 0; status.textContent = "جاهز"; go.textContent = P().hello; go.classList.remove("stop");
   }
   go.addEventListener("click", () => {
-    if (go.classList.contains("stop")) { runId++; if (synth) synth.cancel(); idle(); return; }
-    speak(briefing, "يتكلم…");
+    if (go.classList.contains("stop")) { stopAll(); idle(); return; }
+    speak(briefing, "brief", P().talking);
   });
-  document.querySelectorAll(".ask").forEach(b => b.addEventListener("click", () => speak(answers[b.dataset.q], "يرد…")));
+  document.querySelectorAll(".ask").forEach(b => b.addEventListener("click", () => speak(answers[b.dataset.q], b.dataset.q, P().answering)));
+
+  // ---------- Conversation ----------
+  const qEl = document.getElementById("q"), logEl = document.getElementById("log"), note = document.getElementById("note"), micBtn = document.getElementById("mic");
+  let history = [];
+  const facts = `بيانات كافيه دلّة (أمس الأحد، بيانات تجريبية):
+- المبيعات 524 د.ك (+12% عن الأحد اللي قبله). الشويخ 318 د.ك، السالمية 206 د.ك. الطلبات 187.
+- مبيعات آخر 7 أيام: 412، 389، 455، 498، 470، 541، 524 د.ك.
+- التوصيل 62 طلب: طلبات 35، كيتا 15، جاهز 12.
+- التقييم 4.6 من 5. تقييمين نجمة وحدة على طلبات عن التأخير بعد العشا، والرد جاهز ينتظر موافقة المالك.
+- إنستقرام: 8 رسايل ما انرد عليها، 3 عن حجز طاولات الجمعة.
+- المخزون: حليب الشوفان يخلص بعد يومين، البن الإثيوبي باقي كيلو.
+- الأصناف: سبانش لاتيه 74، قهوة اليوم V60 41، كيكة الزعفران 33، آيس لاتيه بالهيل 29، كرواسان زعتر 4 (ما يتحرك).
+- الموظفين كلهم داوموا على الوقت.`;
+  function addLog(cls, text) { const el = document.createElement("p"); el.className = cls; el.textContent = text; logEl.appendChild(el); logEl.scrollTop = logEl.scrollHeight; }
+  function localAnswer(q) {
+    if (/مبيع|دخل|فلوس|دينار|فرع/.test(q)) return answers.sales;
+    if (/تقييم|ريفيو|عملا|شكو/.test(q)) return answers.reviews;
+    if (/مخزون|ناقص|حليب|بن|مورد/.test(q)) return answers.stock;
+    if (/نصيح|عرض|اقترح|شسوي|شنو أسوي/.test(q)) return answers.tip;
+    return ["هالسؤال أقدر أجاوبه لما تفتح الصفحة من claude.ai، لأن هناك أشتغل بالذكاء الاصطناعي.", "الحين جرب تسألني عن المبيعات أو التقييمات أو المخزون."];
+  }
+  async function converse(q) {
+    q = q.trim(); if (!q) return;
+    addLog("me", q); qEl.value = "";
+    let lines;
+    if (ai) {
+      stopAll(); target = .3; status.textContent = P().thinking; sub.textContent = "…";
+      const sys = `أنت ${P().name}، مساعد ذكي ${P().gender} لصاحب كافيه في الكويت اسمه بو محمد.
+تكلم باللهجة الكويتية فقط، بأسلوب ودود وعملي ومختصر، كأنك تكلمه صوت. ${P().grammar}
+جاوب بجملة إلى ثلاث جمل قصيرة، نص عادي بدون رموز أو قوائم أو إيموجي، واكتب الأرقام بالكلمات العربية عشان تنقرا صح بالصوت.
+اعتمد فقط على هالبيانات، وإذا شي مو موجود قول ما عندي هالمعلومة الحين:
+${facts}`;
+      const msgs = [{ role: "user", content: sys + "\n\nأول سؤال من بو محمد جاي." }, { role: "assistant", content: "تمام." }, ...history, { role: "user", content: q }];
+      try {
+        const r = await ai(msgs, { modelTier: "quick", cache: false });
+        const text = (r.text || "").trim();
+        history.push({ role: "user", content: q }, { role: "assistant", content: text }); history = history.slice(-8);
+        lines = text.split(/(?<=[.!؟?])\s+/).filter(Boolean);
+      } catch (e) {
+        if (e && e.code === "not_granted") ai = null;
+        lines = localAnswer(q);
+      }
+    } else lines = localAnswer(q);
+    addLog("ai", lines.map(fill).join(" "));
+    speak(lines, "chat", P().answering);
+  }
+  document.getElementById("talk").addEventListener("submit", e => { e.preventDefault(); converse(qEl.value); });
+  function setupMic(d) {
+    micBtn.hidden = false;
+    let heard = "";
+    d.onPartial(({ text }) => { qEl.value = (heard + " " + text).trim(); });
+    d.onFinal(({ text }) => { heard = (heard + " " + text).trim(); qEl.value = heard; });
+    d.onState(({ state, reason }) => {
+      const on = state === "listening" || state === "starting";
+      micBtn.classList.toggle("on", on);
+      note.textContent = on ? "أسمعك… اضغط المايك مرة ثانية لما تخلص." : "اضغط المايك وتكلم، أو اكتب سؤالك.";
+      if (on) { target = .25; status.textContent = "أسمعك…"; }
+      if (state === "idle") {
+        if (reason === "not_granted") { micBtn.hidden = true; note.textContent = "المايك مقفول. تقدر تكتب سؤالك."; }
+        const q = heard || qEl.value; heard = "";
+        if (q.trim() && (reason === "stopped" || reason === "viewer_stopped" || reason === "time_limit")) converse(q);
+        else if (!go.classList.contains("stop")) idle();
+      }
+    });
+    micBtn.addEventListener("click", () => {
+      if (d.active()) { d.stop().catch(() => {}); return; }
+      stopAll(); idle(); heard = ""; qEl.value = "";
+      d.start({ language: "ar" }).catch(e => { if (e && e.code === "not_granted") { micBtn.hidden = true; note.textContent = "المايك مقفول. تقدر تكتب سؤالك."; } });
+    });
+  }
+
+  // ---------- Persona switch ----------
+  function setPersona(p) {
+    persona = p;
+    try { localStorage.setItem("cafe-persona", p); } catch (e) {}
+    document.documentElement.dataset.persona = p;
+    document.querySelectorAll(".persona button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.p === p)));
+    document.getElementById("pname").textContent = P().name;
+    document.getElementById("waname").textContent = P().name;
+    document.getElementById("wa").innerHTML = escapeHtml(fill(waText)) + '<time class="num">8:00 AM</time>';
+    stopAll(); idle(); pickVoice(); history = []; logEl.textContent = "";
+    sub.innerHTML = `<span class="hint">اضغط الزر، و${P().name} ${P().reads} لك تقرير الصبح بالصوت.</span>`;
+  }
+  document.querySelectorAll(".persona button").forEach(b => b.addEventListener("click", () => setPersona(b.dataset.p)));
+  setPersona(persona);
 
   // ---------- Copy ----------
   document.getElementById("copy").addEventListener("click", async e => {
     const btn = e.currentTarget;
-    try { await navigator.clipboard.writeText(waText); btn.textContent = "انسخت"; }
+    try { await navigator.clipboard.writeText(fill(waText)); btn.textContent = "انسخت"; }
     catch (err) {
       const r = document.createRange(); r.selectNodeContents(document.getElementById("wa"));
       const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "حددت النص، انسخه";
