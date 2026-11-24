@@ -371,3 +371,12 @@ details.acc p, details.acc ul { color: #444; font-size: 14px; margin: 12px 0 0; 
 .promo .art img.photo:nth-child(2) { z-index: 1; transform: translateY(-10px); }
 .promo .art img.photo:nth-child(3) { transform: rotate(10deg); }
 @media (max-width: 860px) { .hero-kits { height: 360px; } .tiles .tile.big { aspect-ratio: 4/5; } }
+
+/* payment badges */
+.pay-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.pay-badges.center { justify-content: center; margin-top: 4px; }
+.pay-badges span { height: 26px; min-width: 42px; padding: 0 8px; border-radius: 5px; border: 1px solid #d9d9d9; display: inline-flex; align-items: center; justify-content: center; font: 800 11px/1 var(--body); letter-spacing: .2px; white-space: nowrap; }
+.footer .pay-badges { margin-top: 0; }
+.footer .pay-badges span { border-color: #2a2a2a; }
+.installments { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.installments b { color: var(--ink); }

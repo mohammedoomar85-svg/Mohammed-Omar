@@ -49,6 +49,23 @@
     ig: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
     tt: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.3 1.7 3.8 4 4v3c-1.5 0-2.9-.4-4-1.2V15a6 6 0 1 1-6-6v3a3 3 0 1 0 3 3V3h3Z"/></svg>'
   };
+  /* Payment badges (text marks in each brand's colors) */
+  const PAY = {
+    visa: ["VISA", "#1a1f71", "#fff", "italic 900 13px/1 Arial, sans-serif"],
+    mastercard: ['<i style="display:inline-flex"><b style="width:13px;height:13px;border-radius:50%;background:#eb001b;display:inline-block"></b><b style="width:13px;height:13px;border-radius:50%;background:#f79e1b;display:inline-block;margin-left:-5px;mix-blend-mode:multiply"></b></i>', "#fff", "#111"],
+    amex: ["AMEX", "#2e77bc", "#fff"],
+    discover: ['DISC<b style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#f76f20;margin:0 1px"></b>VER', "#fff", "#111"],
+    paypal: ['<b style="color:#003087">Pay</b><b style="color:#009cde">Pal</b>', "#fff", "#003087", "italic 900 13px/1 Arial, sans-serif"],
+    venmo: ["venmo", "#008cff", "#fff", "italic 900 13px/1 Arial, sans-serif"],
+    applepay: ["Apple Pay", "#000", "#fff"],
+    googlepay: ['<b style="color:#4285f4">G</b> Pay', "#fff", "#3c4043"],
+    shoppay: ["shop<b style='font-weight:900'>Pay</b>", "#5a31f4", "#fff"],
+    klarna: ["Klarna.", "#ffb3c7", "#0b051d"],
+    afterpay: ["afterpay", "#b2fce4", "#000"],
+    affirm: ["affirm", "#fff", "#4a4af4"],
+    cashapp: ["Cash App Pay", "#00d632", "#fff"]
+  };
+  const payBadges = (cls = "") => `<div class="pay-badges ${cls}">${(S.paymentMethods || []).filter(k => PAY[k]).map(k => { const [t, bg, fg, font] = PAY[k]; return `<span title="${k}" style="background:${bg};color:${fg}${font ? ";font:" + font : ""}">${t}</span>`; }).join("")}</div>`;
   const starStr = r => "★★★★★".slice(0, Math.round(r)) + "☆☆☆☆☆".slice(0, 5 - Math.round(r));
   const stars = p => p.rating ? `<div class="stars">${starStr(p.rating)}<small>(${p.reviews || 0})</small></div>` : "";
 
@@ -93,12 +110,12 @@
         <div class="cols">
           <div><div class="logo">PITCH<b>FITS</b></div><p>Football jerseys for fans across the USA. Club, national team and classic kits, delivered to your door.</p>
             <div class="social"><a href="${S.instagram}" aria-label="Instagram">${I.ig}</a><a href="${S.tiktok}" aria-label="TikTok">${I.tt}</a></div></div>
-          <div><h4>Shop</h4><a href="collection.html?c=new">New Arrivals</a><a href="collection.html?c=clubs">Club Kits</a><a href="collection.html?c=national">National Teams</a><a href="collection.html?c=classic-clubs">Classic Club Kits</a><a href="collection.html?c=classic-national">Classic National Kits</a><a href="collection.html?c=sale">Sale</a></div>
+          <div><h4>Shop</h4><a href="collection.html?c=new">New Arrivals</a>${P.some(p => p.collections.includes("clubs")) ? `<a href="collection.html?c=clubs">Club Kits</a>` : ""}<a href="collection.html?c=national">National Teams</a><a href="collection.html?c=classic-clubs">Classic Club Kits</a><a href="collection.html?c=classic-national">Classic National Kits</a><a href="collection.html?c=sale">Sale</a></div>
           <div><h4>Help</h4><a href="info.html#track">Track Order</a><a href="info.html#shipping">Shipping Policy</a><a href="info.html#returns">Returns &amp; Refunds</a><a href="info.html#sizes">Size Guide</a><a href="info.html#faq">FAQ</a></div>
           <div><h4>Company</h4><a href="info.html#about">About Us</a><a href="info.html#contact">Contact</a><a href="info.html#privacy">Privacy Policy</a><a href="info.html#terms">Terms of Service</a><a href="mailto:${S.email}">${S.email}</a></div>
         </div>
         <div class="bottom"><span>© ${new Date().getFullYear()} ${S.domain} — All rights reserved.</span>
-          <div class="pay"><span>VISA</span><span>MASTERCARD</span><span>AMEX</span><span>PAYPAL</span><span>APPLE PAY</span><span>G PAY</span></div></div>
+          ${payBadges()}</div>
       </div></footer>
       <div class="drawer" id="drawer"><div class="shade" data-close></div><div class="panel">
         <div class="top"><h3>Your Cart</h3><button class="icon-btn" data-close aria-label="Close">${I.close}</button></div>
@@ -189,7 +206,8 @@
       ${t.codeOff ? `<div class="r disc"><span>Code ${esc(code)}</span><span>−${money(t.codeOff)}</span></div>` : ""}
       <div class="r"><span>Shipping</span><span>${t.ship ? money(t.ship) : "FREE"}</span></div>
       <div class="r total"><span>Total</span><span>${money(t.total)}</span></div>
-      <button class="btn accent block" id="checkoutBtn">${I.lock.replace("<svg", '<svg width="18" height="18"')} Secure Checkout</button>`;
+      <button class="btn accent block" id="checkoutBtn">${I.lock.replace("<svg", '<svg width="18" height="18"')} Secure Checkout</button>
+      ${payBadges("center")}`;
   }
 
   document.addEventListener("click", e => {
@@ -316,6 +334,7 @@
         <h1 class="display">${esc(p.name)}</h1>
         ${stars(p)}
         <div class="price"><span class="now ${off ? "on-sale" : ""}">${money(p.price)}</span>${p.compareAt ? `<s>${money(p.compareAt)}</s> <span class="save-pill">SAVE ${money(p.compareAt - p.price)}</span>` : ""}</div>
+        <div class="installments">Or 4 interest-free payments of <b>${money(p.price / 4)}</b> with ${esc(S.installmentProviders || "")}</div>
         <div class="opt"><label class="h"><span>Size: <span id="sizeLbl" style="color:var(--muted)">Select</span></span><a href="#sizeGuide" onclick="document.getElementById('sizeGuide').open=true">Size guide</a></label>
           <div class="sizes">${sizes.map(s => `<button data-size="${s}">${s}</button>`).join("")}</div></div>
         <div class="opt"><label class="h"><span>Name &amp; Number</span></label>
@@ -329,14 +348,15 @@
           <button class="btn" id="addBtn">Add to Cart — <span id="btnPrice">${money(p.price)}</span></button></div>
         ${S.buyXGetY ? `<div class="deal-box">${I.gift.replace("<svg", '<svg width="22" height="22"')} BUY ${S.buyXGetY.buy} GET ${S.buyXGetY.free} FREE — mix &amp; match any jerseys</div>` : ""}
         <div class="perks">
-          <div>${I.truck} Free US shipping on orders ${money(S.freeShippingThreshold)}+ · Delivery in 7–14 business days</div>
+          <div>${I.truck} Free US shipping on orders ${money(S.freeShippingThreshold)}+ · Delivered in ${S.deliveryDays} business days anywhere in the USA</div>
           <div>${I.back} 30-day hassle-free returns</div>
           <div>${I.lock} Secure checkout — SSL encrypted</div>
         </div>
+        ${payBadges()}
         <div style="margin-top:22px">
           <details class="acc" open><summary>Details</summary><ul>${(p.details || []).map(d => `<li>${esc(d)}</li>`).join("")}<li>Lightweight, breathable performance fabric</li><li>Regular fit, true to size</li><li>Machine wash cold, inside out — do not iron the print</li></ul></details>
           <details class="acc" id="sizeGuide"><summary>Size Guide</summary><table class="size-table"><tr><th>Size</th><th>Chest (in)</th><th>Length (in)</th><th>Height</th></tr><tr><td>S</td><td>36–38</td><td>27</td><td>5'5"–5'8"</td></tr><tr><td>M</td><td>38–40</td><td>28</td><td>5'8"–5'11"</td></tr><tr><td>L</td><td>40–42</td><td>29</td><td>5'11"–6'1"</td></tr><tr><td>XL</td><td>42–45</td><td>30</td><td>6'1"–6'3"</td></tr><tr><td>2XL</td><td>45–48</td><td>31</td><td>6'3"–6'5"</td></tr><tr><td>3XL</td><td>48–51</td><td>32</td><td>6'5"+</td></tr></table></details>
-          <details class="acc"><summary>Shipping &amp; Returns</summary><p>Orders are processed in 1–3 business days and delivered in 7–14 business days across the USA with tracking. Free shipping on orders over ${money(S.freeShippingThreshold)}. Returns accepted within 30 days for unworn items (custom name/number items are final sale).</p></details>
+          <details class="acc"><summary>Shipping &amp; Returns</summary><p>Every order is delivered in ${S.deliveryDays} business days anywhere in the USA, with tracking. Free shipping on orders over ${money(S.freeShippingThreshold)}. Returns accepted within 30 days for unworn items (custom name/number items are final sale).</p></details>
         </div>
       </div>`;
     const upd = () => {

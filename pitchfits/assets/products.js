@@ -21,6 +21,10 @@ window.STORE = {
     "🚚 FREE US SHIPPING ON ORDERS $75+",
     "⚽ WORLD CUP 2026 KITS IN STOCK — USE CODE PITCH10 FOR 10% OFF"
   ],
+  deliveryDays: "5–7",            // business days, anywhere in the USA (processing included)
+  /* Payment methods shown on the site. They work for real once checkout is connected (Shopify Payments / Stripe / PayPal). */
+  paymentMethods: ["visa", "mastercard", "amex", "discover", "paypal", "venmo", "applepay", "googlepay", "shoppay", "klarna", "afterpay", "affirm", "cashapp"],
+  installmentProviders: "Klarna, Afterpay or Affirm",
   email: "support@pitchfits.com",
   instagram: "https://instagram.com/",
   tiktok: "https://tiktok.com/"
