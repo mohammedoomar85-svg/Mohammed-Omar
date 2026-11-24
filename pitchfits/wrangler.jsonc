@@ -1,0 +1,6 @@
+// Deploy PitchFits as its own Cloudflare Workers static site: run `npx wrangler deploy` inside this folder.
+{
+  "name": "pitchfits",
+  "compatibility_date": "2025-06-01",
+  "assets": { "directory": "." }
+}
