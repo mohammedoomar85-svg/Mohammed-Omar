@@ -138,8 +138,6 @@
       const o = e.target.closest("[data-open]"); if (o) { e.preventDefault(); $("#" + o.dataset.open).classList.add("open"); if (o.dataset.open === "drawer") renderCart(); }
       if (e.target.closest("[data-close]")) e.target.closest(".drawer, .mnav").classList.remove("open");
       if (e.target.closest("[data-toggle-search]")) { $(".search-bar").classList.toggle("open"); $(".search-bar input").focus(); }
-      const cs = e.target.closest("[data-card-size]");
-      if (cs) { const p = byId(cs.dataset.id); addToCart(p.id, cs.dataset.cardSize, 1, p.print ? { name: p.print.name, number: p.print.number, included: true } : null); }
       const add = e.target.closest("[data-quick-add]");
       if (add) { e.preventDefault(); location.href = "product.html?id=" + encodeURIComponent(add.dataset.quickAdd); }
     });
@@ -240,7 +238,6 @@
         ${stars(p)}
         <div class="price"><span class="now ${off ? "on-sale" : ""}">${money(p.price)}</span>${p.compareAt ? `<s>${money(p.compareAt)}</s>` : ""}</div>
       </a>
-      <div class="card-sizes" aria-label="Add to cart in size">${(isKids(p) ? SIZES.kids : SIZES.adult).map(s => `<button data-card-size="${s}" data-id="${p.id}" aria-label="Add size ${s} to cart">${s}</button>`).join("")}</div>
     </div>`;
   }
   const inCol = (p, id) => id === "all" ? true : id === "sale" ? !!p.compareAt
