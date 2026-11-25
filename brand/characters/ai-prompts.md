@@ -30,10 +30,10 @@ Character design turnaround sheet of Lulwa, a curious 6-year-old Kuwaiti girl wi
 Character design turnaround sheet of Al-Yadda, a warm and kind elderly Kuwaiti grandmother with a gentle smile, soft wrinkles and round glasses. She wears a traditional black malfa (thin black head scarf) over her hair with a little white hair showing at the front, and a traditional wide green Kuwaiti thoub nashal (flowing embroidered over-dress) covered in gold embroidery and small gold sequins. Her palms and fingertips are dyed with traditional henna, and she wears a gold bangle on each wrist. She leans on a wooden cane. Show front view, three-quarter view, side view and back view, full body, same scale.
 ```
 
-## ٥. فزّو
+## ٥. فزّو (القطوة)
 
 ```
-Character design turnaround sheet of Fizzo, a cute desert jerboa mascot with soft golden-yellow fur, a cream belly, huge round ears with pink insides, big shiny eyes, tiny front paws, very long hind legs and a long thin tail ending in a fluffy coral-red tuft. Playful and bouncy. Show front view, side view, back view and a mid-jump pose.
+Character design turnaround sheet of Fizzo, a playful young Arabian Mau cat (the native cat of the Arabian Peninsula): slim and agile with long legs, large pointed ears with pink insides, short sunny golden-ginger fur with soft darker tabby stripes, a cream muzzle, chest and paws, big round green eyes and a long expressive tail. He wears a teal collar with a small gold star-shaped tag. He never talks: he springs up suddenly, pounces and makes the kids laugh. Show front view, side view, back view, a sitting pose and a mid-jump pose.
 ```
 
 ## ٦. تعابير الوجه (بعد ما تعتمد الشخصية)
@@ -45,11 +45,11 @@ Expression sheet of the attached character (keep this exact character): head and
 ## ٧. الشخصيات مع بعض
 
 ```
-The four attached characters standing together in a friendly line-up, Al-Yadda on the left, then Lulwa, Fahad and Fizzo the jerboa jumping on the right. Heights to scale: the kids reach the grandmother's shoulder. Keep every character exactly as in the references.
+The four attached characters standing together in a friendly line-up, Al-Yadda on the left, then Lulwa, Fahad and Fizzo the cat leaping up on the right. Heights to scale: the kids reach the grandmother's shoulder. Keep every character exactly as in the references.
 ```
 
 ## ٨. مشهد من حلقة (مثال)
 
 ```
-Scene from a children's animated series: Fahad and Lulwa (attached characters) sit on the floor of a cosy Kuwaiti living room with a colourful sadu-pattern rug, opening a teal gift box with a yellow ribbon; magnetic building tiles glow inside. Al-Yadda smiles from a majlis cushion behind them. Warm afternoon light through a window with a palm tree outside. Wide 16:9 frame.
+Scene from a children's animated series: Fahad and Lulwa (attached characters) sit on the floor of a cosy Kuwaiti living room with a colourful sadu-pattern rug, opening a teal gift box with a yellow ribbon; magnetic building tiles glow inside. Al-Yadda smiles from a majlis cushion behind them, and Fizzo the cat springs up from behind the box, surprised. Warm afternoon light through a window with a palm tree outside. Wide 16:9 frame.
 ```
