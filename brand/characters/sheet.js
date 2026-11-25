@@ -11,9 +11,9 @@ const shadow = (x, y, w) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="12" fill
 
 // Sheet 1: the cast line-up.
 const cast = [
-  { x: 1370, art: boy({ armL: 20, armR: 150 }), name: 'فهد', role: 'الولد، ٦ سنين', note: 'يحب يبني ويركّب، ويستعجل دايماً' , sw: [C.white, N, C.skin] },
-  { x: 1010, art: girl({ armL: 150, armR: 20 }), name: 'لولوة', role: 'البنت، ٦ سنين', note: 'تحب الحروف والأسئلة، وتفكر قبل لا تسوي', sw: [C.coral, N, C.sun] },
-  { x: 620, art: grandma(), name: 'اليدّة', role: 'جدتهم', note: 'تحكي القصص وتعطيهم الحكمة', sw: [C.abaya, C.sea, C.skin2] },
+  { x: 1370, art: boy({ armL: 20, armR: 150 }), name: 'فهد', role: 'الولد، ٦ سنين', note: 'يحب يبني ويركّب، ويستعجل دايماً' , sw: [C.suit, C.white, C.coral] },
+  { x: 1010, art: girl({ armL: 150, armR: 20 }), name: 'لولوة', role: 'البنت، ٦ سنين', note: 'تحب الحروف والأسئلة، وتفكر قبل لا تسوي', sw: [C.coral, C.sun, C.hair] },
+  { x: 620, art: grandma(), name: 'اليدّة', role: 'جدتهم', note: 'ثوب نشل وحنة وسوارة ذهب، وتحكي القصص', sw: [C.leaf, N, C.sun] },
 ];
 let s1 = `<rect width="1600" height="900" fill="#EFE8D8"/><rect x="30" y="30" width="1540" height="840" rx="36" fill="${C.cream}"/>
 <text x="1530" y="110" text-anchor="end" font-family="Baloo" font-size="54" fill="${N}">شخصيات فز و العب</text>
