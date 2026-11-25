@@ -441,3 +441,9 @@ details.acc p, details.acc ul { color: #444; font-size: 14px; margin: 12px 0 0; 
 /* the store is a light design: keep form controls light in every browser theme */
 :root { color-scheme: light; }
 .print-opt input { accent-color: var(--ink); }
+/* custom radio circles: same look in every browser and theme */
+.print-opt input[type="radio"] { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; border: 2px solid #b5b5b0; background: #fff; display: grid; place-items: center; margin: 0; }
+.print-opt input[type="radio"]::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); transform: scale(0); transition: transform .15s; }
+.print-opt input[type="radio"]:checked { border-color: var(--ink); }
+.print-opt input[type="radio"]:checked::before { transform: scale(1); }
+.print-opt input[type="radio"]:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
