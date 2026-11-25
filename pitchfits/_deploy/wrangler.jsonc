@@ -1,0 +1,9 @@
+// PitchFits on Cloudflare Workers: files live in the SITE KV namespace, worker.js serves them.
+// Deploy with:  bash _deploy/deploy.sh   (from the pitchfits folder)
+{
+  "name": "pitchfits",
+  "main": "worker.js",
+  "compatibility_date": "2025-06-01",
+  "workers_dev": true,
+  "kv_namespaces": [{ "binding": "SITE", "id": "3be4251495684e568187607afb31f845" }]
+}
