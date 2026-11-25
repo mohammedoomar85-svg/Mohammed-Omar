@@ -244,12 +244,6 @@
     : id === "classic" ? p.collections.some(c => c.startsWith("classic")) : p.collections.includes(id);
   const firstOf = id => P.find(p => inCol(p, id) && imgs(p).length) || P[0];
 
-  const SIZE_CHART = [
-    ["S", "36–38", "27", "5'5\"–5'8\"", "120–145"], ["M", "38–40", "28", "5'8\"–5'11\"", "145–165"],
-    ["L", "40–42", "29", "5'11\"–6'1\"", "165–185"], ["XL", "42–45", "30", "6'1\"–6'3\"", "185–210"],
-    ["2XL", "45–48", "31", "6'3\"–6'5\"", "210–235"], ["3XL", "48–51", "32", "6'5\"+", "235–260"]
-  ];
-
   /* ---------- Pages ---------- */
   function home() {
     const hk = $(".hero-kits");
@@ -343,9 +337,7 @@
         <div class="price"><span class="now ${off ? "on-sale" : ""}">${money(p.price)}</span>${p.compareAt ? `<s>${money(p.compareAt)}</s> <span class="save-pill">SAVE ${money(p.compareAt - p.price)}</span>` : ""}</div>
         <div class="installments">Or 4 interest-free payments of <b>${money(p.price / 4)}</b> with ${esc(S.installmentProviders || "")}</div>
         <div class="opt"><label class="h"><span>Size: <span id="sizeLbl" style="color:var(--muted)">Select</span></span><a href="size-guide.html">How to measure</a></label>
-          <div class="sizes">${sizes.map(s => `<button data-size="${s}">${s}</button>`).join("")}</div>
-          <div class="size-chart"><table><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Height</th><th>Weight</th></tr></thead><tbody>${SIZE_CHART.map(r => `<tr data-row="${r[0]}"><td><b>${r[0]}</b></td><td>${r[1]}"</td><td>${r[2]}"</td><td>${r[3]}</td><td>${r[4]} lb</td></tr>`).join("")}</tbody></table>
-          <p>Athletic fit. Between sizes or prefer a relaxed fit? Size up one.</p></div></div>
+          <div class="sizes">${sizes.map(s => `<button data-size="${s}">${s}</button>`).join("")}</div></div>
         <div class="opt"><label class="h"><span>Name &amp; Number</span></label>
           <div class="print-opts">
             ${p.print ? opt("pictured", `As pictured: ${esc(printLabel(p.print))}`, "Exactly like the photos", "Included") : ""}
@@ -375,7 +367,7 @@
     $("#pdp").addEventListener("change", e => { if (e.target.name === "print") { mode = e.target.value; upd(); } });
     $("#pdp").addEventListener("click", e => {
       const s = e.target.closest("[data-size]");
-      if (s) { size = s.dataset.size; $$("[data-size]").forEach(b => b.classList.toggle("on", b === s)); $("#sizeLbl").textContent = size; $("#sizeLbl").style.color = "var(--ink)"; $$("[data-row]").forEach(r => r.classList.toggle("on", r.dataset.row === size)); }
+      if (s) { size = s.dataset.size; $$("[data-size]").forEach(b => b.classList.toggle("on", b === s)); $("#sizeLbl").textContent = size; $("#sizeLbl").style.color = "var(--ink)"; }
       const v = e.target.closest("[data-view]");
       if (v) { $$("[data-view]").forEach(b => b.classList.toggle("on", b === v)); $("#mainView").innerHTML = viewHtml(views[+v.dataset.view]); }
       const pq = e.target.closest("[data-pq]"); if (pq) { qty = Math.max(1, qty + +pq.dataset.pq); upd(); }
