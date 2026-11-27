@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>طلبي · قعدة</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f4c5c">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+main { padding-block: 28px; }
+main .wrap { max-width: 680px; display: flex; flex-direction: column; gap: 16px; }
+.card { padding: 18px; }
+h1 { font-size: 1.7rem; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
+.steps div { text-align: center; font-size: .88rem; color: var(--muted); padding-top: 10px; border-top: 4px solid var(--line); }
+.steps div.on { color: var(--ink); font-weight: 700; border-color: var(--brand); }
+.row { display: flex; justify-content: space-between; gap: 12px; padding-block: 6px; }
+.row + .row { border-top: 1px solid var(--line); }
+.total { font-weight: 800; }
+.code { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px; border-radius: 14px; background: var(--bg-2); }
+.code b.c { font-size: 1.35rem; letter-spacing: .06em; direction: ltr; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.code .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.wait { border-inline-start: 4px solid var(--gold); }
+.cancel { border-inline-start: 4px solid var(--warn); }
+.list a { display: flex; justify-content: space-between; padding: 12px 0; text-decoration: none; color: var(--ink); border-bottom: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><span class="logo-mark" aria-hidden="true">ق</span><span><b>قعدة</b><small>ألعاب جمعات بالعربي</small></span></a>
+  <a class="btn btn-ghost" href="/" style="margin-inline-start:auto">المتجر</a>
+</div></header>
+
+<main><div class="wrap" id="out"><p class="note">جاري التحميل…</p></div></main>
+
+<footer class="foot"><div class="wrap"><span>قعدة · الكويت</span><a id="wa" target="_blank" rel="noopener">تحتاج مساعدة؟ كلمنا على الواتساب</a></div></footer>
+
+<script src="/config.js"></script>
+<script src="/catalog.js"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.GAADA, out = document.getElementById('out');
+  var games = {}; window.CATALOG.forEach(function (p) { games[p.id] = p; });
+  document.getElementById('wa').href = 'https://wa.me/' + C.WHATSAPP;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function kwd(n) { return Number(n).toFixed(3) + ' د.ك'; }
+  function mine() { try { return JSON.parse(localStorage.getItem('gaada-orders') || '[]'); } catch (e) { return []; } }
+  var m = /[?&]t=([0-9a-f-]{36})/i.exec(location.search);
+
+  if (!m) {
+    var list = mine();
+    out.innerHTML = '<h1>طلباتي</h1><div class="card list">' + (list.length ? list.map(function (o) {
+      return '<a href="?t=' + esc(o.t) + '"><b class="num">' + esc(o.no) + '</b><span class="note">' + new Date(o.at).toLocaleDateString('ar-KW') + '</span></a>';
+    }).join('') : '<p class="note" style="margin:0">ما فيه طلبات محفوظة في هذا الجهاز. افتح رابط الطلب اللي وصلك على الواتساب.</p>') + '</div>';
+    return;
+  }
+
+  var token = m[1];
+  function load() {
+    fetch(C.SB_URL + '/rest/v1/rpc/gaada_order_status', {
+      method: 'POST', headers: { apikey: C.SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: token })
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(show).catch(function () {
+      out.innerHTML = '<div class="card"><p class="err" style="margin:0">ما قدرنا نفتح الطلب. تأكد من الإنترنت وحدّث الصفحة.</p></div>';
+    });
+  }
+  function show(o) {
+    if (!o) { out.innerHTML = '<div class="card"><p class="err" style="margin:0">ما لقينا هذا الطلب. تأكد من الرابط.</p></div>'; return; }
+    var paid = ['paid', 'shipped', 'done'].indexOf(o.status) >= 0;
+    var digital = o.items.some(function (i) { return i.kind === 'digital'; });
+    var stage = { new: 0, paid: 1, shipped: 2, done: 2, cancelled: -1 }[o.status];
+    var labels = o.has_physical ? ['استلمنا الطلب', 'تم الدفع', 'تم التوصيل'] : ['استلمنا الطلب', 'تم الدفع', 'الكود جاهز'];
+    if (!o.has_physical && paid) stage = 2;
+    var h = '<div class="card"><h1>طلب <span class="num">' + esc(o.number) + '</span></h1>' +
+      '<p class="note" style="margin:4px 0 0">' + new Date(o.created_at).toLocaleString('ar-KW') + ' · ' + (o.pay_method === 'knet' ? 'KNET' : 'كاش عند الاستلام') + '</p>' +
+      (stage >= 0 ? '<div class="steps">' + labels.map(function (l, i) { return '<div class="' + (i <= stage ? 'on' : '') + '">' + l + '</div>'; }).join('') + '</div>' : '') + '</div>';
+
+    if (o.status === 'cancelled') h += '<div class="card cancel">هذا الطلب ملغي. إذا هذا غلط كلمنا على الواتساب.</div>';
+    else if (digital && !paid) h += '<div class="card wait"><b>كود اللعبة يطلع هنا بعد تأكيد الدفع.</b><br><span class="note">' +
+      (o.pay_method === 'knet' ? 'إذا ما وصلك رابط دفع KNET على الواتساب، كلمنا وبنرسله لك.' : 'يطلع الكود بعد ما تستلم وتدفع للمندوب.') + ' هذي الصفحة تتحدث لحالها.</span></div>';
+
+    if (o.codes.length) {
+      h += '<div class="card"><h2 style="font-size:1.3rem;margin-bottom:10px">أكواد ألعابك</h2><div style="display:flex;flex-direction:column;gap:10px">' +
+        o.codes.map(function (c) {
+          var g = games[c.product] || {};
+          var url = (g.play || '/play/' + c.product + '/') + '?code=' + encodeURIComponent(c.code);
+          return '<div class="code"><div><div class="note">' + esc(g.name || c.product) + '</div><b class="c">' + esc(c.code) + '</b></div>' +
+            '<div class="acts"><button class="btn btn-ghost" type="button" data-copy="' + esc(c.code) + '">انسخ</button>' +
+            '<a class="btn btn-main" href="' + esc(url) + '">افتح اللعبة</a></div></div>';
+        }).join('') + '</div><p class="note" style="margin:10px 0 0">الكود يشتغل على 3 أجهزة. افتح اللعبة على الشاشة اللي بتلعبون عليها.</p></div>';
+    }
+
+    h += '<div class="card">' + o.items.map(function (i) {
+      return '<div class="row"><span>' + esc(i.name) + ' × <span class="num">' + i.qty + '</span></span><span>' + kwd(i.price * i.qty) + '</span></div>';
+    }).join('') +
+      (o.has_physical ? '<div class="row"><span>التوصيل</span><span>' + (Number(o.delivery) ? kwd(o.delivery) : 'مجاني') + '</span></div>' : '') +
+      '<div class="row total"><span>الإجمالي</span><span>' + kwd(o.total) + '</span></div></div>';
+    out.innerHTML = h;
+    if (digital && !paid && o.status !== 'cancelled') setTimeout(load, 20000);
+  }
+  out.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-copy]'); if (!b) return;
+    try { navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'تم النسخ'; } catch (x) {}
+  });
+  load();
+})();
+</script>
+</body>
+</html>

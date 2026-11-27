@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>قعدة · ألعاب جمعات بالعربي في الكويت</title>
+<meta name="description" content="قعدة: ألعاب جمعات عربية تشتغل من المتصفح وتوصلك فوراً، وألعاب لوحية وورقية بتوصيل داخل الكويت. ادفع بـ KNET أو كاش عند الاستلام.">
+<meta property="og:title" content="قعدة · ألعاب جمعات بالعربي">
+<meta property="og:description" content="ألعاب رقمية للديوانية والعائلة توصلك فوراً، وألعاب لوحية بتوصيل داخل الكويت.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_KW">
+<meta name="theme-color" content="#0f4c5c">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* Hero */
+.hero { padding-block: 40px 28px; }
+.hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 32px; align-items: center; }
+.hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lead { font-size: 1.12rem; color: var(--muted); margin: 14px 0 22px; max-width: 34em; }
+.hero .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.chips span { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: .9rem; font-weight: 500; }
+.hero-art { aspect-ratio: 1; border-radius: 28px; background: var(--brand); position: relative; overflow: hidden; box-shadow: var(--shadow); }
+.hero-art svg { width: 100%; height: 100%; display: block; }
+@media (max-width: 820px) { .hero .wrap { grid-template-columns: 1fr; } .hero-art { max-width: 360px; width: 100%; margin-inline: auto; } }
+
+/* Catalog */
+section.block { padding-block: 28px; scroll-margin-top: 72px; }
+.block-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.block-head h2 { font-size: 1.7rem; }
+.tabs { display: flex; gap: 6px; background: var(--bg-2); padding: 4px; border-radius: 14px; }
+.tabs button { border: 0; background: transparent; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.prod { display: flex; flex-direction: column; overflow: hidden; cursor: pointer; text-align: start; padding: 0; transition: transform .15s; }
+.prod:hover { transform: translateY(-2px); }
+.cover { aspect-ratio: 4 / 3; position: relative; display: grid; place-items: center; overflow: hidden; }
+.cover .g { font-family: var(--f-display); font-size: 5.5rem; line-height: 1; opacity: .95; }
+.cover .kind { position: absolute; top: 10px; inset-inline-start: 10px; background: rgba(0,0,0,.35); color: #fff;
+  border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 700; }
+.cover .off { position: absolute; top: 10px; inset-inline-end: 10px; background: var(--accent); color: var(--accent-ink);
+  border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 800; }
+.prod .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.prod h3 { font-size: 1.15rem; }
+.prod .tag { color: var(--muted); font-size: .92rem; }
+.prod .row { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 8px; gap: 8px; }
+.prod .add { padding: 8px 14px; min-height: 40px; }
+.empty { padding: 28px; text-align: center; color: var(--muted); }
+.draft-tag { background: var(--warn); color: #fff; border-radius: 6px; padding: 0 6px; font-size: .75rem; }
+
+/* Why + FAQ */
+.why { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.why .card { padding: 18px; }
+.why b { display: block; font-size: 1.05rem; margin-bottom: 4px; }
+.why p { margin: 0; color: var(--muted); font-size: .95rem; }
+.ico { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-2); display: grid; place-items: center; margin-bottom: 10px; color: var(--brand); }
+.faq details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px 16px; margin-bottom: 8px; }
+.faq summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
+.faq details p { margin: 0 0 14px; color: var(--muted); }
+
+/* Dialogs */
+dialog { border: 0; padding: 0; background: var(--card); color: var(--ink); border-radius: 20px; width: min(640px, calc(100% - 24px));
+  max-height: calc(100dvh - 24px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+dialog::backdrop { background: rgba(10, 20, 30, .55); }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 18px; border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: var(--card); z-index: 1; }
+.dlg-head h2 { font-size: 1.3rem; }
+.x { border: 0; background: var(--bg-2); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 1.3rem; line-height: 1; }
+.dlg-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.pd-cover { border-radius: 16px; aspect-ratio: 16 / 9; }
+.pd-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.pd-body ul, .pd-body ol { margin: 0; padding-inline-start: 22px; }
+.pd-body h3 { font-size: 1.05rem; margin-top: 4px; }
+.pd-buy { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-top: 1px solid var(--line);
+  position: sticky; bottom: 0; background: var(--card); }
+
+/* Cart */
+.line { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding-block: 10px; border-bottom: 1px solid var(--line); }
+.line .mini { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font-family: var(--f-display); font-size: 1.6rem; }
+.line b { display: block; }
+.qty { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-2); border-radius: 10px; padding: 2px; }
+.qty button { border: 0; background: var(--card); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-weight: 800; }
+.qty span { min-width: 24px; text-align: center; }
+.sums { display: flex; flex-direction: column; gap: 4px; }
+.sums div { display: flex; justify-content: space-between; }
+.sums .total { font-weight: 800; font-size: 1.15rem; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .two { grid-template-columns: 1fr; } }
+.phone-in { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.phone-in span { padding: 11px 12px; background: var(--bg-2); direction: ltr; }
+.phone-in input { border: 0; border-radius: 0; direction: ltr; text-align: start; }
+.pay { display: flex; flex-direction: column; gap: 8px; }
+.pay label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; }
+.pay label:has(input:checked) { border-color: var(--brand); outline: 1px solid var(--brand); }
+.pay input { margin-top: 5px; accent-color: var(--brand); }
+.pay small { display: block; color: var(--muted); }
+.done { text-align: center; }
+.done .big { font-family: var(--f-display); font-size: 2rem; color: var(--ok); }
+.done .ordno { font-size: 1.4rem; font-weight: 800; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="قعدة، الصفحة الرئيسية">
+      <span class="logo-mark" aria-hidden="true">ق</span>
+      <span><b>قعدة</b><small>ألعاب جمعات بالعربي</small></span>
+    </a>
+    <nav class="nav" aria-label="الأقسام">
+      <a href="#games" data-jump="digital">الألعاب الرقمية</a>
+      <a href="#games" data-jump="physical">لوحية وورقية</a>
+      <a href="/order/">طلباتي</a>
+      <a href="#faq">الأسئلة</a>
+    </nav>
+    <button class="btn btn-brand cart-btn" id="open-cart" type="button" aria-label="السلة">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H6"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></svg>
+      السلة <span class="badge" id="cart-count" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>قعدتكم أحلى<br>مع <em>لعبة</em> تجمعكم</h1>
+        <p class="lead">ألعاب جمعات بالعربي للديوانية والعائلة والربع. الألعاب الرقمية تفتح من المتصفح على التلفزيون أو اللابتوب ويوصلك الكود أول ما تدفع، والألعاب اللوحية نوصلها لك داخل الكويت.</p>
+        <div class="cta">
+          <a class="btn btn-main" href="#games" data-jump="digital">تصفّح الألعاب الرقمية</a>
+          <a class="btn btn-ghost" href="#games" data-jump="physical">الألعاب اللوحية</a>
+        </div>
+        <div class="chips" aria-label="مزايا المتجر">
+          <span>KNET</span><span>كاش عند الاستلام</span><span>توصيل داخل الكويت</span><span>الكود يوصلك فوراً</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 400 400">
+          <defs>
+            <pattern id="lat" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="40" height="40" fill="#0f4c5c"/><path d="M0 20h40M20 0v40" stroke="#16606f" stroke-width="3"/>
+            </pattern>
+          </defs>
+          <rect width="400" height="400" fill="url(#lat)"/>
+          <circle cx="300" cy="96" r="44" fill="#f3e7d3"/><circle cx="318" cy="84" r="40" fill="#0f4c5c"/>
+          <path d="M0 300 Q100 270 200 300 T400 300 V400 H0Z" fill="#0b3a47"/>
+          <path d="M0 330 Q100 305 200 330 T400 330 V400 H0Z" fill="#082d37"/>
+          <g transform="translate(70 150) rotate(-10)"><rect width="120" height="168" rx="14" fill="#f3e7d3"/><rect x="10" y="10" width="100" height="148" rx="9" fill="none" stroke="#e2643f" stroke-width="4"/><text x="60" y="108" font-size="72" text-anchor="middle" fill="#e2643f" font-family="Reem Kufi, Tahoma" font-weight="700">ق</text></g>
+          <g transform="translate(200 170) rotate(9)"><rect width="120" height="168" rx="14" fill="#e2643f"/><rect x="10" y="10" width="100" height="148" rx="9" fill="none" stroke="#f3e7d3" stroke-width="4"/><circle cx="60" cy="84" r="26" fill="#f3e7d3"/><circle cx="60" cy="84" r="10" fill="#e2643f"/></g>
+          <g transform="translate(150 250)"><rect width="64" height="64" rx="14" fill="#d9a441"/><circle cx="20" cy="20" r="6" fill="#0f4c5c"/><circle cx="44" cy="44" r="6" fill="#0f4c5c"/><circle cx="32" cy="32" r="6" fill="#0f4c5c"/></g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="games" aria-labelledby="games-title">
+    <div class="wrap">
+      <div class="block-head">
+        <h2 id="games-title">الألعاب</h2>
+        <div class="tabs" role="tablist" aria-label="نوع اللعبة">
+          <button role="tab" type="button" data-tab="all" aria-selected="true">الكل</button>
+          <button role="tab" type="button" data-tab="digital" aria-selected="false">رقمية</button>
+          <button role="tab" type="button" data-tab="physical" aria-selected="false">لوحية وورقية</button>
+        </div>
+      </div>
+      <div class="grid" id="grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="why-title">
+    <div class="wrap">
+      <div class="block-head"><h2 id="why-title">ليش قعدة؟</h2></div>
+      <div class="why">
+        <div class="card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div><b>توصلك فوراً</b><p>الألعاب الرقمية ما تحتاج شحن. بعد تأكيد الدفع يطلع لك الكود على صفحة الطلب.</p></div>
+        <div class="card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><b>أي جهاز</b><p>تفتح من المتصفح على التلفزيون أو اللابتوب أو الآيباد، بدون تحميل.</p></div>
+        <div class="card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></div><b>توصيل داخل الكويت</b><p>الألعاب اللوحية والورقية نوصلها لكل المحافظات. التوصيل مجاني للطلبات من 20 د.ك.</p></div>
+        <div class="card"><div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><b>ادفع براحتك</b><p>KNET، أو كاش عند الاستلام للطلبات اللي فيها توصيل.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="block-head"><h2 id="faq-title">أسئلة متكررة</h2></div>
+      <details><summary>كيف توصلني اللعبة الرقمية؟</summary><p>بعد ما تطلب، نرسل لك رابط دفع KNET على الواتساب. أول ما يتأكد الدفع يطلع كود اللعبة على صفحة طلبك، ونرسله لك على الواتساب بعد.</p></details>
+      <details><summary>على كم جهاز أقدر أفتح اللعبة؟</summary><p>الكود يشتغل على 3 أجهزة. تقدر تلعب كل ما تبي بدون حد لعدد المرات.</p></details>
+      <details><summary>وش أحتاج عشان ألعب؟</summary><p>شاشة كبيرة فيها متصفح (تلفزيون ذكي أو لابتوب موصول بالتلفزيون) وإنترنت. بعض الألعاب لها لوحة حكم تنفتح من الجوال بباركود.</p></details>
+      <details><summary>كم ياخذ التوصيل؟</summary><p>داخل الكويت عادة خلال يوم إلى يومين عمل. رسوم التوصيل 2 د.ك، ومجاني للطلبات من 20 د.ك.</p></details>
+      <details><summary>أقدر أرجع اللعبة؟</summary><p>الألعاب اللوحية ترجع إذا كانت مغلقة وبحالتها خلال 7 أيام. الألعاب الرقمية ما ترجع بعد ما ينفتح الكود، وإذا واجهتك مشكلة كلمنا على الواتساب ونحلها.</p></details>
+      <details><summary>كيف أتابع طلبي؟</summary><p>بعد الطلب يطلع لك رابط صفحة الطلب. احفظه، وتقدر ترجع له من «طلباتي» في هذا الجهاز.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>© <span class="num" id="yr"></span> قعدة · الكويت</span>
+    <span><a id="wa-foot" target="_blank" rel="noopener">تواصل معنا على الواتساب</a></span>
+  </div>
+</footer>
+
+<!-- Product details -->
+<dialog id="pd" aria-labelledby="pd-title">
+  <div class="dlg-head"><h2 id="pd-title"></h2><button class="x" type="button" data-close aria-label="إغلاق">×</button></div>
+  <div class="dlg-body pd-body" id="pd-body"></div>
+  <div class="pd-buy"><span class="price" id="pd-price"></span><button class="btn btn-main" id="pd-add" type="button">أضف للسلة</button></div>
+</dialog>
+
+<!-- Cart, checkout and confirmation -->
+<dialog id="cart" aria-labelledby="cart-title">
+  <div class="dlg-head"><h2 id="cart-title">السلة</h2><button class="x" type="button" data-close aria-label="إغلاق">×</button></div>
+
+  <div class="dlg-body" id="step-cart">
+    <div id="lines"></div>
+    <div class="sums" id="sums"></div>
+    <button class="btn btn-main" id="to-checkout" type="button">إتمام الطلب</button>
+  </div>
+
+  <form class="dlg-body" id="step-form" hidden novalidate>
+    <div class="field"><label for="f-name">الاسم</label><input id="f-name" autocomplete="name" required maxlength="80"></div>
+    <div class="field"><label for="f-phone">رقم الواتساب</label>
+      <div class="phone-in"><span>+965</span><input id="f-phone" inputmode="numeric" maxlength="8" placeholder="5XXXXXXX" autocomplete="tel-national" required></div></div>
+    <div id="addr" hidden>
+      <div class="two">
+        <div class="field"><label for="f-gov">المحافظة</label>
+          <select id="f-gov"><option>العاصمة</option><option>حولي</option><option>الفروانية</option><option>مبارك الكبير</option><option>الأحمدي</option><option>الجهراء</option></select></div>
+        <div class="field"><label for="f-area">المنطقة</label><input id="f-area" placeholder="مثلاً السالمية"></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label for="f-address">العنوان</label><input id="f-address" placeholder="قطعة، شارع، جادة، منزل"></div>
+    </div>
+    <div class="field"><label for="f-notes">ملاحظات (اختياري)</label><textarea id="f-notes" rows="2" maxlength="400"></textarea></div>
+    <fieldset class="pay" style="border:0;padding:0;margin:0">
+      <legend style="font-weight:700;margin-bottom:6px">طريقة الدفع</legend>
+      <label><input type="radio" name="pay" value="knet" checked><span><b>KNET</b><small>نرسل لك رابط دفع على الواتساب</small></span></label>
+      <label id="pay-cash" hidden><input type="radio" name="pay" value="cash"><span><b>كاش عند الاستلام</b><small>تدفع للمندوب. أكواد الألعاب الرقمية تطلع بعد الاستلام.</small></span></label>
+    </fieldset>
+    <div class="sums" id="sums-2"></div>
+    <p class="err" id="f-err" role="alert" hidden></p>
+    <div class="two">
+      <button class="btn btn-ghost" type="button" id="back-cart">رجوع للسلة</button>
+      <button class="btn btn-main" type="submit" id="place">أكّد الطلب</button>
+    </div>
+  </form>
+
+  <div class="dlg-body done" id="step-done" hidden>
+    <div class="big">وصلنا طلبك</div>
+    <div>رقم الطلب <span class="ordno num" id="d-no"></span></div>
+    <p class="note" id="d-msg"></p>
+    <a class="btn btn-main" id="d-wa" target="_blank" rel="noopener">أرسل الطلب على الواتساب</a>
+    <a class="btn btn-ghost" id="d-link">افتح صفحة الطلب</a>
+  </div>
+</dialog>
+
+<script src="/config.js"></script>
+<script src="/catalog.js"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.GAADA, $ = function (id) { return document.getElementById(id); };
+  var PREVIEW = /[?&]preview=1/.test(location.search);
+  var products = window.CATALOG.slice();
+  var byId = {};
+  var tab = 'all';
+
+  function kwd(n) { return (Math.round(Number(n) * 1000) / 1000).toFixed(3) + ' د.ك'; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  function cover(p, cls) {
+    return '<div class="' + cls + '" style="background:linear-gradient(135deg,' + p.color[0] + ',' + p.color[0] + ' 55%,' + p.color[1] + ');color:' + p.color[1] + '">';
+  }
+  function visible(p) { return (!p.draft && p.live !== false) || PREVIEW; }
+  function index() { byId = {}; products.forEach(function (p) { byId[p.id] = p; }); }
+  index();
+
+  // Live prices and availability from the database. If it can't be reached, the catalog prices stay.
+  fetch(C.SB_URL + '/rest/v1/gaada_products?select=id,price_kwd,old_price_kwd,stock', { headers: { apikey: C.SB_KEY } })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (rows) {
+      if (!rows) return;
+      var live = {}; rows.forEach(function (r) { live[r.id] = r; });
+      products.forEach(function (p) {
+        var r = live[p.id];
+        if (!r) { p.live = false; return; }
+        p.live = true; p.price = Number(r.price_kwd); p.oldPrice = r.old_price_kwd ? Number(r.old_price_kwd) : null;
+        p.soldOut = r.stock !== null && r.stock <= 0;
+      });
+      render(); renderCart();
+    }).catch(function () {});
+
+  // Catalog grid
+  function render() {
+    var list = products.filter(function (p) { return visible(p) && (tab === 'all' || p.kind === tab); });
+    var html = list.map(function (p) {
+      var off = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+      return '<article class="card prod" tabindex="0" role="button" data-id="' + esc(p.id) + '" aria-label="' + esc(p.name) + '">' +
+        cover(p, 'cover') + '<span class="g" aria-hidden="true">' + esc(p.glyph) + '</span>' +
+        '<span class="kind">' + (p.kind === 'digital' ? 'رقمية' : 'توصيل') + '</span>' +
+        (off > 0 ? '<span class="off">−' + off + '%</span>' : '') + '</div>' +
+        '<div class="body"><h3>' + esc(p.name) + (p.draft ? ' <span class="draft-tag">مسودة</span>' : '') + '</h3>' +
+        '<div class="tag">' + esc(p.tagline) + '</div>' +
+        '<div class="note">' + esc(p.players) + ' لاعب · ' + esc(p.minutes) + ' دقيقة</div>' +
+        '<div class="row"><span class="price">' + kwd(p.price) + (p.oldPrice ? '<s>' + kwd(p.oldPrice) + '</s>' : '') + '</span>' +
+        (p.soldOut ? '<span class="pill">نفدت الكمية</span>' : '<button class="btn btn-main add" type="button" data-add="' + esc(p.id) + '">أضف</button>') +
+        '</div></div></article>';
+    }).join('');
+    if (!list.length) html = '<div class="card empty">' + (tab === 'physical' ? 'الألعاب اللوحية والورقية قريباً. تابعنا على الواتساب عشان نعلمك أول ما تنزل.' : 'ما فيه ألعاب هنا للحين.') + '</div>';
+    $('grid').innerHTML = html;
+  }
+  function setTab(t) {
+    tab = t;
+    document.querySelectorAll('[data-tab]').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === t)); });
+    render();
+  }
+  document.querySelectorAll('[data-tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  document.querySelectorAll('[data-jump]').forEach(function (a) { a.addEventListener('click', function () { setTab(a.dataset.jump); }); });
+  $('grid').addEventListener('click', function (e) {
+    var add = e.target.closest('[data-add]');
+    if (add) { e.stopPropagation(); addToCart(add.dataset.add); return; }
+    var card = e.target.closest('.prod'); if (card) openProduct(card.dataset.id);
+  });
+  $('grid').addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('prod')) { e.preventDefault(); openProduct(e.target.dataset.id); }
+  });
+
+  // Product details
+  var current = null;
+  function openProduct(id) {
+    var p = byId[id]; if (!p) return; current = p;
+    $('pd-title').textContent = p.name;
+    $('pd-body').innerHTML = cover(p, 'cover pd-cover') + '<span class="g" aria-hidden="true">' + esc(p.glyph) + '</span></div>' +
+      '<div class="pd-meta"><span class="pill">' + (p.kind === 'digital' ? 'لعبة رقمية · توصلك فوراً' : 'توصيل داخل الكويت') + '</span>' +
+      '<span class="pill">' + esc(p.players) + ' لاعب</span><span class="pill">' + esc(p.minutes) + ' دقيقة</span></div>' +
+      '<p style="margin:0">' + esc(p.about) + '</p>' +
+      (p.features ? '<h3>وش فيها</h3><ul>' + p.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '') +
+      (p.howto ? '<h3>كيف توصلك</h3><ol>' + p.howto.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ol>' : '');
+    $('pd-price').innerHTML = kwd(p.price) + (p.oldPrice ? '<s>' + kwd(p.oldPrice) + '</s>' : '');
+    $('pd-add').disabled = !!p.soldOut; $('pd-add').textContent = p.soldOut ? 'نفدت الكمية' : 'أضف للسلة';
+    $('pd').showModal();
+  }
+  $('pd-add').addEventListener('click', function () { if (current) { addToCart(current.id); $('pd').close(); } });
+
+  // Cart
+  var cart = store('gaada-cart') || {};
+  function items() { return Object.keys(cart).filter(function (id) { return byId[id] && cart[id] > 0; }).map(function (id) { return { p: byId[id], qty: cart[id] }; }); }
+  function totals() {
+    var sub = 0, phys = false;
+    items().forEach(function (i) { sub += i.p.price * i.qty; if (i.p.kind === 'physical') phys = true; });
+    var del = phys ? (sub >= C.FREE_DELIVERY_FROM_KWD ? 0 : C.DELIVERY_KWD) : 0;
+    return { sub: sub, del: del, total: sub + del, phys: phys, count: items().reduce(function (a, i) { return a + i.qty; }, 0) };
+  }
+  function save() { store('gaada-cart', cart); renderCart(); }
+  function addToCart(id) {
+    var p = byId[id]; if (!p || p.soldOut) return;
+    // A digital game gives one code per copy, so most people need one; physical games can be several.
+    cart[id] = Math.min((cart[id] || 0) + 1, p.kind === 'digital' ? 5 : 20);
+    save(); openCart();
+  }
+  function sumsHtml(t) {
+    return '<div><span>المجموع</span><span>' + kwd(t.sub) + '</span></div>' +
+      (t.phys ? '<div><span>التوصيل</span><span>' + (t.del ? kwd(t.del) : 'مجاني') + '</span></div>' : '') +
+      '<div class="total"><span>الإجمالي</span><span>' + kwd(t.total) + '</span></div>' +
+      (t.phys && t.del ? '<div class="note">التوصيل مجاني من ' + kwd(C.FREE_DELIVERY_FROM_KWD) + '</div>' : '');
+  }
+  function renderCart() {
+    var t = totals(), list = items();
+    $('cart-count').hidden = !t.count; $('cart-count').textContent = t.count;
+    $('lines').innerHTML = list.length ? list.map(function (i) {
+      return '<div class="line">' + cover(i.p, 'mini') + esc(i.p.glyph) + '</div>' +
+        '<div><b>' + esc(i.p.name) + '</b><span class="note">' + kwd(i.p.price) + (i.p.kind === 'digital' ? ' · رقمية' : ' · توصيل') + '</span></div>' +
+        '<div class="qty"><button type="button" data-dec="' + esc(i.p.id) + '" aria-label="أنقص">−</button><span class="num">' + i.qty + '</span>' +
+        '<button type="button" data-inc="' + esc(i.p.id) + '" aria-label="زِد">+</button></div></div>';
+    }).join('') : '<p class="empty">السلة فاضية.</p>';
+    $('sums').innerHTML = list.length ? sumsHtml(t) : '';
+    $('sums-2').innerHTML = sumsHtml(t);
+    $('to-checkout').hidden = !list.length;
+    $('addr').hidden = !t.phys; $('pay-cash').hidden = !t.phys;
+    if (!t.phys) document.querySelector('input[name=pay][value=knet]').checked = true;
+  }
+  $('lines').addEventListener('click', function (e) {
+    var inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]');
+    if (inc) addToCartQuiet(inc.dataset.inc, 1);
+    if (dec) addToCartQuiet(dec.dataset.dec, -1);
+  });
+  function addToCartQuiet(id, d) {
+    var p = byId[id]; var max = p.kind === 'digital' ? 5 : 20;
+    cart[id] = Math.max(0, Math.min(max, (cart[id] || 0) + d)); if (!cart[id]) delete cart[id]; save();
+  }
+  function step(name) { ['cart', 'form', 'done'].forEach(function (s) { $('step-' + s).hidden = s !== name; }); $('cart-title').textContent = { cart: 'السلة', form: 'بيانات الطلب', done: 'تم الطلب' }[name]; }
+  function openCart() { step('cart'); renderCart(); $('cart').showModal(); }
+  $('open-cart').addEventListener('click', openCart);
+  $('to-checkout').addEventListener('click', function () {
+    var me = store('gaada-me') || {};
+    if (me.name && !$('f-name').value) $('f-name').value = me.name;
+    if (me.phone && !$('f-phone').value) $('f-phone').value = me.phone;
+    step('form');
+  });
+  $('back-cart').addEventListener('click', function () { step('cart'); });
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { b.closest('dialog').close(); }); });
+  document.querySelectorAll('dialog').forEach(function (d) { d.addEventListener('click', function (e) { if (e.target === d) d.close(); }); });
+
+  // Place the order
+  var ERR = {
+    'address required': 'اكتب المنطقة والعنوان عشان نوصل لك.',
+    'cash only for delivered orders': 'الدفع كاش متاح بس للطلبات اللي فيها توصيل.',
+    'empty cart': 'السلة فاضية.',
+  };
+  $('step-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = totals(), err = $('f-err'); err.hidden = true;
+    var name = $('f-name').value.trim(), phone = $('f-phone').value.replace(/\D/g, '');
+    var fail = function (m) { err.textContent = m; err.hidden = false; };
+    if (name.length < 2) return fail('اكتب اسمك.');
+    if (!/^[569]\d{7}$/.test(phone)) return fail('رقم الجوال لازم يكون 8 أرقام ويبدأ بـ 5 أو 6 أو 9.');
+    if (t.phys && (!$('f-area').value.trim() || !$('f-address').value.trim())) return fail(ERR['address required']);
+    var pay = document.querySelector('input[name=pay]:checked').value;
+    var body = { name: name, phone: phone, pay_method: pay, notes: $('f-notes').value.trim(),
+      items: items().map(function (i) { return { id: i.p.id, qty: i.qty }; }) };
+    if (t.phys) { body.governorate = $('f-gov').value; body.area = $('f-area').value.trim(); body.address = $('f-address').value.trim(); }
+    $('place').disabled = true; $('place').textContent = 'جاري الإرسال…';
+    fetch(C.SB_URL + '/rest/v1/rpc/gaada_place_order', {
+      method: 'POST', headers: { apikey: C.SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p: body })
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.message || 'error'); return j; }); })
+      .then(function (o) {
+        store('gaada-me', { name: name, phone: phone });
+        var mine = store('gaada-orders') || []; mine.unshift({ no: o.number, t: o.token, at: Date.now() }); store('gaada-orders', mine.slice(0, 20));
+        var link = location.origin + '/order/?t=' + o.token;
+        var lines = items().map(function (i) { return '• ' + i.p.name + ' × ' + i.qty; }).join('\n');
+        var msg = 'السلام عليكم، طلب جديد من قعدة\nرقم الطلب: ' + o.number + '\n' + lines + '\nالإجمالي: ' + kwd(o.total) +
+          '\nالدفع: ' + (pay === 'knet' ? 'KNET (أرسلوا لي رابط الدفع)' : 'كاش عند الاستلام') + '\nالاسم: ' + name + '\nصفحة الطلب: ' + link;
+        $('d-no').textContent = o.number;
+        $('d-msg').textContent = pay === 'knet'
+          ? 'أرسل لنا الطلب على الواتساب ونرد عليك برابط دفع KNET. ' + (t.phys ? 'بعد الدفع نجهز التوصيل.' : 'أول ما يتأكد الدفع يطلع كود اللعبة على صفحة الطلب.')
+          : 'نتواصل معك لتأكيد موعد التوصيل. أرسل لنا الطلب على الواتساب عشان نبدأ.';
+        $('d-wa').href = 'https://wa.me/' + C.WHATSAPP + '?text=' + encodeURIComponent(msg);
+        $('d-link').href = '/order/?t=' + o.token;
+        cart = {}; save(); step('done');
+      })
+      .catch(function (x) {
+        var m = String(x.message || '');
+        fail(ERR[m] || (m.indexOf('out of stock') === 0 ? 'وحدة من الألعاب نفدت كميتها. شيلها من السلة وحاول مرة ثانية.' :
+          m.indexOf('product not available') === 0 ? 'وحدة من الألعاب ما عادت متوفرة. شيلها من السلة وحاول مرة ثانية.' :
+          'ما قدرنا نرسل الطلب. تأكد من الإنترنت وحاول مرة ثانية، أو كلمنا على الواتساب.'));
+      })
+      .finally(function () { $('place').disabled = false; $('place').textContent = 'أكّد الطلب'; });
+  });
+
+  $('yr').textContent = new Date().getFullYear();
+  $('wa-foot').href = 'https://wa.me/' + C.WHATSAPP;
+  render(); renderCart();
+  var deep = /[?&]p=([a-z0-9-]+)/.exec(location.search); if (deep && byId[deep[1]]) openProduct(deep[1]);
+})();
+</script>
+</body>
+</html>
