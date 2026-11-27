@@ -274,12 +274,12 @@ grant execute on function public.fzk_redeem(text, text, text) to anon, authentic
 -- 10) Starting products. Change prices any time in Table Editor → fzk_products. -------
 -- The physical games are in 002_physical.sql.
 insert into public.fzk_products (id, kind, name_ar, price_kwd, old_price_kwd, active, stock, sort) values
-  ('diwaniya', 'digital', 'ديوانية مشربية الكوت', 2.500, 3.500, true, null, 1),
-  ('sullam',   'digital', 'سلّم الألف',           2.500, 3.500, true, null, 2),
-  ('huroof',   'digital', 'خلية الحروف',          2.500, 3.500, true, null, 3),
-  ('theeb',    'digital', 'ليلة الذيب',           2.500, 3.500, true, null, 4),
-  ('tamtheel', 'digital', 'مثّلها وقولها',        2.500, 3.500, true, null, 5)
-on conflict (id) do nothing;
+  ('diwaniya', 'digital', 'اضمن',          2.500, 3.500, true, null, 1),
+  ('sullam',   'digital', 'سؤال المليون',   2.500, 3.500, true, null, 2),
+  ('huroof',   'digital', 'حروف الديرة',    2.500, 3.500, true, null, 3),
+  ('theeb',    'digital', 'مافيا',          2.500, 3.500, true, null, 4),
+  ('tamtheel', 'digital', 'مثّلها وقولها',  2.500, 3.500, true, null, 5)
+on conflict (id) do update set name_ar = excluded.name_ar;  -- names follow this file; prices you set stay
 
 -- A test code for the Diwaniya game that works on 50 devices. Delete it before launch:
 -- delete from public.fzk_codes where code = 'FK-TEST-2026';

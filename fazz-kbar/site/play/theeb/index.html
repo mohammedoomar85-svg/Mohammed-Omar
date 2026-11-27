@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ليلة الذيب · فز و العب للكبار</title>
+<title>مافيا · فز و العب للكبار</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,25 +35,25 @@
 </head>
 <body>
 <div class="shell">
-  <div class="bar"><h1>ليلة الذيب</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+  <div class="bar"><h1>مافيا</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
 
   <!-- 1. Setup -->
   <section class="card" id="s-setup" style="display:flex;flex-direction:column;gap:14px">
-    <p class="muted" style="margin:0">لعبة أدوار سرية من 5 إلى 20 لاعب. واحد منكم «الراوي» يمسك الجهاز ويدير الليل والنهار، والباقين يلعبون. الذيابة يحاولون يطيحون أهل الديرة واحد واحد بالليل، وأهل الديرة يحاولون يكشفونهم ويطلعونهم بالتصويت في النهار.</p>
+    <p class="muted" style="margin:0">لعبة أدوار سرية من 5 إلى 20 لاعب. واحد منكم «الراوي» يمسك الجهاز ويدير الليل والنهار، والباقين يلعبون. المافيا يحاولون يطيحون أهل الديرة واحد واحد بالليل، وأهل الديرة يحاولون يكشفونهم ويطلعونهم بالتصويت في النهار.</p>
     <h3>اللاعبين</h3>
     <div class="names" id="names"></div>
     <button class="btn" id="add" type="button">+ أضف لاعب</button>
     <h3>الأدوار</h3>
     <div class="counts">
-      <div class="field"><label for="c-wolf">الذيابة</label><input id="c-wolf" type="number" min="1" max="6" value="1"></div>
+      <div class="field"><label for="c-wolf">المافيا</label><input id="c-wolf" type="number" min="1" max="6" value="1"></div>
       <div class="field"><label for="c-doc">الطبيب</label><input id="c-doc" type="number" min="0" max="1" value="1"></div>
       <div class="field"><label for="c-seer">الشايب</label><input id="c-seer" type="number" min="0" max="1" value="1"></div>
     </div>
     <p class="muted" style="margin:0" id="rules-note"></p>
     <details><summary style="cursor:pointer;font-weight:700">وش يسوي كل دور؟</summary>
-      <p class="muted"><b class="role-wolf">الذيب</b>: كل ليلة الذيابة يختارون واحد يطيحونه. بالنهار يتظاهرون إنهم من أهل الديرة.<br>
-      <b class="role-doc">الطبيب</b>: كل ليلة يختار واحد يحميه (يقدر يحمي نفسه). إذا الذيابة اختاروه ما يطيح.<br>
-      <b class="role-seer">الشايب</b>: كل ليلة يسأل عن واحد، والراوي يأشر له بالراس: ذيب أو لا.<br>
+      <p class="muted"><b class="role-wolf">المافيا</b>: كل ليلة المافيا يختارون واحد يطيحونه. بالنهار يتظاهرون إنهم من أهل الديرة.<br>
+      <b class="role-doc">الطبيب</b>: كل ليلة يختار واحد يحميه (يقدر يحمي نفسه). إذا المافيا اختاروه ما يطيح.<br>
+      <b class="role-seer">الشايب</b>: كل ليلة يسأل عن واحد، والراوي يأشر له بالراس: من المافيا أو لا.<br>
       <b class="role-town">أهل الديرة</b>: ما عندهم قدرة بالليل، بس صوتهم في النهار يفرق.</p></details>
     <p class="err" id="setup-err" style="color:var(--bad);font-weight:700;margin:0" hidden></p>
     <button class="btn btn-main btn-big" id="deal" type="button">وزّع الأدوار</button>
@@ -106,10 +106,10 @@
   $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
 
   var ROLES = {
-    wolf: { n: 'ذيب', c: 'role-wolf', h: 'كل ليلة تختار مع باقي الذيابة واحد تطيحونه. بالنهار لا تنكشف.' },
-    doc: { n: 'الطبيب', c: 'role-doc', h: 'كل ليلة تختار واحد تحميه من الذيابة. تقدر تحمي نفسك.' },
-    seer: { n: 'الشايب', c: 'role-seer', h: 'كل ليلة تسأل عن واحد، والراوي يقول لك بالإشارة إذا هو ذيب أو لا.' },
-    town: { n: 'من أهل الديرة', c: 'role-town', h: 'دورك تكشف الذيابة بالنقاش والتصويت في النهار.' },
+    wolf: { n: 'مافيا', c: 'role-wolf', h: 'كل ليلة تختار مع باقي المافيا واحد تطيحونه. بالنهار لا تنكشف.' },
+    doc: { n: 'الطبيب', c: 'role-doc', h: 'كل ليلة تختار واحد تحميه من المافيا. تقدر تحمي نفسك.' },
+    seer: { n: 'الشايب', c: 'role-seer', h: 'كل ليلة تسأل عن واحد، والراوي يقول لك بالإشارة إذا هو من المافيا أو لا.' },
+    town: { n: 'من أهل الديرة', c: 'role-town', h: 'دورك تكشف المافيا بالنقاش والتصويت في النهار.' },
   };
   var players = [], step, night, picks, sel, queue, qi;
 
@@ -124,7 +124,7 @@
   function note() {
     var n = saved.filter(function (x) { return x.trim(); }).length;
     var w = n >= 15 ? 4 : n >= 11 ? 3 : n >= 7 ? 2 : 1;
-    $('rules-note').textContent = n + ' لاعب. ننصح بـ ' + w + ' ذيب.';
+    $('rules-note').textContent = n + ' لاعب. ننصح بـ ' + w + ' مافيا.';
   }
   $('names').addEventListener('input', function (e) { var i = e.target.dataset.i; if (i != null) { saved[i] = e.target.value; set('fzk-theeb-names', saved); note(); } });
   $('names').addEventListener('click', function (e) { var d = e.target.closest('[data-del]'); if (d && saved.length > 1) { saved.splice(+d.dataset.del, 1); set('fzk-theeb-names', saved); namesUI(); } });
@@ -138,7 +138,7 @@
     var err = $('setup-err'); err.hidden = true;
     if (names.length < 5) { err.textContent = 'تحتاجون 5 لاعبين على الأقل.'; err.hidden = false; return; }
     if (new Set(names).size !== names.length) { err.textContent = 'فيه اسمين متشابهين. خل كل اسم مختلف.'; err.hidden = false; return; }
-    if (w >= names.length - w) { err.textContent = 'عدد الذيابة لازم يكون أقل من نص اللاعبين.'; err.hidden = false; return; }
+    if (w >= names.length - w) { err.textContent = 'عدد المافيا لازم يكون أقل من نص اللاعبين.'; err.hidden = false; return; }
     if (w + d + s > names.length) { err.textContent = 'الأدوار أكثر من اللاعبين.'; err.hidden = false; return; }
     var roles = []; for (var i = 0; i < w; i++) roles.push('wolf'); if (d) roles.push('doc'); if (s) roles.push('seer');
     while (roles.length < names.length) roles.push('town');
@@ -157,7 +157,7 @@
     $('role-for').textContent = p.n + '، دورك:';
     $('role-name').textContent = R.n; $('role-name').className = 'role-name ' + R.c;
     var mates = p.r === 'wolf' ? players.filter(function (x) { return x.r === 'wolf' && x !== p; }).map(function (x) { return x.n; }) : [];
-    $('role-hint').textContent = R.h + (mates.length ? ' ربعك الذيابة: ' + mates.join('، ') + '.' : '');
+    $('role-hint').textContent = R.h + (mates.length ? ' ربعك في المافيا: ' + mates.join('، ') + '.' : '');
     show('role');
   };
   $('role-ok').onclick = function () { qi++; $('pass-name').textContent = ''; passNext(); };
@@ -180,18 +180,18 @@
     $('phase').textContent = phaseT;
     var say = '', choose = false, skip = false;
     if (s.k === 'sleep') say = 'الكل يسكر عيونه. نامت الديرة…';
-    if (s.k === 'wolf') { say = 'الذيابة يفتحون عيونهم ويأشرون على واحد يبون يطيحونه. اختاره هنا.'; choose = true; }
-    if (s.k === 'doc') { say = 'الذيابة يسكرون. الطبيب يفتح عيونه ويأشر على واحد يبي يحميه.'; choose = true; skip = !alive().some(function (p) { return p.r === 'doc'; }); }
+    if (s.k === 'wolf') { say = 'المافيا يفتحون عيونهم ويأشرون على واحد يبون يطيحونه. اختاره هنا.'; choose = true; }
+    if (s.k === 'doc') { say = 'المافيا يسكرون. الطبيب يفتح عيونه ويأشر على واحد يبي يحميه.'; choose = true; skip = !alive().some(function (p) { return p.r === 'doc'; }); }
     if (s.k === 'seer') { say = 'الطبيب يسكر. الشايب يفتح عيونه ويأشر على واحد يبي يعرف عنه.'; choose = true; }
-    if (s.k === 'seer-res') say = picks.seer ? 'أشّر للشايب: ' + picks.seer + (playerBy(picks.seer).r === 'wolf' ? ' ذيب 👍' : ' مو ذيب 👎') + '. بعدها الشايب يسكر.' : 'الشايب يسكر.';
+    if (s.k === 'seer-res') say = picks.seer ? 'أشّر للشايب: ' + picks.seer + (playerBy(picks.seer).r === 'wolf' ? ' من المافيا 👍' : ' مو من المافيا 👎') + '. بعدها الشايب يسكر.' : 'الشايب يسكر.';
     if (s.k === 'dawn') {
       var victim = picks.wolf && picks.wolf !== picks.doc ? picks.wolf : null;
       if (victim && !s.done) { playerBy(victim).alive = false; s.done = true; log('الليلة ' + night + ': طاح ' + victim); }
       if (!victim && !s.done) { s.done = true; log('الليلة ' + night + ': ما طاح أحد'); }
-      say = 'الكل يفتح عيونه. ' + (victim ? 'للأسف الذيابة طيّحوا ' + victim + '. يقدر يقول كلمة أخيرة بدون ما يكشف دوره.' : 'الطبيب أنقذ الموقف، محد طاح الليلة!');
+      say = 'الكل يفتح عيونه. ' + (victim ? 'للأسف المافيا طيّحوا ' + victim + '. يقدر يقول كلمة أخيرة بدون ما يكشف دوره.' : 'الطبيب أنقذ الموقف، محد طاح الليلة!');
       if (over()) return;
     }
-    if (s.k === 'vote') { say = 'تناقشوا وصوّتوا: مين تشكون إنه ذيب؟ اختاروا اللي ياخذ أكثر أصوات.'; choose = true; skip = true; }
+    if (s.k === 'vote') { say = 'تناقشوا وصوّتوا: مين تشكون إنه من المافيا؟ اختاروا اللي ياخذ أكثر أصوات.'; choose = true; skip = true; }
     $('say').textContent = say;
     var targets = s.k === 'wolf' ? alive().filter(function (p) { return p.r !== 'wolf'; }) : alive();
     $('plist').innerHTML = choose ? targets.map(function (p) { return '<button class="pbtn" type="button" data-n="' + esc(p.n) + '">' + esc(p.n) + '</button>'; }).join('') : '';
@@ -223,7 +223,7 @@
   function over() {
     var w = alive().filter(function (p) { return p.r === 'wolf'; }).length, t = alive().length - w;
     if (w && w < t) return false;
-    $('end-t').textContent = w ? 'فازت الذيابة 🐺' : 'فاز أهل الديرة 🏡';
+    $('end-t').textContent = w ? 'فازت المافيا 🕶️' : 'فاز أهل الديرة 🏡';
     $('end-list').innerHTML = players.map(function (p) { return '<div class="pbtn' + (p.alive ? '' : ' dead') + '" style="text-decoration:none">' + esc(p.n) + '<small class="' + ROLES[p.r].c + '">' + ROLES[p.r].n + '</small></div>'; }).join('');
     show('end'); return true;
   }

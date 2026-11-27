@@ -25,7 +25,10 @@ for (const g of games) {
   const html = readFileSync(g.src, 'utf8');
   const gate = `<script src="/config.js"></script>\n<script src="/play/gate.js" data-product="${g.id}"></script>\n<meta name="robots" content="noindex">\n`;
   if (!html.includes('</head>')) throw new Error(`No </head> in ${g.src}`);
-  writeFileSync(join(out, 'index.html'), html.replace('</head>', gate + '</head>'));
+  let page = html.replace('</head>', gate + '</head>');
+  // The adult store sells Diwaniya under the name «اضمن».
+  if (g.id === 'diwaniya') page = page.split('ديوانية مشربية الكوت').join('اضمن');
+  writeFileSync(join(out, 'index.html'), page);
   if (g.id === 'diwaniya') copyFileSync(sbjs, join(out, 'supabase.js'));
 }
 console.log('Built fazz-kbar/dist: store, order/, admin/, play/' + games.map((g) => g.id).join(', play/'));
