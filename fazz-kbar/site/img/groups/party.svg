@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#6a1b9a"/>
+  <g fill="#ffd6ff"><path d="M80 60h10v24H80z" transform="rotate(30 85 72)"/><path d="M320 50h10v24h-10z" transform="rotate(-30 325 62)"/><circle cx="60" cy="220" r="7"/><circle cx="348" cy="230" r="8"/><path d="M300 120l8 8-8 8-8-8z"/></g>
+  <g fill="#ffd166"><circle cx="120" cy="40" r="6"/><circle cx="290" cy="270" r="6"/><path d="M50 140h10v20H50z" transform="rotate(-20 55 150)"/></g>
+  <path d="M90 90h150a20 20 0 0 1 20 20v60a20 20 0 0 1-20 20h-90l-34 28 6-28H90a20 20 0 0 1-20-20v-60a20 20 0 0 1 20-20z" fill="#ffd6ff"/>
+  <text x="165" y="162" font-family="Tahoma,Arial" font-weight="700" font-size="54" fill="#6a1b9a" text-anchor="middle">ههه</text>
+  <path d="M250 150h80a18 18 0 0 1 18 18v44a18 18 0 0 1-18 18h-14l4 24-28-24h-42a18 18 0 0 1-18-18v-44a18 18 0 0 1 18-18z" fill="#ffd166"/>
+  <text x="290" y="208" font-family="Tahoma,Arial" font-weight="700" font-size="44" fill="#6a1b9a" text-anchor="middle">!؟</text>
+</svg>

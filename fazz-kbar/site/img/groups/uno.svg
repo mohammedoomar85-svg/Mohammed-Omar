@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#b3261e"/><circle cx="200" cy="150" r="130" fill="#ffd23f" opacity=".12"/>
+  <g transform="translate(200 160)">
+    <g transform="rotate(-24)"><rect x="-48" y="-130" width="96" height="140" rx="14" fill="#fff"/><rect x="-40" y="-122" width="80" height="124" rx="10" fill="#1d6fd6"/><circle cx="0" cy="-60" r="30" fill="#fff" opacity=".9"/><text x="0" y="-46" font-family="Tahoma,Arial" font-weight="700" font-size="42" fill="#1d6fd6" text-anchor="middle">7</text></g>
+    <g transform="rotate(0)"><rect x="-48" y="-130" width="96" height="140" rx="14" fill="#fff"/><rect x="-40" y="-122" width="80" height="124" rx="10" fill="#2e9e44"/><circle cx="0" cy="-60" r="30" fill="#fff" opacity=".9"/><text x="0" y="-46" font-family="Tahoma,Arial" font-weight="700" font-size="42" fill="#2e9e44" text-anchor="middle">+2</text></g>
+    <g transform="rotate(24)"><rect x="-48" y="-130" width="96" height="140" rx="14" fill="#fff"/><rect x="-40" y="-122" width="80" height="124" rx="10" fill="#ffd23f"/><circle cx="0" cy="-60" r="30" fill="#fff" opacity=".9"/><path d="M-14-60a14 14 0 1 1 6 11l-2 9-6-14 14-2-6 5a8 8 0 1 0-3-9z" fill="#b3261e"/></g>
+  </g>
+</svg>

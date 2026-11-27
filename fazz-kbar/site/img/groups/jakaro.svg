@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#5b3a1e"/>
+  <g transform="translate(200 150)">
+    <rect x="-120" y="-120" width="240" height="240" rx="26" fill="#c8964f" stroke="#3b2410" stroke-width="6" transform="rotate(45) scale(.82)"/>
+    <path d="M-36-110h72v74h74v72h-74v74h-72v-74h-74v-72h74z" fill="#f0c987" stroke="#8a5a2b" stroke-width="4"/>
+    <g fill="#8a5a2b" opacity=".55"><circle cx="0" cy="-90" r="6"/><circle cx="0" cy="-66" r="6"/><circle cx="0" cy="-42" r="6"/><circle cx="0" cy="42" r="6"/><circle cx="0" cy="66" r="6"/><circle cx="0" cy="90" r="6"/><circle cx="-90" cy="0" r="6"/><circle cx="-66" cy="0" r="6"/><circle cx="-42" cy="0" r="6"/><circle cx="42" cy="0" r="6"/><circle cx="66" cy="0" r="6"/><circle cx="90" cy="0" r="6"/></g>
+    <circle cx="-18" cy="-90" r="11" fill="#e63946"/><circle cx="90" cy="-18" r="11" fill="#1d6fd6"/><circle cx="18" cy="90" r="11" fill="#2e9e44"/><circle cx="-90" cy="18" r="11" fill="#ffd23f"/>
+    <circle cx="0" cy="0" r="16" fill="#3b2410"/>
+  </g>
+</svg>

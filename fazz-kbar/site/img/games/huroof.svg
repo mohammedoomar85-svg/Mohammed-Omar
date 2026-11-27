@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14532d"/><stop offset="1" stop-color="#0b2f1a"/></linearGradient>
+    <path id="h" d="M0-40L34.6-20V20L0 40-34.6 20V-20Z"/></defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <rect x="0" y="0" width="12" height="300" fill="#f97316"/><rect x="388" y="0" width="12" height="300" fill="#f97316"/>
+  <rect x="0" y="0" width="400" height="10" fill="#4ade80"/><rect x="0" y="290" width="400" height="10" fill="#4ade80"/>
+  <g font-family="Tahoma, Arial, sans-serif" font-weight="700" font-size="34" text-anchor="middle">
+    <g transform="translate(130 86)"><use href="#h" fill="#f97316"/><text y="12" fill="#2a1002">ح</text></g>
+    <g transform="translate(202 86)"><use href="#h" fill="#1f6b3e"/><text y="12" fill="#e7f7ec">ر</text></g>
+    <g transform="translate(274 86)"><use href="#h" fill="#4ade80"/><text y="12" fill="#052e16">و</text></g>
+    <g transform="translate(94 150)"><use href="#h" fill="#1f6b3e"/><text y="12" fill="#e7f7ec">ف</text></g>
+    <g transform="translate(166 150)"><use href="#h" fill="#f97316"/><text y="12" fill="#2a1002">د</text></g>
+    <g transform="translate(238 150)"><use href="#h" fill="#f97316"/><text y="12" fill="#2a1002">ي</text></g>
+    <g transform="translate(310 150)"><use href="#h" fill="#1f6b3e"/><text y="12" fill="#e7f7ec">ك</text></g>
+    <g transform="translate(130 214)"><use href="#h" fill="#4ade80"/><text y="12" fill="#052e16">ة</text></g>
+    <g transform="translate(202 214)"><use href="#h" fill="#1f6b3e"/><text y="12" fill="#e7f7ec">ع</text></g>
+    <g transform="translate(274 214)"><use href="#h" fill="#f97316"/><text y="12" fill="#2a1002">ب</text></g>
+  </g>
+</svg>

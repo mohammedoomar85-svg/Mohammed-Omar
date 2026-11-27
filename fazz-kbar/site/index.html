@@ -40,7 +40,7 @@ section.block { padding-block: 28px; scroll-margin-top: 72px; }
 .prod { display: flex; flex-direction: column; overflow: hidden; cursor: pointer; text-align: start; padding: 0; transition: transform .15s; }
 .prod:hover { transform: translateY(-2px); }
 .cover { aspect-ratio: 4 / 3; position: relative; display: grid; place-items: center; overflow: hidden; }
-.cover .g { font-family: var(--f-display); font-size: 5.5rem; line-height: 1; opacity: .95; }
+.cover img, .mini img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cover .kind { position: absolute; top: 10px; inset-inline-start: 10px; background: rgba(0,0,0,.35); color: #fff;
   border-radius: 999px; padding: 2px 10px; font-size: .8rem; font-weight: 700; }
 .cover .off { position: absolute; top: 10px; inset-inline-end: 10px; background: var(--accent); color: var(--accent-ink);
@@ -87,7 +87,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
 
 /* Cart */
 .line { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding-block: 10px; border-bottom: 1px solid var(--line); }
-.line .mini { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font-family: var(--f-display); font-size: 1.6rem; }
+.line .mini { width: 52px; height: 52px; border-radius: 12px; position: relative; overflow: hidden; }
 .line b { display: block; }
 .qty { display: inline-flex; align-items: center; gap: 4px; background: var(--bg-2); border-radius: 10px; padding: 2px; }
 .qty button { border: 0; background: var(--card); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-weight: 800; }
@@ -283,8 +283,10 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
   function kwd(n) { return (Math.round(Number(n) * 1000) / 1000).toFixed(3) + ' د.ك'; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  // Picture for a product: its own art if it has one, else the digital game's cover or the group's icon.
+  function art(p) { return p.img || (p.kind === 'digital' ? '/img/games/' + p.id + '.svg' : '/img/groups/' + (p.group || 'party') + '.svg'); }
   function cover(p, cls) {
-    return '<div class="' + cls + '" style="background:linear-gradient(135deg,' + p.color[0] + ',' + p.color[0] + ' 55%,' + p.color[1] + ');color:' + p.color[1] + '">';
+    return '<div class="' + cls + '" style="background:' + p.color[0] + '"><img src="' + esc(art(p)) + '" alt="" loading="lazy" decoding="async">';
   }
   function visible(p) { return (!p.draft && p.live !== false) || PREVIEW; }
   function index() { byId = {}; products.forEach(function (p) { byId[p.id] = p; }); }
@@ -323,7 +325,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     var html = list.map(function (p) {
       var off = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
       return '<article class="card prod" tabindex="0" role="button" data-id="' + esc(p.id) + '" aria-label="' + esc(p.name) + '">' +
-        cover(p, 'cover') + '<span class="g" aria-hidden="true">' + esc(p.glyph) + '</span>' +
+        cover(p, 'cover') +
         '<span class="kind">' + (p.kind === 'digital' ? 'رقمية' : 'توصيل') + '</span>' +
         (off > 0 ? '<span class="off">−' + off + '%</span>' : '') + '</div>' +
         '<div class="body"><h3>' + esc(p.name) + (p.draft ? ' <span class="draft-tag">مسودة</span>' : '') + '</h3>' +
@@ -360,7 +362,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
   function openProduct(id) {
     var p = byId[id]; if (!p) return; current = p;
     $('pd-title').textContent = p.name;
-    $('pd-body').innerHTML = cover(p, 'cover pd-cover') + '<span class="g" aria-hidden="true">' + esc(p.glyph) + '</span></div>' +
+    $('pd-body').innerHTML = cover(p, 'cover pd-cover') + '</div>' +
       '<div class="pd-meta"><span class="pill">' + (p.kind === 'digital' ? 'لعبة رقمية · توصلك فوراً' : 'توصيل داخل الكويت') + '</span>' +
       (p.players ? '<span class="pill">' + esc(p.players) + ' لاعب</span><span class="pill">' + esc(p.minutes) + ' دقيقة</span>' : (GROUPS[p.group] ? '<span class="pill">' + esc(GROUPS[p.group]) + '</span>' : '')) + '</div>' +
       '<p style="margin:0">' + esc(p.about || p.tagline) + '</p>' +
@@ -398,7 +400,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     var t = totals(), list = items();
     $('cart-count').hidden = !t.count; $('cart-count').textContent = t.count;
     $('lines').innerHTML = list.length ? list.map(function (i) {
-      return '<div class="line">' + cover(i.p, 'mini') + esc(i.p.glyph) + '</div>' +
+      return '<div class="line">' + cover(i.p, 'mini') + '</div>' +
         '<div><b>' + esc(i.p.name) + '</b><span class="note">' + kwd(i.p.price) + (i.p.kind === 'digital' ? ' · رقمية' : ' · توصيل') + '</span></div>' +
         '<div class="qty"><button type="button" data-dec="' + esc(i.p.id) + '" aria-label="أنقص">−</button><span class="num">' + i.qty + '</span>' +
         '<button type="button" data-inc="' + esc(i.p.id) + '" aria-label="زِد">+</button></div></div>';

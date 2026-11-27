@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f4c5c"/><stop offset="1" stop-color="#0a2f3a"/></linearGradient>
+    <pattern id="lat" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 13h26M13 0v26" stroke="#d9a441" stroke-opacity=".08" stroke-width="2"/></pattern>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/><rect width="400" height="300" fill="url(#lat)"/>
+  <!-- answers board -->
+  <rect x="92" y="46" width="216" height="208" rx="18" fill="#082530" stroke="#d9a441" stroke-width="4"/>
+  <g font-family="Tahoma, Arial, sans-serif" font-weight="700">
+    <rect x="108" y="64" width="184" height="34" rx="9" fill="#d9a441"/>
+    <rect x="114" y="70" width="38" height="22" rx="6" fill="#24160a"/><text x="133" y="86" font-size="14" fill="#f5ecdc" text-anchor="middle">1000</text>
+    <rect x="168" y="77" width="108" height="8" rx="4" fill="#24160a" opacity=".55"/>
+    <rect x="108" y="106" width="184" height="34" rx="9" fill="#d9a441"/>
+    <rect x="114" y="112" width="38" height="22" rx="6" fill="#24160a"/><text x="133" y="128" font-size="14" fill="#f5ecdc" text-anchor="middle">700</text>
+    <rect x="168" y="119" width="80" height="8" rx="4" fill="#24160a" opacity=".55"/>
+    <rect x="108" y="148" width="184" height="34" rx="9" fill="#173f4c"/><text x="200" y="171" font-size="20" fill="#d9a441" text-anchor="middle">؟</text>
+    <rect x="108" y="190" width="184" height="34" rx="9" fill="#173f4c"/><text x="200" y="213" font-size="20" fill="#d9a441" text-anchor="middle">؟</text>
+  </g>
+  <!-- big check badge -->
+  <circle cx="300" cy="216" r="44" fill="#46c1b6" stroke="#082530" stroke-width="6"/>
+  <path d="M279 216l14 14 28-30" fill="none" stroke="#082530" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- timer -->
+  <circle cx="96" cy="236" r="30" fill="#ef6f62" stroke="#082530" stroke-width="6"/>
+  <path d="M96 218v18l12 8" fill="none" stroke="#fff8ea" stroke-width="6" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs><radialGradient id="bg" cx=".5" cy=".4" r=".8"><stop offset="0" stop-color="#3a2f52"/><stop offset="1" stop-color="#120e1c"/></radialGradient></defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <!-- moon -->
+  <circle cx="318" cy="66" r="30" fill="#f3e7d3"/><circle cx="332" cy="56" r="27" fill="#2c2340"/>
+  <g fill="#f3e7d3" opacity=".6"><circle cx="60" cy="50" r="2"/><circle cx="100" cy="90" r="1.5"/><circle cx="260" cy="36" r="1.5"/><circle cx="356" cy="130" r="2"/></g>
+  <!-- fedora -->
+  <path d="M96 150c0-6 46-14 104-14s104 8 104 14-46 22-104 22S96 156 96 150z" fill="#0a0810"/>
+  <path d="M140 146c4-38 18-66 60-66s56 28 60 66c-18 6-40 9-60 9s-42-3-60-9z" fill="#14111d"/>
+  <path d="M142 132c18 6 38 9 58 9s40-3 58-9l2 14c-18 6-40 9-60 9s-42-3-60-9z" fill="#ef4444"/>
+  <path d="M182 84c6 10 30 10 36 0" fill="none" stroke="#2a2438" stroke-width="5" stroke-linecap="round"/>
+  <!-- mask -->
+  <path d="M120 196c18-12 52-12 80 2 28-14 62-14 80-2-2 22-18 40-42 40-18 0-30-10-38-20-8 10-20 20-38 20-24 0-40-18-42-40z" fill="#ef4444"/>
+  <ellipse cx="160" cy="208" rx="18" ry="10" fill="#120e1c"/><ellipse cx="240" cy="208" rx="18" ry="10" fill="#120e1c"/>
+  <circle cx="166" cy="206" r="3" fill="#f3e7d3"/><circle cx="246" cy="206" r="3" fill="#f3e7d3"/>
+</svg>

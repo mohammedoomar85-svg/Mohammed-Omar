@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9a3412"/><stop offset="1" stop-color="#5c1d08"/></linearGradient></defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <circle cx="200" cy="150" r="118" fill="#fde68a" opacity=".08"/>
+  <!-- happy mask -->
+  <g transform="translate(108 70) rotate(-12)">
+    <path d="M0 10C30-4 90-4 120 10c4 60-14 110-60 120C14 120-4 70 0 10z" fill="#fde68a"/>
+    <path d="M26 46q12-12 24 0M70 46q12-12 24 0" fill="none" stroke="#5c1d08" stroke-width="7" stroke-linecap="round"/>
+    <path d="M30 78q30 34 60 0z" fill="#5c1d08"/>
+  </g>
+  <!-- speech bubble with crossed word -->
+  <g transform="translate(222 64)">
+    <path d="M10 0h120a14 14 0 0 1 14 14v62a14 14 0 0 1-14 14H52l-26 22 4-22H10A14 14 0 0 1-4 76V14A14 14 0 0 1 10 0z" fill="#fff7e6"/>
+    <rect x="22" y="24" width="96" height="12" rx="6" fill="#9a3412" opacity=".75"/>
+    <rect x="22" y="50" width="70" height="12" rx="6" fill="#9a3412" opacity=".45"/>
+    <circle cx="108" cy="58" r="20" fill="none" stroke="#ef4444" stroke-width="7"/><path d="M94 72l28-28" stroke="#ef4444" stroke-width="7"/>
+  </g>
+  <!-- hourglass -->
+  <g transform="translate(262 186)">
+    <rect x="0" y="0" width="64" height="10" rx="5" fill="#fde68a"/><rect x="0" y="74" width="64" height="10" rx="5" fill="#fde68a"/>
+    <path d="M8 10h48c0 18-16 24-16 32s16 14 16 32H8c0-18 16-24 16-32S8 28 8 10z" fill="#fff7e6" opacity=".9"/>
+    <path d="M20 66h24c-4-8-8-10-12-12-4 2-8 4-12 12z" fill="#f59e0b"/>
+  </g>
+</svg>
