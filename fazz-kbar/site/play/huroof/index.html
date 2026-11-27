@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خلية الحروف · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="huroof"></script>
+<style>
+.wrapb { display: flex; justify-content: center; }
+.boardbox { --s: min(15vw, 12.5vh, 104px); direction: ltr; padding: calc(var(--s) * .32) calc(var(--s) * .32); border-radius: 22px; position: relative;
+  border-top: 12px solid var(--teamB); border-bottom: 12px solid var(--teamB); border-left: 12px solid var(--teamA); border-right: 12px solid var(--teamA); background: var(--card); }
+.hrow { display: flex; gap: calc(var(--s) * .06); margin-top: calc(var(--s) * -.2); }
+.hrow:first-child { margin-top: 0; }
+.hrow.odd { margin-left: calc(var(--s) * .53); }
+.hex { width: var(--s); height: calc(var(--s) * 1.12); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--bg-2); border: 0; cursor: pointer; display: grid; place-items: center; font-family: var(--f-display);
+  font-size: calc(var(--s) * .46); color: var(--ink); transition: transform .1s, background .2s; }
+.hex:hover { transform: scale(1.05); background: color-mix(in srgb, var(--gold) 30%, var(--bg-2)); }
+.hex.a { background: var(--teamA); color: #1a0b05; } .hex.b { background: var(--teamB); color: #06180e; }
+.hex.win { animation: pulse .7s ease-in-out 3; }
+@keyframes pulse { 50% { transform: scale(1.12); } }
+.legend { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; font-size: .95rem; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-inline-end: 6px; vertical-align: -2px; }
+.legend .la::before { background: var(--teamA); } .legend .lb::before { background: var(--teamB); }
+.modal { position: fixed; inset: 0; background: rgba(5, 12, 18, .82); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.modal .card { width: min(680px, 100%); display: flex; flex-direction: column; gap: 14px; text-align: center; }
+.letter { font-family: var(--f-display); font-size: 4.5rem; line-height: 1; color: var(--gold); }
+.qtext { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 800; }
+.answer { font-size: 1.6rem; font-weight: 800; color: var(--ok); }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.btn-a { background: var(--teamA); color: #1a0b05; } .btn-b { background: var(--teamB); color: #06180e; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>خلية الحروف</h1>
+    <button class="btn" id="newboard" type="button">لوحة جديدة</button>
+    <button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+  <div class="teams">
+    <div class="team a"><input id="na" value="الفريق البرتقالي" aria-label="اسم الفريق البرتقالي"><span class="score num" id="sa">0</span></div>
+    <div class="team b"><input id="nb" value="الفريق الأخضر" aria-label="اسم الفريق الأخضر"><span class="score num" id="sb">0</span></div>
+  </div>
+  <div class="legend"><span class="la">البرتقالي يوصل يمين ↔ يسار</span><span class="lb">الأخضر يوصل فوق ↕ تحت</span></div>
+  <div class="wrapb"><div class="boardbox" id="board" aria-label="لوحة الحروف"></div></div>
+  <p class="muted center" style="margin:0">المقدم يختار حرف، ويقرأ السؤال. أول فريق يجاوب صح ياخذ الخلية. أول فريق يوصل بين ضفتيه يفوز بالجولة.</p>
+</div>
+
+<div class="modal" id="m" hidden><div class="card">
+  <div class="letter" id="m-l"></div>
+  <div class="qtext" id="m-q"></div>
+  <div class="clock num" id="m-clock" style="font-size:2.4rem"></div>
+  <div class="answer" id="m-a" hidden></div>
+  <div class="acts">
+    <button class="btn" id="m-show" type="button">اظهر الجواب</button>
+    <button class="btn" id="m-next" type="button">سؤال ثاني</button>
+  </div>
+  <div class="acts">
+    <button class="btn btn-a btn-big" id="m-ta" type="button"></button>
+    <button class="btn btn-b btn-big" id="m-tb" type="button"></button>
+  </div>
+  <div class="acts"><button class="btn" id="m-none" type="button">محد جاوب</button><button class="btn" id="m-clear" type="button" hidden>رجّع الخلية فاضية</button></div>
+</div></div>
+
+<div class="modal" id="win" hidden><div class="card">
+  <h2 id="win-t" style="font-size:2.2rem"></h2><p class="muted" style="margin:0">النتيجة: <span id="win-s"></span></p>
+  <button class="btn btn-main btn-big" id="win-next" type="button">الجولة الجاية</button>
+</div></div>
+
+<script src="/play/huroof/questions.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var N = 5, Q = window.HUROOF_Q, cells, owner, cur, score = { a: 0, b: 0 }, timer;
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+  var usedQ = get('fzk-huroof-used', {});
+
+  function newBoard() {
+    var letters = shuffle(Object.keys(Q)).slice(0, N * N);
+    cells = []; owner = [];
+    for (var r = 0; r < N; r++) { cells.push(letters.slice(r * N, r * N + N)); owner.push([0, 0, 0, 0, 0]); }
+    draw();
+  }
+  function draw() {
+    $('board').innerHTML = cells.map(function (row, r) {
+      return '<div class="hrow' + (r % 2 ? ' odd' : '') + '">' + row.map(function (l, c) {
+        var o = owner[r][c];
+        return '<button class="hex' + (o ? ' ' + o : '') + '" type="button" data-r="' + r + '" data-c="' + c + '">' + l + '</button>';
+      }).join('') + '</div>';
+    }).join('');
+  }
+  function nb(r, c) {
+    var d = r % 2 ? [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, 0], [1, 1]] : [[-1, -1], [-1, 0], [0, -1], [0, 1], [1, -1], [1, 0]];
+    return d.map(function (x) { return [r + x[0], c + x[1]]; }).filter(function (p) { return p[0] >= 0 && p[0] < N && p[1] >= 0 && p[1] < N; });
+  }
+  // Orange (a) joins the left and right edges, green (b) joins top and bottom.
+  function wins(t) {
+    var seen = {}, stack = [], path = {};
+    for (var i = 0; i < N; i++) { var s = t === 'a' ? [i, 0] : [0, i]; if (owner[s[0]][s[1]] === t) { stack.push(s); seen[s] = null; } }
+    while (stack.length) {
+      var p = stack.pop();
+      if ((t === 'a' && p[1] === N - 1) || (t === 'b' && p[0] === N - 1)) {
+        var out = [], k = p; while (k) { out.push(k); k = seen[k]; } return out;
+      }
+      nb(p[0], p[1]).forEach(function (q) { if (owner[q[0]][q[1]] === t && !(q in seen)) { seen[q] = p; stack.push(q); } });
+    }
+    return null;
+  }
+  function pickQ(l) {
+    var list = Q[l], u = usedQ[l] || [];
+    var free = list.map(function (_, i) { return i; }).filter(function (i) { return u.indexOf(i) < 0; });
+    if (!free.length) { u = []; free = list.map(function (_, i) { return i; }); }
+    var i = free[Math.floor(Math.random() * free.length)]; u.push(i); usedQ[l] = u; set('fzk-huroof-used', usedQ);
+    return list[i];
+  }
+  function openCell(r, c) {
+    cur = { r: r, c: c, l: cells[r][c] }; var qa = pickQ(cur.l); cur.qa = qa;
+    $('m-l').textContent = cur.l; $('m-q').textContent = qa[0]; $('m-a').textContent = qa[1]; $('m-a').hidden = true;
+    $('m-ta').textContent = $('na').value; $('m-tb').textContent = $('nb').value;
+    $('m-clear').hidden = !owner[r][c];
+    $('m').hidden = false; startClock();
+  }
+  function startClock() {
+    clearInterval(timer); var left = 15; $('m-clock').textContent = left; $('m-clock').classList.remove('low');
+    timer = setInterval(function () { left--; $('m-clock').textContent = Math.max(left, 0); $('m-clock').classList.toggle('low', left <= 5); if (left <= 0) clearInterval(timer); }, 1000);
+  }
+  function close() { clearInterval(timer); $('m').hidden = true; }
+  $('m-show').onclick = function () { $('m-a').hidden = false; };
+  $('m-next').onclick = function () { var qa = pickQ(cur.l); cur.qa = qa; $('m-q').textContent = qa[0]; $('m-a').textContent = qa[1]; $('m-a').hidden = true; startClock(); };
+  $('m-none').onclick = close;
+  $('m-clear').onclick = function () { owner[cur.r][cur.c] = 0; close(); draw(); };
+  function take(t) {
+    owner[cur.r][cur.c] = t; close(); draw();
+    var path = wins(t);
+    if (path) {
+      path.forEach(function (p) { var b = document.querySelector('.hex[data-r="' + p[0] + '"][data-c="' + p[1] + '"]'); if (b) b.classList.add('win'); });
+      score[t]++; $('sa').textContent = score.a; $('sb').textContent = score.b;
+      setTimeout(function () {
+        $('win-t').textContent = 'فاز ' + (t === 'a' ? $('na').value : $('nb').value) + ' بالجولة!';
+        $('win-s').textContent = $('na').value + ' ' + score.a + ' – ' + score.b + ' ' + $('nb').value;
+        $('win').hidden = false;
+      }, 1600);
+    }
+  }
+  $('m-ta').onclick = function () { take('a'); };
+  $('m-tb').onclick = function () { take('b'); };
+  $('board').addEventListener('click', function (e) { var b = e.target.closest('.hex'); if (b) openCell(+b.dataset.r, +b.dataset.c); });
+  $('win-next').onclick = function () { $('win').hidden = true; newBoard(); };
+  $('newboard').onclick = function () { if (confirm('تبي لوحة جديدة؟ الخلايا الملونة بتنمسح.')) newBoard(); };
+  newBoard();
+})();
+</script>
+</body>
+</html>

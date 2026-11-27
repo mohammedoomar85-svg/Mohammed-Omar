@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مثّلها وقولها · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="tamtheel"></script>
+<style>
+.shell { max-width: 640px; }
+.modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.modes label { border: 2px solid var(--line); border-radius: 14px; padding: 10px; cursor: pointer; text-align: center; font-weight: 800; }
+.modes label small { display: block; font-weight: 500; color: var(--muted); font-size: .8rem; }
+.modes label:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--card)); }
+.modes input { position: absolute; opacity: 0; }
+.cardw { min-height: 46vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; }
+.cat { color: var(--gold); font-weight: 800; }
+.word { font-family: var(--f-display); font-size: clamp(2.4rem, 11vw, 4.2rem); line-height: 1.2; }
+.ban { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.ban span { background: color-mix(in srgb, var(--bad) 22%, var(--card)); border: 1px solid var(--bad); border-radius: 999px; padding: 4px 14px; font-weight: 800; }
+.kind { font-size: .85rem; border-radius: 999px; padding: 2px 12px; background: var(--bg-2); }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.got { font-size: .95rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>مثّلها وقولها</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+
+  <section class="card" id="s-setup" style="display:flex;flex-direction:column;gap:14px">
+    <p class="muted" style="margin:0">فريقين. واحد من الفريق يمسك الجوال ويوصّل الكلمة لربعه قبل يخلص الوقت. «مثّلها»: بدون ولا كلمة. «قولها»: اشرح بالكلام بس لا تقول الكلمات الممنوعة.</p>
+    <div class="modes">
+      <label><input type="radio" name="mode" value="act" checked>مثّلها<small>تمثيل صامت</small></label>
+      <label><input type="radio" name="mode" value="say">قولها<small>بدون الممنوع</small></label>
+      <label><input type="radio" name="mode" value="mix">خلطة<small>مرة ومرة</small></label>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="na">الفريق الأول</label><input id="na" value="الفريق البرتقالي" maxlength="24"></div>
+      <div class="field"><label for="nb">الفريق الثاني</label><input id="nb" value="الفريق الأخضر" maxlength="24"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="secs">وقت الدور (ثانية)</label><select id="secs"><option>45</option><option selected>60</option><option>90</option></select></div>
+      <div class="field"><label for="goal">الفوز عند</label><select id="goal"><option value="10">10 نقاط</option><option value="20" selected>20 نقطة</option><option value="30">30 نقطة</option></select></div>
+    </div>
+    <button class="btn btn-main btn-big" id="start" type="button">ابدأ</button>
+  </section>
+
+  <section id="s-game" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="teams">
+      <div class="team a" id="ta"><b id="la"></b><span class="score num" id="sa">0</span></div>
+      <div class="team b" id="tb"><b id="lb"></b><span class="score num" id="sb">0</span></div>
+    </div>
+
+    <div class="card cardw" id="ready">
+      <div class="muted">الدور على</div><div class="word" id="ready-team"></div>
+      <p class="muted" style="margin:0">اللي بيوصّل الكلمات يمسك الجوال، وربعه يخمنون.</p>
+      <button class="btn btn-main btn-big" id="go" type="button">جاهزين، ابدأ الوقت</button>
+    </div>
+
+    <div id="turn" hidden style="display:flex;flex-direction:column;gap:12px">
+      <div class="clock num" id="clock"></div>
+      <div class="card cardw" id="card"></div>
+      <div class="row3">
+        <button class="btn btn-ok btn-big" id="ok" type="button">صح ✓</button>
+        <button class="btn btn-big" id="pass" type="button">تخطّي</button>
+        <button class="btn btn-bad btn-big" id="foul" type="button">مخالفة −1</button>
+      </div>
+      <div class="got" id="got"></div>
+    </div>
+
+    <div class="card cardw" id="summary" hidden>
+      <div class="muted">خلص الوقت!</div><div class="word" id="sum-pts"></div><div class="got" id="sum-list"></div>
+      <button class="btn btn-main btn-big" id="nextturn" type="button">الدور اللي بعده</button>
+    </div>
+  </section>
+
+  <section class="card cardw" id="s-end" hidden>
+    <div class="word" id="end-t"></div><div class="muted" id="end-s"></div>
+    <button class="btn btn-main btn-big" id="again" type="button">لعبة جديدة</button>
+  </section>
+</div>
+
+<script src="/play/tamtheel/cards.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var T = window.TAMTHEEL, mode, deckAct, deckSay, team, score, secs, goal, timer, left, card, turnPts, turnLog, turns, flip;
+  function buildDecks() {
+    var acts = []; Object.keys(T.act).forEach(function (c) { T.act[c].forEach(function (w) { acts.push({ t: 'act', c: c, w: w }); }); });
+    deckAct = shuffle(acts); deckSay = shuffle(T.say.map(function (x) { return { t: 'say', w: x[0], ban: x[1] }; }));
+  }
+  function drawCard() {
+    var kind = mode === 'mix' ? (flip = !flip, flip ? 'act' : 'say') : mode;
+    if (kind === 'act') { if (!deckAct.length) buildDecks(); return deckAct.pop(); }
+    if (!deckSay.length) buildDecks(); return deckSay.pop();
+  }
+  function showCard() {
+    card = drawCard();
+    $('card').innerHTML = card.t === 'act'
+      ? '<span class="kind">مثّلها بدون كلام</span><div class="cat">' + esc(card.c) + '</div><div class="word">' + esc(card.w) + '</div>'
+      : '<span class="kind">قولها بدون الممنوع</span><div class="word">' + esc(card.w) + '</div><div class="muted">لا تقول:</div><div class="ban">' + card.ban.map(function (b) { return '<span>' + esc(b) + '</span>'; }).join('') + '</div>';
+    $('foul').hidden = card.t === 'act' && mode === 'act';
+  }
+  function names() { return [$('na').value.trim() || 'الفريق الأول', $('nb').value.trim() || 'الفريق الثاني']; }
+  function board() {
+    var n = names(); $('la').textContent = n[0]; $('lb').textContent = n[1];
+    $('sa').textContent = score[0]; $('sb').textContent = score[1];
+    $('ta').classList.toggle('on', team === 0); $('tb').classList.toggle('on', team === 1);
+  }
+  function view(id) { ['ready', 'turn', 'summary'].forEach(function (s) { $(s).hidden = s !== id; }); }
+  $('start').onclick = function () {
+    mode = document.querySelector('input[name=mode]:checked').value; secs = +$('secs').value; goal = +$('goal').value;
+    score = [0, 0]; team = 0; turns = 0; flip = false; buildDecks();
+    $('s-setup').hidden = true; $('s-end').hidden = true; $('s-game').hidden = false; ready();
+  };
+  function ready() { board(); $('ready-team').textContent = names()[team]; view('ready'); }
+  $('go').onclick = function () {
+    turnPts = 0; turnLog = []; left = secs; view('turn'); showCard(); tick();
+    clearInterval(timer); timer = setInterval(function () { left--; tick(); if (left <= 0) endTurn(); }, 1000);
+  };
+  function tick() { $('clock').textContent = Math.max(left, 0); $('clock').classList.toggle('low', left <= 10); $('got').textContent = turnLog.length ? 'هالدور: ' + turnLog.join('، ') : ''; }
+  function mark(d, tag) { turnPts += d; score[team] = Math.max(0, score[team] + d); turnLog.push(card.w + tag); board(); showCard(); tick(); }
+  $('ok').onclick = function () { mark(1, ' ✓'); };
+  $('pass').onclick = function () { turnLog.push(card.w + ' ⤼'); showCard(); tick(); };
+  $('foul').onclick = function () { mark(-1, ' ✕'); };
+  function endTurn() {
+    clearInterval(timer);
+    $('sum-pts').textContent = (turnPts >= 0 ? '+' : '') + turnPts + ' لـ ' + names()[team];
+    $('sum-list').textContent = turnLog.join('، ');
+    view('summary'); turns++;
+  }
+  $('nextturn').onclick = function () {
+    // Both teams get the same number of turns before a winner is called.
+    if (turns % 2 === 0 && (score[0] >= goal || score[1] >= goal) && score[0] !== score[1]) {
+      var w = score[0] > score[1] ? 0 : 1;
+      $('end-t').textContent = 'فاز ' + names()[w] + '!'; $('end-s').textContent = names()[0] + ' ' + score[0] + ' – ' + score[1] + ' ' + names()[1];
+      $('s-game').hidden = true; $('s-end').hidden = false; return;
+    }
+    team = 1 - team; ready();
+  };
+  $('again').onclick = function () { $('s-end').hidden = true; $('s-setup').hidden = false; };
+})();
+</script>
+</body>
+</html>

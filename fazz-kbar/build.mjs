@@ -1,7 +1,7 @@
-// Builds the Gaada store into gaada/dist for Cloudflare.
-// Usage (from the repo root or gaada/): node gaada/build.mjs
+// Builds the Fizz & Play adults store into fazz-kbar/dist for Cloudflare.
+// Usage (from the repo root or fazz-kbar/): node fazz-kbar/build.mjs
 //   /           store            /order/   the customer's order page and codes
-//   /admin/     dashboard        /play/diwaniya/   the Diwaniya game behind a code gate
+//   /admin/     dashboard        /play/<game>/   the digital games behind a code gate
 import { copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,7 +16,8 @@ cpSync(join(here, 'site'), dist, { recursive: true });
 const sbjs = join(repo, 'diwaniya', 'supabase.js');
 copyFileSync(sbjs, join(dist, 'admin', 'supabase.js'));
 
-// Paid games: the original page plus the code gate. Add more games here as { id, src }.
+// Diwaniya lives outside this folder, so it is copied in with the code gate added.
+// The other games are in site/play/ and already include the gate.
 const games = [{ id: 'diwaniya', src: join(repo, 'diwaniya', 'index.html') }];
 for (const g of games) {
   const out = join(dist, 'play', g.id);
@@ -27,4 +28,4 @@ for (const g of games) {
   writeFileSync(join(out, 'index.html'), html.replace('</head>', gate + '</head>'));
   if (g.id === 'diwaniya') copyFileSync(sbjs, join(out, 'supabase.js'));
 }
-console.log('Built gaada/dist: store, order/, admin/, play/' + games.map((g) => g.id).join(', play/'));
+console.log('Built fazz-kbar/dist: store, order/, admin/, play/' + games.map((g) => g.id).join(', play/'));

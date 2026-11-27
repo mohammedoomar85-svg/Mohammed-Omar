@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>سلّم الألف · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="sullam"></script>
+<style>
+.stage { display: grid; grid-template-columns: 1fr 260px; gap: 16px; flex: 1; }
+@media (max-width: 860px) { .stage { grid-template-columns: 1fr; } .ladder { order: -1; } }
+.qbox { display: flex; flex-direction: column; gap: 16px; }
+.q { font-size: clamp(1.35rem, 3.2vw, 2.1rem); font-weight: 800; text-align: center; padding: 26px 18px; line-height: 1.5; }
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .answers { grid-template-columns: 1fr; } }
+.ans { display: flex; gap: 12px; align-items: center; text-align: start; min-height: 70px; border-radius: 16px; border: 2px solid var(--line);
+  background: var(--card); padding: 12px 16px; font-size: clamp(1.05rem, 2.2vw, 1.35rem); font-weight: 700; cursor: pointer; }
+.ans .k { width: 36px; height: 36px; border-radius: 10px; background: var(--bg-2); display: grid; place-items: center; flex: none; color: var(--gold); }
+.ans:hover:not(:disabled) { border-color: var(--gold); }
+.ans.pick { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 18%, var(--card)); }
+.ans.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 28%, var(--card)); }
+.ans.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 28%, var(--card)); }
+.ans.gone { visibility: hidden; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tools .btn.used { text-decoration: line-through; opacity: .4; }
+.ladder { display: flex; flex-direction: column-reverse; gap: 4px; padding: 12px; }
+.step { display: flex; justify-content: space-between; padding: 6px 12px; border-radius: 10px; font-weight: 700; color: var(--muted); }
+.step.safe { color: var(--gold); }
+.step.done { color: var(--ink); }
+.step.now { background: var(--accent); color: var(--accent-ink); }
+.top-info { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.player { font-size: 1.2rem; font-weight: 800; }
+.clock { font-size: 2.6rem; }
+.overlay { position: fixed; inset: 0; background: rgba(5, 12, 18, .8); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.overlay .card { width: min(520px, 100%); text-align: center; display: flex; flex-direction: column; gap: 14px; }
+.big-pts { font-family: var(--f-display); font-size: 3.4rem; color: var(--gold); }
+.board td { padding: 6px 10px; border-bottom: 1px solid var(--line); }
+.board { width: 100%; border-collapse: collapse; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>سلّم الألف</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+
+  <!-- Setup -->
+  <section class="card" id="setup" style="max-width:560px;margin-inline:auto;width:100%;display:flex;flex-direction:column;gap:14px">
+    <p class="muted" style="margin:0">12 سؤال من السهل للصعب، وكل جواب صح يطلعك درجة لين توصل 1000 نقطة. عندك ثلاث مساعدات، وتقدر تنسحب وتحتفظ بنقاطك. الدرجة 4 والدرجة 8 أمان: لو غلطت بعدها ترجع لها مو للصفر.</p>
+    <div class="field"><label for="pname">اسم المتسابق</label><input id="pname" maxlength="30" placeholder="مثلاً بو فهد"></div>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="timer-on" checked> مؤقت 45 ثانية لكل سؤال</label>
+    <button class="btn btn-main btn-big" id="start" type="button">ابدأ</button>
+    <div id="board-wrap" hidden><h3 style="margin-bottom:6px">لوحة الشرف</h3><table class="board" id="board"></table></div>
+  </section>
+
+  <!-- Play -->
+  <section class="stage" id="play" hidden>
+    <div class="qbox">
+      <div class="top-info"><span class="player" id="who"></span><span class="clock num" id="clock"></span><span class="muted" id="qnum"></span></div>
+      <div class="card q" id="q"></div>
+      <div class="answers" id="answers"></div>
+      <div class="tools">
+        <button class="btn" id="t-50" type="button">احذف ثنتين</button>
+        <button class="btn" id="t-ask" type="button">شاور الربع (30 ث)</button>
+        <button class="btn" id="t-swap" type="button">بدّل السؤال</button>
+        <button class="btn btn-ok" id="lock" type="button" disabled>هذا جوابي النهائي</button>
+        <button class="btn btn-bad" id="quit" type="button">انسحب</button>
+      </div>
+    </div>
+    <ol class="card ladder" id="ladder" aria-label="الدرجات"></ol>
+  </section>
+</div>
+
+<div class="overlay" id="end" hidden><div class="card">
+  <h2 id="end-title"></h2><div class="big-pts num" id="end-pts"></div><p class="muted" id="end-msg" style="margin:0"></p>
+  <button class="btn btn-main btn-big" id="again" type="button">متسابق جديد</button>
+</div></div>
+
+<script src="/play/sullam/questions.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var PTS = [10, 20, 30, 50, 75, 100, 150, 200, 300, 450, 700, 1000], SAFE = [3, 7];
+  var TIER = function (i) { return i < 4 ? 'easy' : i < 8 ? 'medium' : 'hard'; };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  // Questions not repeated on this device until a tier runs out.
+  var used = get('fzk-sullam-used', { easy: [], medium: [], hard: [] });
+  function draw(tier) {
+    var bank = window.SULLAM_Q[tier];
+    var free = bank.map(function (_, i) { return i; }).filter(function (i) { return used[tier].indexOf(i) < 0 && taken.indexOf(tier + i) < 0; });
+    if (!free.length) { used[tier] = []; free = bank.map(function (_, i) { return i; }).filter(function (i) { return taken.indexOf(tier + i) < 0; }); }
+    var i = free[Math.floor(Math.random() * free.length)];
+    taken.push(tier + i); used[tier].push(i); set('fzk-sullam-used', used);
+    var row = bank[i];
+    return { q: row[0], right: row[1], opts: shuffle(row.slice(1)) };
+  }
+
+  var step, cur, pick, tools, taken, timer, left, name, locked;
+  function ladder() {
+    $('ladder').innerHTML = PTS.map(function (p, i) {
+      return '<li class="step' + (SAFE.indexOf(i) >= 0 ? ' safe' : '') + (i < step ? ' done' : '') + (i === step ? ' now' : '') + '"><span class="num">' + (i + 1) + '</span><span class="num">' + p + '</span></li>';
+    }).join('');
+  }
+  function showQ() {
+    cur = draw(TIER(step)); pick = -1; locked = false;
+    $('q').textContent = cur.q;
+    $('qnum').textContent = 'سؤال ' + (step + 1) + ' من 12';
+    $('answers').innerHTML = cur.opts.map(function (o, i) { return '<button class="ans" type="button" data-i="' + i + '"><span class="k">' + 'أبجد'[i] + '</span><span>' + esc(o) + '</span></button>'; }).join('');
+    $('lock').disabled = true; ladder(); startClock(45);
+  }
+  function startClock(s) {
+    clearInterval(timer);
+    if (!$('timer-on').checked) { $('clock').textContent = ''; return; }
+    left = s; tick(); timer = setInterval(function () { left--; tick(); if (left <= 0) { clearInterval(timer); finish('time'); } }, 1000);
+  }
+  function tick() { $('clock').textContent = left; $('clock').classList.toggle('low', left <= 10); }
+  $('answers').addEventListener('click', function (e) {
+    var b = e.target.closest('.ans'); if (!b || locked) return;
+    document.querySelectorAll('.ans').forEach(function (x) { x.classList.remove('pick'); });
+    b.classList.add('pick'); pick = +b.dataset.i; $('lock').disabled = false;
+  });
+  $('lock').addEventListener('click', function () {
+    if (pick < 0 || locked) return; locked = true; clearInterval(timer);
+    var ok = cur.opts[pick] === cur.right;
+    setTimeout(function () {
+      document.querySelectorAll('.ans').forEach(function (x) { if (cur.opts[+x.dataset.i] === cur.right) x.classList.add('right'); });
+      if (!ok) document.querySelector('.ans[data-i="' + pick + '"]').classList.add('wrong');
+      setTimeout(function () {
+        if (!ok) return finish('wrong');
+        step++; if (step >= PTS.length) return finish('win');
+        showQ();
+      }, 1600);
+    }, 900);
+  });
+  function safePoints() { var s = 0; SAFE.forEach(function (i) { if (step > i) s = PTS[i]; }); return s; }
+  function finish(why) {
+    clearInterval(timer); locked = true;
+    var pts = why === 'win' ? PTS[PTS.length - 1] : why === 'quit' ? (step ? PTS[step - 1] : 0) : safePoints();
+    $('end-title').textContent = { win: 'وصلت رأس السلّم!', quit: 'انسحاب ذكي', wrong: 'جواب غلط', time: 'خلص الوقت' }[why];
+    $('end-pts').textContent = pts + ' نقطة';
+    $('end-msg').textContent = why === 'wrong' || why === 'time' ? 'الجواب الصحيح: ' + cur.right : name + ' خلص بـ ' + pts + ' نقطة.';
+    var b = get('fzk-sullam-board', []); b.push({ n: name, p: pts }); b.sort(function (x, y) { return y.p - x.p; }); set('fzk-sullam-board', b.slice(0, 10));
+    $('end').hidden = false;
+  }
+  function useTool(id, fn) { var b = $(id); if (tools[id] || locked) return; tools[id] = true; b.classList.add('used'); b.disabled = true; fn(); }
+  $('t-50').onclick = function () { useTool('t-50', function () {
+    var wrong = shuffle(cur.opts.map(function (o, i) { return i; }).filter(function (i) { return cur.opts[i] !== cur.right; })).slice(0, 2);
+    wrong.forEach(function (i) { var b = document.querySelector('.ans[data-i="' + i + '"]'); b.classList.add('gone'); b.classList.remove('pick'); if (pick === i) { pick = -1; $('lock').disabled = true; } });
+  }); };
+  $('t-ask').onclick = function () { useTool('t-ask', function () { if ($('timer-on').checked) startClock(Math.max(left || 0, 0) + 30); }); };
+  $('t-swap').onclick = function () { useTool('t-swap', showQ); };
+  $('quit').onclick = function () { if (!locked && confirm('تبي تنسحب وتاخذ ' + (step ? PTS[step - 1] : 0) + ' نقطة؟')) finish('quit'); };
+
+  function board() {
+    var b = get('fzk-sullam-board', []); $('board-wrap').hidden = !b.length;
+    $('board').innerHTML = b.map(function (r, i) { return '<tr><td class="num">' + (i + 1) + '</td><td>' + esc(r.n) + '</td><td class="num">' + r.p + '</td></tr>'; }).join('');
+  }
+  $('start').onclick = function () {
+    name = $('pname').value.trim() || 'المتسابق';
+    step = 0; taken = []; tools = {};
+    ['t-50', 't-ask', 't-swap'].forEach(function (id) { $(id).disabled = false; $(id).classList.remove('used'); });
+    $('who').textContent = name; $('setup').hidden = true; $('play').hidden = false; showQ();
+  };
+  $('again').onclick = function () { $('end').hidden = true; $('play').hidden = true; $('setup').hidden = false; $('pname').value = ''; board(); $('pname').focus(); };
+  board();
+})();
+</script>
+</body>
+</html>

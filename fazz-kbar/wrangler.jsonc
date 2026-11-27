@@ -1,0 +1,8 @@
+// Cloudflare Workers config for the Fizz & Play adults store (static files only), separate from the Fizz & Play site.
+// Deploy from this folder:  cd fazz-kbar && npx wrangler deploy
+{
+  "name": "fazz-kbar",
+  "compatibility_date": "2025-06-01",
+  "build": { "command": "node build.mjs" },
+  "assets": { "directory": "./dist" }
+}

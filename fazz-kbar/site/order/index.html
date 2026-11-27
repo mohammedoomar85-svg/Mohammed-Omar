@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>طلبي · قعدة</title>
+<title>طلبي · فز و العب للكبار</title>
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0f4c5c">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -32,25 +32,25 @@ h1 { font-size: 1.7rem; }
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="/"><span class="logo-mark" aria-hidden="true">ق</span><span><b>قعدة</b><small>ألعاب جمعات بالعربي</small></span></a>
+  <a class="logo" href="/"><span class="logo-mark" aria-hidden="true">فز</span><span><b>فز و العب</b><small>للكبار · ألعاب جمعات</small></span></a>
   <a class="btn btn-ghost" href="/" style="margin-inline-start:auto">المتجر</a>
 </div></header>
 
 <main><div class="wrap" id="out"><p class="note">جاري التحميل…</p></div></main>
 
-<footer class="foot"><div class="wrap"><span>قعدة · الكويت</span><a id="wa" target="_blank" rel="noopener">تحتاج مساعدة؟ كلمنا على الواتساب</a></div></footer>
+<footer class="foot"><div class="wrap"><span>فز و العب للكبار · الكويت</span><a id="wa" target="_blank" rel="noopener">تحتاج مساعدة؟ كلمنا على الواتساب</a></div></footer>
 
 <script src="/config.js"></script>
 <script src="/catalog.js"></script>
 <script>
 (function () {
   'use strict';
-  var C = window.GAADA, out = document.getElementById('out');
+  var C = window.FZK, out = document.getElementById('out');
   var games = {}; window.CATALOG.forEach(function (p) { games[p.id] = p; });
   document.getElementById('wa').href = 'https://wa.me/' + C.WHATSAPP;
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function kwd(n) { return Number(n).toFixed(3) + ' د.ك'; }
-  function mine() { try { return JSON.parse(localStorage.getItem('gaada-orders') || '[]'); } catch (e) { return []; } }
+  function mine() { try { return JSON.parse(localStorage.getItem('fzk-orders') || '[]'); } catch (e) { return []; } }
   var m = /[?&]t=([0-9a-f-]{36})/i.exec(location.search);
 
   if (!m) {
@@ -63,7 +63,7 @@ h1 { font-size: 1.7rem; }
 
   var token = m[1];
   function load() {
-    fetch(C.SB_URL + '/rest/v1/rpc/gaada_order_status', {
+    fetch(C.SB_URL + '/rest/v1/rpc/fzk_order_status', {
       method: 'POST', headers: { apikey: C.SB_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: token })
     }).then(function (r) { return r.ok ? r.json() : null; }).then(show).catch(function () {
       out.innerHTML = '<div class="card"><p class="err" style="margin:0">ما قدرنا نفتح الطلب. تأكد من الإنترنت وحدّث الصفحة.</p></div>';

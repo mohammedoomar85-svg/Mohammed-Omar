@@ -1,5 +1,5 @@
 // Store settings. Change these here; every page reads them.
-window.GAADA = {
+window.FZK = {
   // Supabase project (the public "publishable" key is safe to be here; never put the secret key).
   SB_URL: 'https://mxocmwkxnihenqmfhjcc.supabase.co',
   SB_KEY: 'sb_publishable_NgFczrw5qNiMZN_VDpdeQg_0wcG4wxD',

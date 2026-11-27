@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>لوحة قعدة</title>
+<title>لوحة فز و العب للكبار</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +40,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="logo" href="/"><span class="logo-mark" aria-hidden="true">ق</span><span><b>قعدة</b><small>لوحة الإدارة</small></span></a>
+  <a class="logo" href="/"><span class="logo-mark" aria-hidden="true">فز</span><span><b>فز و العب للكبار</b><small>لوحة الإدارة</small></span></a>
   <button class="btn btn-ghost" id="logout" type="button" style="margin-inline-start:auto" hidden>خروج</button>
 </div></header>
 
@@ -72,7 +72,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     <section id="v-products" hidden>
       <div class="card scroll">
         <table><thead><tr><th>المنتج</th><th>النوع</th><th>السعر د.ك</th><th>قبل الخصم</th><th>المخزون</th><th>ظاهر</th><th></th></tr></thead><tbody id="prods"></tbody></table>
-        <p class="note">المخزون فاضي = ما ينحسب (للألعاب الرقمية). لإضافة منتج جديد أضفه في catalog.js وفي جدول gaada_products بنفس الرمز.</p>
+        <p class="note">المخزون فاضي = ما ينحسب (للألعاب الرقمية). لإضافة منتج جديد أضفه في catalog.js وفي جدول fzk_products بنفس الرمز.</p>
       </div>
     </section>
   </div>
@@ -83,7 +83,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
 <script>
 (function () {
   'use strict';
-  var C = window.GAADA, $ = function (id) { return document.getElementById(id); };
+  var C = window.FZK, $ = function (id) { return document.getElementById(id); };
   var sb = window.supabase.createClient(C.SB_URL, C.SB_KEY);
   var orders = [], codes = {}, filter = 'open';
   var ST = { new: 'جديد', paid: 'مدفوع', shipped: 'مع المندوب', done: 'مكتمل', cancelled: 'ملغي' };
@@ -94,7 +94,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
   async function boot() {
     var s = (await sb.auth.getSession()).data.session;
     if (!s) { $('login').hidden = false; $('app').hidden = true; $('logout').hidden = true; return; }
-    var ok = (await sb.rpc('gaada_is_admin')).data;
+    var ok = (await sb.rpc('fzk_is_admin')).data;
     if (!ok) { $('login').hidden = false; $('lerr').textContent = 'هذا الحساب ما عنده صلاحية إدارة.'; $('lerr').hidden = false; await sb.auth.signOut(); return; }
     $('login').hidden = true; $('app').hidden = false; $('logout').hidden = false;
     load();
@@ -109,9 +109,9 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
   $('reload').addEventListener('click', load);
 
   async function load() {
-    var o = await sb.from('gaada_orders').select('*, gaada_order_items(*)').order('created_at', { ascending: false }).limit(300);
+    var o = await sb.from('fzk_orders').select('*, fzk_order_items(*)').order('created_at', { ascending: false }).limit(300);
     orders = o.data || [];
-    var c = await sb.from('gaada_codes').select('code,product_id,order_id,uses,devices,revoked').not('order_id', 'is', null);
+    var c = await sb.from('fzk_codes').select('code,product_id,order_id,uses,devices,revoked').not('order_id', 'is', null);
     codes = {}; (c.data || []).forEach(function (x) { (codes[x.order_id] = codes[x.order_id] || []).push(x); });
     renderOrders(); loadProducts();
   }
@@ -135,9 +135,9 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     $('orders').innerHTML = list.length ? list.map(card).join('') : '<div class="card note">ما فيه طلبات هنا.</div>';
   }
   function card(o) {
-    var its = o.gaada_order_items || [], cs = codes[o.id] || [];
+    var its = o.fzk_order_items || [], cs = codes[o.id] || [];
     var link = location.origin + '/order/?t=' + o.token;
-    var payMsg = 'هلا ' + o.name + '، شكراً لطلبك من قعدة (' + o.number + ').\nالإجمالي: ' + kwd(o.total) + '\nرابط الدفع KNET: \nبعد الدفع تقدر تتابع طلبك هنا: ' + link;
+    var payMsg = 'هلا ' + o.name + '، شكراً لطلبك من فز و العب للكبار (' + o.number + ').\nالإجمالي: ' + kwd(o.total) + '\nرابط الدفع KNET: \nبعد الدفع تقدر تتابع طلبك هنا: ' + link;
     var codeMsg = 'هلا ' + o.name + '، تم تأكيد الدفع لطلبك ' + o.number + ' 🎉\n' +
       cs.map(function (c) { return c.product_id + ': ' + c.code; }).join('\n') + '\nافتح ألعابك من هنا: ' + link;
     var acts = [];
@@ -163,14 +163,14 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     var b = e.target.closest('[data-st]'); if (!b) return;
     if (b.dataset.st === 'cancelled' && !confirm('تبي تلغي الطلب؟ أكواد الألعاب بتتوقف.')) return;
     b.disabled = true;
-    var r = await sb.from('gaada_orders').update({ status: b.dataset.st }).eq('id', b.dataset.id);
+    var r = await sb.from('fzk_orders').update({ status: b.dataset.st }).eq('id', b.dataset.id);
     if (r.error) alert('ما قدرنا نحدّث الطلب: ' + r.error.message);
     load();
   });
 
   // Products
   async function loadProducts() {
-    var r = await sb.from('gaada_products').select('*').order('sort');
+    var r = await sb.from('fzk_products').select('*').order('sort');
     $('prods').innerHTML = (r.data || []).map(function (p) {
       return '<tr data-id="' + esc(p.id) + '"><td><b>' + esc(p.name_ar) + '</b><br><span class="note num">' + esc(p.id) + '</span></td>' +
         '<td>' + (p.kind === 'digital' ? 'رقمية' : 'لوحية') + '</td>' +
@@ -188,7 +188,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     var row = { price_kwd: num(v('price_kwd').value), old_price_kwd: num(v('old_price_kwd').value), stock: num(v('stock').value),
       active: v('active').checked, updated_at: new Date().toISOString() };
     if (row.price_kwd == null || isNaN(row.price_kwd)) return alert('اكتب السعر.');
-    var r = await sb.from('gaada_products').update(row).eq('id', tr.dataset.id);
+    var r = await sb.from('fzk_products').update(row).eq('id', tr.dataset.id);
     b.textContent = r.error ? 'خطأ' : 'تم'; if (r.error) alert(r.error.message);
     setTimeout(function () { b.textContent = 'حفظ'; }, 1500);
   });
