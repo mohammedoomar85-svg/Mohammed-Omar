@@ -27,7 +27,7 @@ create policy "anyone reads active products" on public.fzk_products
 create sequence if not exists public.fzk_order_no start 1001;
 create table if not exists public.fzk_orders (
   id          bigint generated always as identity primary key,
-  number      text not null unique default ('G-' || nextval('public.fzk_order_no')),
+  number      text not null unique default ('FZ-' || nextval('public.fzk_order_no')),
   token       uuid not null unique default gen_random_uuid(), -- secret part of the order link
   created_at  timestamptz not null default now(),
   name        text not null check (char_length(name) between 2 and 80),
