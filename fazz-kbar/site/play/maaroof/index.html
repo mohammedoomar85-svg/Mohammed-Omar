@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لا تقول المعروف · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/games/maaroof.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="maaroof"></script>
+<style>
+.shell { max-width: 760px; }
+.names { display: flex; flex-direction: column; gap: 8px; }
+.names div { display: flex; gap: 8px; }
+.names input { flex: 1; min-height: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 6px 12px; }
+.names button { width: 46px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); cursor: pointer; }
+.prompt { text-align: center; }
+.prompt .k { color: var(--muted); }
+.prompt .w { font-family: var(--f-display); font-size: clamp(2.4rem, 9vw, 4.4rem); color: var(--gold); line-height: 1.2; }
+.who { text-align: center; font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; }
+.plist { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.pl { border-radius: 999px; padding: 6px 14px; background: var(--bg-2); font-weight: 700; border: 2px solid transparent; }
+.pl.now { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 22%, var(--card)); }
+.pl.done { opacity: .6; }
+.pl.out { text-decoration: line-through; opacity: .35; }
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.common { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.common span { background: color-mix(in srgb, var(--bad) 20%, var(--card)); border: 1px solid var(--bad); border-radius: 999px; padding: 4px 14px; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>لا تقول المعروف</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+
+  <section class="card" id="setup" style="display:flex;flex-direction:column;gap:14px">
+    <p class="muted" style="margin:0">يطلع موضوع، مثلاً «فاكهة»، وكل لاعب بدوره يقول شي منه بس لا يكون من الأجوبة المعروفة اللي يقولها أغلب الناس. اللي يقول المعروف، أو يكرر جواب أحد، أو يخلص وقته، يطلع. آخر واحد يبقى هو الفايز.</p>
+    <h3>اللاعبين</h3>
+    <div class="names" id="names"></div>
+    <button class="btn" id="add" type="button">+ أضف لاعب</button>
+    <div class="field"><label for="secs">وقت كل لاعب</label><select id="secs"><option value="5">5 ثواني</option><option value="8" selected>8 ثواني</option><option value="12">12 ثانية</option></select></div>
+    <p class="err" id="err" style="color:var(--bad);font-weight:700;margin:0" hidden></p>
+    <button class="btn btn-main btn-big" id="start" type="button">ابدأ</button>
+  </section>
+
+  <section id="game" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="card prompt"><div class="k">الموضوع</div><div class="w" id="w"></div></div>
+    <div class="card" id="turn-v" style="display:flex;flex-direction:column;gap:12px">
+      <div class="who" id="who"></div>
+      <div class="clock num" id="clock"></div>
+      <div class="acts">
+        <button class="btn btn-ok btn-big" id="ok" type="button">جواب مو معروف ✓</button>
+        <button class="btn btn-bad btn-big" id="out" type="button">قال المعروف ✕</button>
+      </div>
+    </div>
+    <div class="card center" id="round-v" hidden style="display:flex;flex-direction:column;gap:12px">
+      <h2 id="round-t"></h2>
+      <div class="muted">الأجوبة المعروفة كانت:</div>
+      <div class="common" id="common"></div>
+      <button class="btn btn-main btn-big" id="next" type="button">الموضوع الجاي</button>
+    </div>
+    <div class="plist" id="plist"></div>
+    <details class="card"><summary style="cursor:pointer;font-weight:700">الأجوبة المعروفة (للمقدم بس)</summary><div class="common" id="host" style="margin-top:10px"></div></details>
+  </section>
+
+  <section class="card center" id="end" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="muted">الفايز</div><h2 id="winner" style="font-size:2.6rem;color:var(--gold)"></h2>
+    <button class="btn btn-main btn-big" id="again" type="button">لعبة جديدة</button>
+  </section>
+</div>
+
+<script src="/play/maaroof/prompts.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var P = window.MAAROOF, used = get('fzk-maaroof-used', []), saved = get('fzk-maaroof-names', ['', '', '', '']);
+  var players, prompt, queue, qi, timer, left, secs;
+  function namesUI() {
+    $('names').innerHTML = saved.map(function (n, i) {
+      return '<div><input data-i="' + i + '" value="' + esc(n) + '" placeholder="لاعب ' + (i + 1) + '" maxlength="20"><button type="button" data-del="' + i + '" aria-label="احذف">×</button></div>';
+    }).join('');
+  }
+  $('names').addEventListener('input', function (e) { var i = e.target.dataset.i; if (i != null) { saved[i] = e.target.value; set('fzk-maaroof-names', saved); } });
+  $('names').addEventListener('click', function (e) { var d = e.target.closest('[data-del]'); if (d && saved.length > 2) { saved.splice(+d.dataset.del, 1); set('fzk-maaroof-names', saved); namesUI(); } });
+  $('add').onclick = function () { if (saved.length < 20) { saved.push(''); namesUI(); $('names').lastChild.querySelector('input').focus(); } };
+  namesUI();
+
+  function pick() {
+    var free = P.map(function (_, i) { return i; }).filter(function (i) { return used.indexOf(i) < 0; });
+    if (!free.length) { used = []; free = P.map(function (_, i) { return i; }); }
+    var i = free[Math.floor(Math.random() * free.length)]; used.push(i); set('fzk-maaroof-used', used); return P[i];
+  }
+  function show(id) { ['setup', 'game', 'end'].forEach(function (s) { $(s).hidden = s !== id; }); }
+  $('start').onclick = function () {
+    var names = saved.map(function (x) { return x.trim(); }).filter(Boolean);
+    if (names.length < 2) { $('err').textContent = 'تحتاجون لاعبين على الأقل.'; $('err').hidden = false; return; }
+    $('err').hidden = true; secs = +$('secs').value;
+    players = names.map(function (n) { return { n: n, out: false }; });
+    show('game'); newRound();
+  };
+  function alive() { return players.filter(function (p) { return !p.out; }); }
+  function newRound() {
+    prompt = pick(); queue = alive(); qi = 0;
+    $('w').textContent = prompt[0];
+    $('host').innerHTML = $('common').innerHTML = prompt[1].map(function (a) { return '<span>' + esc(a) + '</span>'; }).join('');
+    $('turn-v').hidden = false; $('round-v').hidden = true; turn();
+  }
+  function plist() {
+    $('plist').innerHTML = players.map(function (p) {
+      var k = queue.indexOf(p);
+      return '<span class="pl' + (p.out ? ' out' : k === qi ? ' now' : k >= 0 && k < qi ? ' done' : '') + '">' + esc(p.n) + '</span>';
+    }).join('');
+  }
+  function turn() {
+    if (alive().length <= 1) return finish();
+    if (qi >= queue.length) return roundEnd();
+    if (queue[qi].out) { qi++; return turn(); }
+    $('who').textContent = 'دور ' + queue[qi].n; plist();
+    clearInterval(timer); left = secs; tickUI();
+    timer = setInterval(function () { left--; tickUI(); if (left <= 0) { clearInterval(timer); knock(); } }, 1000);
+  }
+  function tickUI() { $('clock').textContent = Math.max(left, 0); $('clock').classList.toggle('low', left <= 3); }
+  function knock() { clearInterval(timer); queue[qi].out = true; qi++; turn(); }
+  $('ok').onclick = function () { clearInterval(timer); qi++; turn(); };
+  $('out').onclick = knock;
+  function roundEnd() {
+    clearInterval(timer); plist();
+    $('turn-v').hidden = true; $('round-v').hidden = false;
+    $('round-t').textContent = 'خلصت الجولة! باقي ' + alive().length + ' لاعبين';
+  }
+  $('next').onclick = newRound;
+  function finish() { clearInterval(timer); var w = alive()[0]; $('winner').textContent = w ? w.n : 'محد!'; show('end'); }
+  $('again').onclick = function () { show('setup'); };
+})();
+</script>
+</body>
+</html>

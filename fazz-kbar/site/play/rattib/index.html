@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>رتّبها صح · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/games/rattib.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="rattib"></script>
+<style>
+.q { font-size: clamp(1.4rem, 3.4vw, 2.2rem); font-weight: 800; text-align: center; }
+.items { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .items { grid-template-columns: 1fr; } }
+.it { display: flex; align-items: center; gap: 12px; min-height: 68px; border-radius: 16px; border: 2px solid var(--line); background: var(--card);
+  padding: 10px 16px; font-size: clamp(1.1rem, 2.4vw, 1.4rem); font-weight: 800; cursor: pointer; text-align: start; }
+.it .n { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-2); display: grid; place-items: center; flex: none; color: var(--muted); font-family: var(--f-display); font-size: 1.3rem; }
+.it.set .n { background: var(--gold); color: #1d1300; }
+.it.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 22%, var(--card)); }
+.it.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 22%, var(--card)); }
+.it .fix { margin-inline-start: auto; font-size: .95rem; color: var(--muted); }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.res { text-align: center; font-size: 1.3rem; font-weight: 800; min-height: 1.6em; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>رتّبها صح</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+  <div class="teams">
+    <div class="team a" id="ta"><input id="na" value="الفريق البرتقالي" aria-label="اسم الفريق الأول"><span class="score num" id="sa">0</span></div>
+    <div class="team b" id="tb"><input id="nb" value="الفريق الأخضر" aria-label="اسم الفريق الثاني"><span class="score num" id="sb">0</span></div>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;gap:16px">
+    <div class="muted center" id="turn"></div>
+    <div class="q" id="q"></div>
+    <div class="items" id="items"></div>
+    <div class="res" id="res" aria-live="polite"></div>
+    <div class="acts">
+      <button class="btn" id="reset" type="button">امسح الترتيب</button>
+      <button class="btn btn-ok btn-big" id="check" type="button" disabled>تحقق</button>
+      <button class="btn btn-main btn-big" id="next" type="button" hidden>السؤال الجاي</button>
+    </div>
+    <p class="muted center" style="margin:0">اضغط على الأجوبة بالترتيب الصحيح. الترتيب الكامل صح = 3 نقاط، وإذا غلطت تاخذ نقطة على كل واحد في مكانه الصح.</p>
+  </div>
+</div>
+
+<script src="/play/rattib/items.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var Q = window.RATTIB, used = get('fzk-rattib-used', []), cur, shown, order, checked, score = [0, 0], turn = 0;
+  function names() { return [$('na').value.trim() || 'الفريق الأول', $('nb').value.trim() || 'الفريق الثاني']; }
+  function pick() {
+    var free = Q.map(function (_, i) { return i; }).filter(function (i) { return used.indexOf(i) < 0; });
+    if (!free.length) { used = []; free = Q.map(function (_, i) { return i; }); }
+    var i = free[Math.floor(Math.random() * free.length)]; used.push(i); set('fzk-rattib-used', used); return Q[i];
+  }
+  function newQ() {
+    cur = pick(); order = []; checked = false;
+    do { shown = shuffle(cur[1]); } while (shown.join() === cur[1].join());
+    $('res').textContent = ''; draw();
+  }
+  function draw() {
+    $('q').textContent = cur[0];
+    $('items').innerHTML = shown.map(function (it) {
+      var k = order.indexOf(it), cls = k >= 0 ? ' set' : '';
+      if (checked) cls += cur[1].indexOf(it) === k ? ' right' : ' wrong';
+      return '<button class="it' + cls + '" type="button" data-it="' + esc(it) + '"' + (checked ? ' disabled' : '') + '><span class="n num">' + (k >= 0 ? k + 1 : '') + '</span>' +
+        '<span>' + esc(it) + '</span>' + (checked && cur[1].indexOf(it) !== k ? '<span class="fix">مكانه: ' + (cur[1].indexOf(it) + 1) + '</span>' : '') + '</button>';
+    }).join('');
+    $('check').disabled = order.length !== 4 || checked; $('check').hidden = checked; $('next').hidden = !checked; $('reset').hidden = checked;
+    $('turn').textContent = 'الدور على: ' + names()[turn];
+    $('sa').textContent = score[0]; $('sb').textContent = score[1];
+    $('ta').classList.toggle('on', turn === 0); $('tb').classList.toggle('on', turn === 1);
+  }
+  $('items').addEventListener('click', function (e) {
+    var b = e.target.closest('.it'); if (!b || checked) return;
+    var it = b.dataset.it, k = order.indexOf(it);
+    if (k >= 0) order.splice(k, 1); else order.push(it);
+    draw();
+  });
+  $('reset').onclick = function () { order = []; draw(); };
+  $('check').onclick = function () {
+    checked = true;
+    var right = order.filter(function (it, i) { return cur[1][i] === it; }).length;
+    var pts = right === 4 ? 3 : right;
+    score[turn] += pts;
+    $('res').textContent = right === 4 ? 'ترتيب كامل صح! +3' : right ? right + ' في مكانها الصح. +' + pts : 'ولا وحدة في مكانها 😅';
+    draw();
+  };
+  $('next').onclick = function () { turn = 1 - turn; newQ(); };
+  ['na', 'nb'].forEach(function (id) { $(id).addEventListener('input', draw); });
+  newQ();
+})();
+</script>
+</body>
+</html>

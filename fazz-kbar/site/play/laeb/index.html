@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مين اللاعب؟ · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/games/laeb.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="laeb"></script>
+<style>
+.path { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; min-height: 120px; }
+.club { background: var(--bg-2); border: 2px solid var(--line); border-radius: 14px; padding: 12px 16px; font-size: clamp(1.05rem, 2.6vw, 1.5rem); font-weight: 800; }
+.club.hid { color: transparent; background: repeating-linear-gradient(45deg, var(--bg-2) 0 8px, var(--card) 8px 16px); min-width: 90px; }
+.arrow { color: var(--gold); font-size: 1.4rem; }
+.answer { font-family: var(--f-display); font-size: clamp(2rem, 6vw, 3.4rem); text-align: center; color: var(--ok); min-height: 1.3em; }
+.worth { text-align: center; font-weight: 800; color: var(--gold); font-size: 1.2rem; }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.btn-a { background: var(--teamA); color: #1a0b05; } .btn-b { background: var(--teamB); color: #06180e; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>مين اللاعب؟</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+  <div class="teams">
+    <div class="team a"><input id="na" value="الفريق البرتقالي" aria-label="اسم الفريق الأول"><span class="score num" id="sa">0</span></div>
+    <div class="team b"><input id="nb" value="الفريق الأخضر" aria-label="اسم الفريق الثاني"><span class="score num" id="sb">0</span></div>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;gap:16px">
+    <p class="muted center" style="margin:0">مسيرة لاعب مشهور بالترتيب، نادي ورا نادي. كل ما عرفتوه بأندية أقل، نقاطكم أكثر.</p>
+    <div class="path" id="path"></div>
+    <div class="worth" id="worth"></div>
+    <div class="answer" id="answer"></div>
+    <div class="acts">
+      <button class="btn btn-brand btn-big" id="more" type="button">اكشف النادي اللي بعده</button>
+    </div>
+    <div class="acts">
+      <button class="btn btn-a btn-big" id="wa" type="button"></button>
+      <button class="btn btn-b btn-big" id="wb" type="button"></button>
+    </div>
+    <div class="acts">
+      <button class="btn" id="show" type="button">اكشف اللاعب</button>
+      <button class="btn btn-main" id="next" type="button">اللاعب الجاي</button>
+    </div>
+  </div>
+  <details class="card"><summary style="cursor:pointer;font-weight:700">الجواب (للمقدم بس)</summary><p id="host" style="margin:8px 0 0;font-weight:800"></p></details>
+</div>
+
+<script src="/play/laeb/players.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var P = window.LAEB, used = get('fzk-laeb-used', []), cur, shown, done, score = [0, 0];
+  function names() { return [$('na').value.trim() || 'الفريق الأول', $('nb').value.trim() || 'الفريق الثاني']; }
+  function worth() { return Math.max(10, (cur.c.length - shown + 1) * 10); }
+  function pick() {
+    var free = P.map(function (_, i) { return i; }).filter(function (i) { return used.indexOf(i) < 0; });
+    if (!free.length) { used = []; free = P.map(function (_, i) { return i; }); }
+    var i = free[Math.floor(Math.random() * free.length)]; used.push(i); set('fzk-laeb-used', used); return P[i];
+  }
+  function newPlayer() { cur = pick(); shown = 1; done = false; draw(); }
+  function draw() {
+    $('path').innerHTML = cur.c.map(function (c, i) {
+      return (i ? '<span class="arrow">←</span>' : '') + '<span class="club' + (i < shown || done ? '' : ' hid') + '">' + (i < shown || done ? esc(c) : '؟') + '</span>';
+    }).join('');
+    $('worth').textContent = done ? '' : 'الحين يسوى ' + worth() + ' نقطة';
+    $('answer').textContent = done ? cur.n : '';
+    $('host').textContent = cur.n;
+    $('more').disabled = done || shown >= cur.c.length;
+    $('wa').textContent = names()[0] + ' عرفه'; $('wb').textContent = names()[1] + ' عرفه';
+    $('wa').disabled = $('wb').disabled = done;
+    $('sa').textContent = score[0]; $('sb').textContent = score[1];
+  }
+  $('more').onclick = function () { if (shown < cur.c.length) { shown++; draw(); } };
+  function win(t) { if (done) return; score[t] += worth(); done = true; draw(); }
+  $('wa').onclick = function () { win(0); };
+  $('wb').onclick = function () { win(1); };
+  $('show').onclick = function () { done = true; draw(); };
+  $('next').onclick = newPlayer;
+  ['na', 'nb'].forEach(function (id) { $(id).addEventListener('input', draw); });
+  newPlayer();
+})();
+</script>
+</body>
+</html>

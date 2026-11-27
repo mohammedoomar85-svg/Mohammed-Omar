@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>سباق الساعة · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/games/sibaq.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="sibaq"></script>
+<style>
+.clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tclock { border-radius: 20px; padding: 14px; text-align: center; background: var(--card); border: 3px solid var(--line); transition: transform .15s; }
+.tclock.a { border-color: var(--teamA); } .tclock.b { border-color: var(--teamB); }
+.tclock.on { transform: scale(1.04); box-shadow: 0 0 0 5px color-mix(in srgb, var(--gold) 50%, transparent); }
+.tclock .t { font-family: var(--f-display); font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1.1; }
+.tclock.low .t { color: var(--bad); }
+.tclock .s { color: var(--muted); }
+.wheel-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.wheel { width: min(320px, 78vw); aspect-ratio: 1; border-radius: 50%; position: relative; transition: transform 3.2s cubic-bezier(.17,.67,.2,1); border: 6px solid var(--gold); }
+.wheel span { position: absolute; inset: 0; display: flex; justify-content: center; padding-top: 14px; font-weight: 800; color: #fff; font-size: .95rem; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.pointer { width: 0; height: 0; border-inline: 16px solid transparent; border-top: 26px solid var(--gold); margin-bottom: -18px; z-index: 2; }
+.prompt { min-height: 36vh; padding-block: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+.prompt .cat { color: var(--gold); font-weight: 800; }
+.prompt .p { font-size: clamp(1.8rem, 6vw, 3.2rem); font-weight: 800; line-height: 1.35; }
+.prompt .p.big { font-size: clamp(4rem, 16vw, 8rem); line-height: 1.15; }
+.prompt .ans { color: var(--ok); font-size: 1.4rem; font-weight: 800; min-height: 1.6em; }
+.acts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>سباق الساعة</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+
+  <section class="card" id="setup" style="max-width:600px;margin-inline:auto;width:100%;display:flex;flex-direction:column;gap:14px">
+    <p class="muted" style="margin:0">فريقين، ولكل فريق ساعته. العجلة تختار الفئة، وكل ما جاوب الفريق صح توقف ساعته وتشتغل ساعة الفريق الثاني على شي جديد. اللي تخلص ساعته أول يخسر الجولة.</p>
+    <div class="grid2">
+      <div class="field"><label for="na">الفريق الأول</label><input id="na" value="الفريق البرتقالي" maxlength="24"></div>
+      <div class="field"><label for="nb">الفريق الثاني</label><input id="nb" value="الفريق الأخضر" maxlength="24"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label for="secs">وقت كل فريق</label><select id="secs"><option value="30">30 ثانية</option><option value="45">45 ثانية</option><option value="60" selected>دقيقة</option><option value="90">دقيقة ونص</option></select></div>
+      <div class="field"><label for="pen">خصم الباس</label><select id="pen"><option value="0">بدون</option><option value="3" selected>3 ثواني</option><option value="5">5 ثواني</option></select></div>
+    </div>
+    <button class="btn btn-main btn-big" id="start" type="button">ابدأ</button>
+  </section>
+
+  <section id="game" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="clocks">
+      <div class="tclock a" id="ca"><div class="s" id="la"></div><div class="t num" id="ta"></div><div class="s">الجولات: <span class="num" id="wa">0</span></div></div>
+      <div class="tclock b" id="cb"><div class="s" id="lb"></div><div class="t num" id="tb"></div><div class="s">الجولات: <span class="num" id="wb">0</span></div></div>
+    </div>
+
+    <div class="card wheel-wrap" id="spin-v">
+      <div class="pointer"></div>
+      <div class="wheel" id="wheel"></div>
+      <button class="btn btn-main btn-big" id="spin" type="button">لف العجلة</button>
+      <p class="muted" style="margin:0" id="first"></p>
+    </div>
+
+    <div id="play-v" hidden style="display:flex;flex-direction:column;gap:12px">
+      <div class="card prompt"><div class="cat" id="cat"></div><div class="p" id="p"></div><div class="ans" id="ans"></div></div>
+      <div class="acts">
+        <button class="btn btn-ok btn-big" id="ok" type="button">صح ✓</button>
+        <button class="btn btn-big" id="pass" type="button">باس</button>
+        <button class="btn btn-big" id="show" type="button">الجواب</button>
+      </div>
+      <button class="btn" id="pause" type="button">إيقاف مؤقت</button>
+    </div>
+
+    <div class="card prompt" id="end-v" hidden>
+      <div class="p" id="end-t"></div><p class="muted" id="end-s" style="margin:0"></p>
+      <button class="btn btn-main btn-big" id="next" type="button">جولة جديدة</button>
+    </div>
+  </section>
+</div>
+
+<script src="/play/sibaq/items.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var CATS = window.SIBAQ, COLORS = ['#e2643f', '#3d2c8d', '#14532d', '#b3261e', '#0f4c5c', '#a16207', '#6a1b9a'];
+  var left = [0, 0], wins = [0, 0], turn = 0, starter = 0, cat, deck, item, tick, running = false, rot = 0, secs, pen;
+
+  function drawWheel() {
+    var n = CATS.length, step = 360 / n;
+    $('wheel').style.background = 'conic-gradient(' + CATS.map(function (c, i) { return COLORS[i % COLORS.length] + ' ' + (i * step) + 'deg ' + ((i + 1) * step) + 'deg'; }).join(',') + ')';
+    $('wheel').innerHTML = CATS.map(function (c, i) { return '<span style="transform:rotate(' + (i * step + step / 2) + 'deg)">' + c.name + '</span>'; }).join('');
+  }
+  function names() { return [$('na').value.trim() || 'الفريق الأول', $('nb').value.trim() || 'الفريق الثاني']; }
+  function clocks() {
+    [0, 1].forEach(function (t) {
+      var el = $(t ? 'cb' : 'ca'); $(t ? 'tb' : 'ta').textContent = Math.max(0, Math.ceil(left[t]));
+      el.classList.toggle('on', running && turn === t); el.classList.toggle('low', left[t] <= 10);
+    });
+    $('la').textContent = names()[0]; $('lb').textContent = names()[1]; $('wa').textContent = wins[0]; $('wb').textContent = wins[1];
+  }
+  function view(v) { ['spin-v', 'play-v', 'end-v'].forEach(function (x) { $(x).hidden = x !== v; }); }
+  function newRound() {
+    left = [secs, secs]; turn = starter; running = false; clocks(); view('spin-v');
+    $('first').textContent = 'يبدأ ' + names()[starter];
+  }
+  $('start').onclick = function () {
+    secs = +$('secs').value; pen = +$('pen').value; wins = [0, 0]; starter = 0;
+    $('setup').hidden = true; $('game').hidden = false; drawWheel(); newRound();
+  };
+  $('spin').onclick = function () {
+    $('spin').disabled = true;
+    var n = CATS.length, i = Math.floor(Math.random() * n), step = 360 / n;
+    // Land the chosen slice under the pointer at the top.
+    rot += 360 * 5 + (360 - (i * step + step / 2) - (rot % 360));
+    $('wheel').style.transform = 'rotate(' + rot + 'deg)';
+    setTimeout(function () {
+      cat = CATS[i]; deck = shuffle(cat.items); $('spin').disabled = false;
+      $('cat').textContent = cat.name; view('play-v'); nextItem(); go();
+    }, 3300);
+  };
+  function nextItem() {
+    if (!deck.length) deck = shuffle(cat.items);
+    item = deck.pop(); $('p').textContent = item[0]; $('p').classList.toggle('big', !!cat.big); $('ans').textContent = '';
+  }
+  function go() {
+    running = true; clearInterval(tick); var last = Date.now();
+    tick = setInterval(function () {
+      var now = Date.now(); left[turn] -= (now - last) / 1000; last = now; clocks();
+      if (left[turn] <= 0) endRound(1 - turn);
+    }, 100);
+    $('pause').textContent = 'إيقاف مؤقت'; clocks();
+  }
+  function stop() { running = false; clearInterval(tick); clocks(); }
+  $('ok').onclick = function () { if (!running) return; turn = 1 - turn; nextItem(); clocks(); };
+  $('pass').onclick = function () { if (!running) return; left[turn] -= pen; nextItem(); clocks(); if (left[turn] <= 0) endRound(1 - turn); };
+  $('show').onclick = function () { $('ans').textContent = item[1]; };
+  $('pause').onclick = function () { if (running) { stop(); $('pause').textContent = 'كمّل'; } else go(); };
+  function endRound(w) {
+    stop(); wins[w]++; clocks();
+    $('end-t').textContent = 'فاز ' + names()[w] + ' بالجولة!';
+    $('end-s').textContent = 'خلص وقت ' + names()[1 - w] + '. الجواب كان: ' + item[1];
+    starter = 1 - starter; view('end-v');
+  }
+  $('next').onclick = newRound;
+})();
+</script>
+</body>
+</html>

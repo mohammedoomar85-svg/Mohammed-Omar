@@ -96,7 +96,7 @@ h1 { font-size: 1.7rem; }
     }
 
     h += '<div class="card">' + o.items.map(function (i) {
-      return '<div class="row"><span>' + esc(i.name) + ' × <span class="num">' + i.qty + '</span></span><span>' + kwd(i.price * i.qty) + '</span></div>';
+      return '<div class="row"><span>' + esc(i.name) + ' × <span class="num">' + i.qty + '</span>' + (i.bundle ? ' <span class="note">(' + esc(i.bundle) + ')</span>' : '') + '</span><span>' + kwd(i.price * i.qty) + '</span></div>';
     }).join('') +
       (o.has_physical ? '<div class="row"><span>التوصيل</span><span>' + (Number(o.delivery) ? kwd(o.delivery) : 'مجاني') + '</span></div>' : '') +
       '<div class="row total"><span>الإجمالي</span><span>' + kwd(o.total) + '</span></div></div>';

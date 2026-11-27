@@ -56,6 +56,26 @@ section.block { padding-block: 28px; scroll-margin-top: 72px; }
 .chipset button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-weight: 500; font-size: .92rem; }
 .chipset button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .more { display: flex; justify-content: center; margin-top: 18px; }
+.bundles { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.bundle { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: var(--r); color: #fff; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #0f4c5c, #3d2c8d); box-shadow: var(--shadow); }
+.bundle:nth-child(2) { background: linear-gradient(135deg, #7c2d12, #b3261e); }
+.bundle:nth-child(3) { background: linear-gradient(135deg, #14532d, #0f4c5c); }
+.bundle h3 { font-size: 1.3rem; } .bundle .sub { opacity: .85; font-size: .95rem; }
+.bundle .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto; padding-top: 8px; }
+.bundle .price s { color: rgba(255,255,255,.7); }
+.bundle .save { position: absolute; top: 12px; inset-inline-end: 12px; background: #ffd166; color: #3a2400; border-radius: 999px; padding: 2px 10px; font-weight: 800; font-size: .8rem; }
+.bundle .btn { background: #fff; color: #142433; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.pick { position: relative; border: 2px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; background: var(--card); text-align: start; padding: 0; }
+.pick .cover { aspect-ratio: 4 / 3; }
+.pick b { display: block; padding: 8px 10px; font-size: .95rem; }
+.pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+.pick[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 8px; inset-inline-start: 8px; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 800; }
+.pick:disabled { opacity: .45; cursor: not-allowed; }
+.line .mini.bund { display: grid; place-items: center; background: linear-gradient(135deg, #0f4c5c, #3d2c8d); color: #fff; font-family: var(--f-display); font-size: 1.3rem; }
+.x-line { border: 0; background: var(--bg-2); border-radius: 10px; padding: 6px 10px; cursor: pointer; font-weight: 700; }
 .empty { padding: 28px; text-align: center; color: var(--muted); }
 .draft-tag { background: var(--warn); color: #fff; border-radius: 6px; padding: 0 6px; font-size: .75rem; }
 
@@ -178,6 +198,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
         <input id="q" type="search" placeholder="ابحث عن لعبة… (جاكارو، أونو، كودنيمز)" aria-label="ابحث عن لعبة">
         <div class="chipset" id="groups" hidden></div>
       </div>
+      <div class="bundles" id="bundles" hidden></div>
       <div class="grid" id="grid" aria-live="polite"></div>
       <div class="more"><button class="btn btn-ghost" id="more" type="button" hidden>اعرض ألعاب أكثر</button></div>
     </div>
@@ -214,6 +235,13 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     <span><a id="wa-foot" target="_blank" rel="noopener">تواصل معنا على الواتساب</a></span>
   </div>
 </footer>
+
+<!-- Bundle picker -->
+<dialog id="bp" aria-labelledby="bp-title">
+  <div class="dlg-head"><h2 id="bp-title"></h2><button class="x" type="button" data-close aria-label="إغلاق">×</button></div>
+  <div class="dlg-body"><p class="note" id="bp-note" style="margin:0"></p><div class="picks" id="bp-list"></div></div>
+  <div class="pd-buy"><span class="price" id="bp-price"></span><button class="btn btn-main" id="bp-add" type="button" disabled></button></div>
+</dialog>
 
 <!-- Product details -->
 <dialog id="pd" aria-labelledby="pd-title">
@@ -306,6 +334,65 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
       });
       render(); renderCart();
     }).catch(function () {});
+  var bundles = (window.BUNDLES || []).slice();
+  fetch(C.SB_URL + '/rest/v1/fzk_bundles?select=id,name_ar,pick,price_kwd,old_price_kwd&order=sort', { headers: { apikey: C.SB_KEY } })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (rows) {
+      if (!rows) return;
+      bundles = rows.map(function (r) { return { id: r.id, name: r.name_ar, pick: r.pick, price: Number(r.price_kwd), oldPrice: r.old_price_kwd ? Number(r.old_price_kwd) : null }; });
+      render(); renderCart();
+    }).catch(function () {});
+  function digitalGames() { return products.filter(function (p) { return p.kind === 'digital' && visible(p) && !p.soldOut; }); }
+  function bundleById(id) { return bundles.filter(function (b) { return b.id === id; })[0]; }
+  function renderBundles() {
+    var n = digitalGames().length;
+    var list = bundles.filter(function (b) { return b.pick <= n; });
+    var el = $('bundles');
+    el.hidden = !list.length || tab === 'physical' || !!query;
+    el.innerHTML = list.map(function (b) {
+      var all = b.pick === n;
+      var off = b.oldPrice ? Math.round((1 - b.price / b.oldPrice) * 100) : 0;
+      return '<div class="bundle">' + (off > 0 ? '<span class="save">وفّر ' + off + '%</span>' : '') +
+        '<h3>' + esc(b.name) + '</h3><div class="sub">' + (all ? 'كل الألعاب الرقمية بسعر واحد' : 'اختر أي ' + b.pick + ' ألعاب رقمية تبيها') + '</div>' +
+        '<div class="row"><span class="price">' + kwd(b.price) + (b.oldPrice ? '<s>' + kwd(b.oldPrice) + '</s>' : '') + '</span>' +
+        '<button class="btn" type="button" data-bundle="' + esc(b.id) + '">' + (all ? 'خذها كلها' : 'اختر ألعابك') + '</button></div></div>';
+    }).join('');
+  }
+  $('bundles').addEventListener('click', function (e) { var b = e.target.closest('[data-bundle]'); if (b) openPicker(b.dataset.bundle); });
+
+  // Bundle picker: choose exactly `pick` games that aren't already in the cart.
+  var picking = null, chosen = [];
+  function inCart(id) { return !!cart[id] || bund.some(function (x) { return x.games.indexOf(id) >= 0; }); }
+  function openPicker(id) {
+    var b = bundleById(id); if (!b) return; picking = b;
+    var games = digitalGames();
+    chosen = b.pick === games.length ? games.filter(function (g) { return !inCart(g.id); }).map(function (g) { return g.id; }) : [];
+    $('bp-title').textContent = b.name;
+    $('bp-price').innerHTML = kwd(b.price) + (b.oldPrice ? '<s>' + kwd(b.oldPrice) + '</s>' : '');
+    drawPicker(); $('bp').showModal();
+  }
+  function drawPicker() {
+    var b = picking;
+    $('bp-list').innerHTML = digitalGames().map(function (g) {
+      var busy = inCart(g.id), on = chosen.indexOf(g.id) >= 0;
+      return '<button class="pick" type="button" data-pick="' + esc(g.id) + '" aria-pressed="' + on + '"' + (busy ? ' disabled' : '') + '>' +
+        cover(g, 'cover') + '</div><b>' + esc(g.name) + (busy ? ' <span class="note">(في السلة)</span>' : '') + '</b></button>';
+    }).join('');
+    var left = b.pick - chosen.length;
+    $('bp-note').textContent = left > 0 ? 'اخترت ' + chosen.length + ' من ' + b.pick + '. باقي ' + left + '.' : 'تمام! اخترت ' + b.pick + ' ألعاب.';
+    $('bp-add').disabled = left !== 0;
+    $('bp-add').textContent = left > 0 ? 'اختر ' + left + ' بعد' : 'أضف الباقة للسلة';
+  }
+  $('bp-list').addEventListener('click', function (e) {
+    var t = e.target.closest('[data-pick]'); if (!t || t.disabled) return;
+    var id = t.dataset.pick, i = chosen.indexOf(id);
+    if (i >= 0) chosen.splice(i, 1); else if (chosen.length < picking.pick) chosen.push(id);
+    drawPicker();
+  });
+  $('bp-add').addEventListener('click', function () {
+    if (chosen.length !== picking.pick) return;
+    bund.push({ b: picking.id, games: chosen.slice() }); $('bp').close(); save(); openCart();
+  });
 
   // Catalog grid
   function render() {
@@ -337,6 +424,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     }).join('');
     if (!list.length) html = '<div class="card empty">' + (query ? 'ما لقينا لعبة بهالاسم. جرّب كلمة ثانية أو اسألنا على الواتساب.' : 'ما فيه ألعاب هنا للحين.') + '</div>';
     $('grid').innerHTML = html;
+    renderBundles();
   }
   function setTab(t) {
     tab = t; grp = ''; shown = 24;
@@ -376,16 +464,21 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
 
   // Cart
   var cart = store('fzk-cart') || {};
+  var bund = store('fzk-cart-b') || [];   // [{b: bundle id, games: [ids]}]
   function items() { return Object.keys(cart).filter(function (id) { return byId[id] && cart[id] > 0; }).map(function (id) { return { p: byId[id], qty: cart[id] }; }); }
+  function bundles_() { return bund.filter(function (x) { return bundleById(x.b) && x.games.every(function (g) { return byId[g]; }); }); }
   function totals() {
     var sub = 0, phys = false;
     items().forEach(function (i) { sub += i.p.price * i.qty; if (i.p.kind === 'physical') phys = true; });
+    bundles_().forEach(function (x) { sub += bundleById(x.b).price; });
     var del = phys ? (sub >= C.FREE_DELIVERY_FROM_KWD ? 0 : C.DELIVERY_KWD) : 0;
-    return { sub: sub, del: del, total: sub + del, phys: phys, count: items().reduce(function (a, i) { return a + i.qty; }, 0) };
+    return { sub: sub, del: del, total: sub + del, phys: phys,
+      count: items().reduce(function (a, i) { return a + i.qty; }, 0) + bundles_().length };
   }
-  function save() { store('fzk-cart', cart); renderCart(); }
+  function save() { store('fzk-cart', cart); store('fzk-cart-b', bund); renderCart(); }
   function addToCart(id) {
     var p = byId[id]; if (!p || p.soldOut) return;
+    if (bund.some(function (x) { return x.games.indexOf(id) >= 0; })) { openCart(); return; }  // already in a bundle
     // A digital game gives one code per copy, so most people need one; physical games can be several.
     cart[id] = Math.min((cart[id] || 0) + 1, p.kind === 'digital' ? 5 : 20);
     save(); openCart();
@@ -397,17 +490,23 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
       (t.phys && t.del ? '<div class="note">التوصيل مجاني من ' + kwd(C.FREE_DELIVERY_FROM_KWD) + '</div>' : '');
   }
   function renderCart() {
-    var t = totals(), list = items();
+    var t = totals(), list = items(), bl = bundles_();
     $('cart-count').hidden = !t.count; $('cart-count').textContent = t.count;
-    $('lines').innerHTML = list.length ? list.map(function (i) {
+    var bhtml = bl.map(function (x) {
+      var b = bundleById(x.b);
+      return '<div class="line"><div class="mini bund">' + b.pick + '</div>' +
+        '<div><b>' + esc(b.name) + '</b><span class="note">' + kwd(b.price) + ' · ' + x.games.map(function (g) { return esc(byId[g].name); }).join('، ') + '</span></div>' +
+        '<button class="x-line" type="button" data-unb="' + bund.indexOf(x) + '">شيل</button></div>';
+    }).join('');
+    $('lines').innerHTML = (list.length || bl.length) ? bhtml + list.map(function (i) {
       return '<div class="line">' + cover(i.p, 'mini') + '</div>' +
         '<div><b>' + esc(i.p.name) + '</b><span class="note">' + kwd(i.p.price) + (i.p.kind === 'digital' ? ' · رقمية' : ' · توصيل') + '</span></div>' +
         '<div class="qty"><button type="button" data-dec="' + esc(i.p.id) + '" aria-label="أنقص">−</button><span class="num">' + i.qty + '</span>' +
         '<button type="button" data-inc="' + esc(i.p.id) + '" aria-label="زِد">+</button></div></div>';
     }).join('') : '<p class="empty">السلة فاضية.</p>';
-    $('sums').innerHTML = list.length ? sumsHtml(t) : '';
+    $('sums').innerHTML = (list.length || bl.length) ? sumsHtml(t) : '';
     $('sums-2').innerHTML = sumsHtml(t);
-    $('to-checkout').hidden = !list.length;
+    $('to-checkout').hidden = !(list.length || bl.length);
     $('addr').hidden = !t.phys; $('pay-cash').hidden = !t.phys;
     if (!t.phys) document.querySelector('input[name=pay][value=knet]').checked = true;
   }
@@ -415,6 +514,7 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     var inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]');
     if (inc) addToCartQuiet(inc.dataset.inc, 1);
     if (dec) addToCartQuiet(dec.dataset.dec, -1);
+    var unb = e.target.closest('[data-unb]'); if (unb) { bund.splice(+unb.dataset.unb, 1); save(); }
   });
   function addToCartQuiet(id, d) {
     var p = byId[id]; var max = p.kind === 'digital' ? 5 : 20;
@@ -449,7 +549,8 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
     if (t.phys && (!$('f-area').value.trim() || !$('f-address').value.trim())) return fail(ERR['address required']);
     var pay = document.querySelector('input[name=pay]:checked').value;
     var body = { name: name, phone: phone, pay_method: pay, notes: $('f-notes').value.trim(),
-      items: items().map(function (i) { return { id: i.p.id, qty: i.qty }; }) };
+      items: bundles_().map(function (x) { return { bundle: x.b, games: x.games }; })
+        .concat(items().map(function (i) { return { id: i.p.id, qty: i.qty }; })) };
     if (t.phys) { body.governorate = $('f-gov').value; body.area = $('f-area').value.trim(); body.address = $('f-address').value.trim(); }
     $('place').disabled = true; $('place').textContent = 'جاري الإرسال…';
     fetch(C.SB_URL + '/rest/v1/rpc/fzk_place_order', {
@@ -459,7 +560,8 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
         store('fzk-me', { name: name, phone: phone });
         var mine = store('fzk-orders') || []; mine.unshift({ no: o.number, t: o.token, at: Date.now() }); store('fzk-orders', mine.slice(0, 20));
         var link = location.origin + '/order/?t=' + o.token;
-        var lines = items().map(function (i) { return '• ' + i.p.name + ' × ' + i.qty; }).join('\n');
+        var lines = bundles_().map(function (x) { return '• ' + bundleById(x.b).name + ': ' + x.games.map(function (g) { return byId[g].name; }).join('، '); })
+          .concat(items().map(function (i) { return '• ' + i.p.name + ' × ' + i.qty; })).join('\n');
         var msg = 'السلام عليكم، طلب جديد من فز و العب للكبار\nرقم الطلب: ' + o.number + '\n' + lines + '\nالإجمالي: ' + kwd(o.total) +
           '\nالدفع: ' + (pay === 'knet' ? 'KNET (أرسلوا لي رابط الدفع)' : 'كاش عند الاستلام') + '\nالاسم: ' + name + '\nصفحة الطلب: ' + link;
         $('d-no').textContent = o.number;
@@ -468,12 +570,14 @@ dialog::backdrop { background: rgba(10, 20, 30, .55); }
           : 'نتواصل معك لتأكيد موعد التوصيل. أرسل لنا الطلب على الواتساب عشان نبدأ.';
         $('d-wa').href = 'https://wa.me/' + C.WHATSAPP + '?text=' + encodeURIComponent(msg);
         $('d-link').href = '/order/?t=' + o.token;
-        cart = {}; save(); step('done');
+        cart = {}; bund = []; save(); step('done');
       })
       .catch(function (x) {
         var m = String(x.message || '');
         fail(ERR[m] || (m.indexOf('out of stock') === 0 ? 'وحدة من الألعاب نفدت كميتها. شيلها من السلة وحاول مرة ثانية.' :
           m.indexOf('product not available') === 0 ? 'وحدة من الألعاب ما عادت متوفرة. شيلها من السلة وحاول مرة ثانية.' :
+          m === 'duplicate item' ? 'فيه لعبة مكررة في السلة (لحالها وداخل باقة). شيل وحدة منهم.' :
+          m === 'bundle not available' || m.indexOf('pick ') === 0 ? 'الباقة تغيّرت. شيلها من السلة واخترها من جديد.' :
           'ما قدرنا نرسل الطلب. تأكد من الإنترنت وحاول مرة ثانية، أو كلمنا على الواتساب.'));
       })
       .finally(function () { $('place').disabled = false; $('place').textContent = 'أكّد الطلب'; });

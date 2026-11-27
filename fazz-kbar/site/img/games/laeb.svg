@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15803d"/><stop offset="1" stop-color="#0b4f26"/></linearGradient></defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <g stroke="#ffffff" stroke-opacity=".25" stroke-width="4" fill="none"><path d="M200 0v300"/><circle cx="200" cy="150" r="56"/><rect x="-4" y="90" width="60" height="120"/><rect x="344" y="90" width="60" height="120"/></g>
+  <!-- jersey -->
+  <path d="M150 70l-46 22 14 44 24-10v104h116V126l24 10 14-44-46-22c-6 16-24 26-50 26s-44-10-50-26z" fill="#f8fafc" stroke="#0b4f26" stroke-width="6" stroke-linejoin="round"/>
+  <text x="200" y="196" font-family="Tahoma, Arial, sans-serif" font-weight="700" font-size="76" fill="#15803d" text-anchor="middle">؟</text>
+  <!-- ball -->
+  <g transform="translate(318 236)"><circle r="34" fill="#fff" stroke="#0b4f26" stroke-width="5"/><path d="M0-14l13 9-5 16H-8l-5-16z" fill="#0b4f26"/><path d="M0-14V-33M13-5l18-6M8 11l11 15M-8 11l-11 15M-13-5l-18-6" stroke="#0b4f26" stroke-width="4"/></g>
+</svg>

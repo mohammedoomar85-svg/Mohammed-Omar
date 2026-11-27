@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>العشرة الكبار · فز و العب للكبار</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/games/ashara.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@600;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="/play/game.css">
+<script src="/config.js"></script>
+<script src="/play/gate.js" data-product="ashara"></script>
+<style>
+.title { font-size: clamp(1.4rem, 3.4vw, 2.2rem); font-weight: 800; text-align: center; }
+.slots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 560px) { .slots { grid-template-columns: 1fr; } }
+.slot { display: flex; align-items: center; gap: 12px; min-height: 60px; border-radius: 14px; border: 2px solid var(--line); background: var(--card);
+  padding: 8px 14px; font-size: 1.2rem; font-weight: 800; cursor: pointer; text-align: start; }
+.slot .n { width: 34px; height: 34px; border-radius: 10px; background: var(--bg-2); display: grid; place-items: center; color: var(--gold); flex: none; }
+.slot .pts { margin-inline-start: auto; color: var(--muted); font-size: .95rem; }
+.slot.a { border-color: var(--teamA); background: color-mix(in srgb, var(--teamA) 22%, var(--card)); }
+.slot.b { border-color: var(--teamB); background: color-mix(in srgb, var(--teamB) 22%, var(--card)); }
+.slot.shown { border-style: dashed; color: var(--muted); }
+.acts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.host { font-size: .95rem; } .host ol { margin: 8px 0 0; padding-inline-start: 22px; columns: 2; }
+.strikes { text-align: center; font-size: 1.6rem; letter-spacing: .3em; color: var(--bad); min-height: 1.6em; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="bar"><h1>العشرة الكبار</h1><button class="theme-t" id="theme" type="button" aria-label="تبديل الألوان">◐</button></div>
+  <div class="teams">
+    <div class="team a" id="ta"><input id="na" value="الفريق البرتقالي" aria-label="اسم الفريق الأول"><span class="score num" id="sa">0</span></div>
+    <div class="team b" id="tb"><input id="nb" value="الفريق الأخضر" aria-label="اسم الفريق الثاني"><span class="score num" id="sb">0</span></div>
+  </div>
+  <div class="card" style="display:flex;flex-direction:column;gap:14px">
+    <div class="muted center" id="turn"></div>
+    <div class="title" id="title"></div>
+    <div class="strikes" id="strikes" aria-live="polite"></div>
+    <div class="slots" id="slots"></div>
+    <div class="acts">
+      <button class="btn btn-bad" id="wrong" type="button">جواب غلط ✕</button>
+      <button class="btn" id="swap" type="button">بدّل الدور</button>
+      <button class="btn" id="reveal" type="button">اكشف الباقي</button>
+      <button class="btn btn-main" id="next" type="button">القائمة الجاية</button>
+    </div>
+    <p class="muted center" style="margin:0">الفريق يقول جواب، والمقدم يضغط عليه في اللوحة إذا موجود. كل ما كان الجواب أصعب، نقاطه أكثر. ثلاث أجوبة غلط وينتقل الدور.</p>
+  </div>
+  <details class="card host"><summary style="cursor:pointer;font-weight:700">الأجوبة (للمقدم بس)</summary><ol id="host"></ol></details>
+</div>
+
+<script src="/play/ashara/lists.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function get(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+  function set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var theme = get('fzk-theme', 'dark'); document.documentElement.dataset.theme = theme;
+  $('theme').onclick = function () { theme = theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; set('fzk-theme', theme); };
+
+  var L = window.ASHARA, used = get('fzk-ashara-used', []), list, owner, score = [0, 0], turn = 0, strikes = 0, showAll = false;
+  function names() { return [$('na').value.trim() || 'الفريق الأول', $('nb').value.trim() || 'الفريق الثاني']; }
+  function pick() {
+    var free = L.map(function (_, i) { return i; }).filter(function (i) { return used.indexOf(i) < 0; });
+    if (!free.length) { used = []; free = L.map(function (_, i) { return i; }); }
+    var i = free[Math.floor(Math.random() * free.length)]; used.push(i); set('fzk-ashara-used', used); return L[i];
+  }
+  function newList() { list = pick(); owner = list.a.map(function () { return null; }); strikes = 0; showAll = false; draw(); }
+  function draw() {
+    $('title').textContent = list.t;
+    $('slots').innerHTML = list.a.map(function (a, i) {
+      var o = owner[i], shown = o !== null || showAll;
+      return '<button class="slot' + (o === 0 ? ' a' : o === 1 ? ' b' : showAll ? ' shown' : '') + '" type="button" data-i="' + i + '"' + (o !== null ? ' disabled' : '') + '>' +
+        '<span class="n num">' + (i + 1) + '</span><span>' + (shown ? esc(a) : '') + '</span><span class="pts num">' + (i + 1) * 10 + '</span></button>';
+    }).join('');
+    $('host').innerHTML = list.a.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('');
+    $('strikes').textContent = '✕'.repeat(strikes);
+    $('turn').textContent = 'الدور على: ' + names()[turn];
+    $('sa').textContent = score[0]; $('sb').textContent = score[1];
+    $('ta').classList.toggle('on', turn === 0); $('tb').classList.toggle('on', turn === 1);
+  }
+  $('slots').addEventListener('click', function (e) {
+    var b = e.target.closest('.slot'); if (!b || showAll) return;
+    var i = +b.dataset.i; if (owner[i] !== null) return;
+    owner[i] = turn; score[turn] += (i + 1) * 10; draw();
+  });
+  $('wrong').onclick = function () { if (showAll) return; strikes++; if (strikes >= 3) { strikes = 0; turn = 1 - turn; } draw(); };
+  $('swap').onclick = function () { strikes = 0; turn = 1 - turn; draw(); };
+  $('reveal').onclick = function () { showAll = true; draw(); };
+  $('next').onclick = function () { turn = 1 - turn; newList(); };
+  ['na', 'nb'].forEach(function (id) { $(id).addEventListener('input', draw); });
+  newList();
+})();
+</script>
+</body>
+</html>

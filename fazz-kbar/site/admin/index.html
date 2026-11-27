@@ -72,6 +72,8 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     <section id="v-products" hidden>
       <div class="card scroll">
         <table><thead><tr><th>المنتج</th><th>النوع</th><th>السعر د.ك</th><th>قبل الخصم</th><th>المخزون</th><th>ظاهر</th><th></th></tr></thead><tbody id="prods"></tbody></table>
+        <h3 style="margin:18px 0 8px">الباقات</h3>
+        <table><thead><tr><th>الباقة</th><th>عدد الألعاب</th><th>السعر د.ك</th><th>قبل الخصم</th><th>ظاهرة</th><th></th></tr></thead><tbody id="bunds"></tbody></table>
         <p class="note">المخزون فاضي = ما ينحسب (للألعاب الرقمية). لإضافة منتج جديد أضفه في catalog.js وفي جدول fzk_products بنفس الرمز.</p>
       </div>
     </section>
@@ -113,7 +115,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     orders = o.data || [];
     var c = await sb.from('fzk_codes').select('code,product_id,order_id,uses,devices,revoked').not('order_id', 'is', null);
     codes = {}; (c.data || []).forEach(function (x) { (codes[x.order_id] = codes[x.order_id] || []).push(x); });
-    renderOrders(); loadProducts();
+    renderOrders(); loadProducts(); loadBundles();
   }
 
   function renderOrders() {
@@ -151,7 +153,7 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
     return '<article class="card"><div class="o-head"><span class="no num">' + esc(o.number) + '</span><span class="st ' + o.status + '">' + ST[o.status] + '</span>' +
       '<span>' + esc(o.name) + '</span><a href="https://wa.me/965' + esc(o.phone) + '" target="_blank" rel="noopener" class="num">+965 ' + esc(o.phone) + '</a>' +
       '<span class="note">' + new Date(o.created_at).toLocaleString('ar-KW') + '</span></div>' +
-      '<div class="o-body"><div>' + its.map(function (i) { return esc(i.name_ar) + ' × ' + i.qty + ' <span class="note">(' + (i.kind === 'digital' ? 'رقمية' : 'توصيل') + ')</span>'; }).join('<br>') +
+      '<div class="o-body"><div>' + its.map(function (i) { return esc(i.name_ar) + ' × ' + i.qty + ' <span class="note">(' + (i.bundle_id ? 'باقة ' + esc(i.bundle_id) : i.kind === 'digital' ? 'رقمية' : 'توصيل') + ')</span>'; }).join('<br>') +
       '<br><b>' + kwd(o.total) + '</b> · ' + (o.pay_method === 'knet' ? 'KNET' : 'كاش') + (Number(o.delivery) ? ' · شامل توصيل ' + kwd(o.delivery) : '') + '</div>' +
       '<div>' + (o.has_physical ? esc([o.governorate, o.area, o.address].filter(Boolean).join('، ')) : '<span class="note">بدون توصيل</span>') +
       (o.notes ? '<br><span class="note">ملاحظة: ' + esc(o.notes) + '</span>' : '') +
@@ -181,6 +183,28 @@ td input { width: 100%; min-width: 70px; padding: 6px 8px; border: 1px solid var
         '<td><button class="btn btn-brand" type="button" data-save style="min-height:36px;padding:4px 12px">حفظ</button></td></tr>';
     }).join('');
   }
+  async function loadBundles() {
+    var r = await sb.from('fzk_bundles').select('*').order('sort');
+    $('bunds').innerHTML = (r.data || []).map(function (b) {
+      return '<tr data-id="' + esc(b.id) + '"><td><input data-k="name_ar" value="' + esc(b.name_ar) + '"></td>' +
+        '<td><input data-k="pick" inputmode="numeric" value="' + b.pick + '"></td>' +
+        '<td><input data-k="price_kwd" inputmode="decimal" value="' + b.price_kwd + '"></td>' +
+        '<td><input data-k="old_price_kwd" inputmode="decimal" value="' + (b.old_price_kwd == null ? '' : b.old_price_kwd) + '"></td>' +
+        '<td><input data-k="active" type="checkbox" style="width:auto;min-width:0"' + (b.active ? ' checked' : '') + '></td>' +
+        '<td><button class="btn btn-brand" type="button" data-bsave style="min-height:36px;padding:4px 12px">حفظ</button></td></tr>';
+    }).join('');
+  }
+  $('bunds').addEventListener('click', async function (e) {
+    var b = e.target.closest('[data-bsave]'); if (!b) return;
+    var tr = b.closest('tr'), v = function (k) { return tr.querySelector('[data-k=' + k + ']'); };
+    var old = v('old_price_kwd').value.trim();
+    var row = { name_ar: v('name_ar').value.trim(), pick: Number(v('pick').value), price_kwd: Number(v('price_kwd').value),
+      old_price_kwd: old === '' ? null : Number(old), active: v('active').checked };
+    if (!row.name_ar || !(row.pick >= 2) || isNaN(row.price_kwd)) return alert('اكتب الاسم وعدد الألعاب (2 أو أكثر) والسعر.');
+    var r = await sb.from('fzk_bundles').update(row).eq('id', tr.dataset.id);
+    b.textContent = r.error ? 'خطأ' : 'تم'; if (r.error) alert(r.error.message);
+    setTimeout(function () { b.textContent = 'حفظ'; }, 1500);
+  });
   $('prods').addEventListener('click', async function (e) {
     var b = e.target.closest('[data-save]'); if (!b) return;
     var tr = b.closest('tr'), v = function (k) { return tr.querySelector('[data-k=' + k + ']'); };
